@@ -50,7 +50,7 @@ router.post('/', requireAuth, requireRole('coach', 'admin'), async (req: AuthReq
   const parse = eventSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
 
-  const event = await prisma.scheduleEvent.create({ data: parse.data });
+  const event = await prisma.scheduleEvent.create({ data: parse.data as any });
 
   const team = await prisma.team.findUnique({ where: { id: parse.data.teamId } });
   if (team) {

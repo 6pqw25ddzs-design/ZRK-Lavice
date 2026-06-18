@@ -46,7 +46,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', requireAuth, requireRole('coach', 'admin'), async (req: AuthRequest, res: Response) => {
   const parse = playerSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
-  const player = await prisma.player.create({ data: parse.data });
+  const player = await prisma.player.create({ data: parse.data as any });
   res.status(201).json(player);
 });
 

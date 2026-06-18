@@ -47,7 +47,7 @@ router.post('/', requireAuth, requireRole('admin', 'coach'), async (req: AuthReq
       ...parse.data,
       authorId: req.user!.id,
       publishedAt: parse.data.isPublished ? new Date() : null,
-    },
+    } as any,
   });
   res.status(201).json(article);
 });

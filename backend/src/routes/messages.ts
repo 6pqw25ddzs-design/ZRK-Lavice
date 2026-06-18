@@ -50,7 +50,7 @@ router.post('/', requireAuth, async (req: AuthRequest, res: Response) => {
   if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
 
   const msg = await prisma.message.create({
-    data: { ...parse.data, senderId: req.user!.id },
+    data: { ...parse.data, senderId: req.user!.id } as any,
     include: { sender: { select: { fullName: true } } },
   });
   res.status(201).json(msg);

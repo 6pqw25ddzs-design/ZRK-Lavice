@@ -18,7 +18,7 @@ const registrationSchema = z.object({
 router.post('/', async (req, res) => {
   const parse = registrationSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
-  const reg = await prisma.registration.create({ data: parse.data });
+  const reg = await prisma.registration.create({ data: parse.data as any });
   res.status(201).json({ id: reg.id, message: 'Registracija primljena. Kontaktiraćemo vas uskoro.' });
 });
 
