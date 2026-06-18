@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 export default function OKlubuPage() {
   return (
     <div className="min-h-screen bg-[#1A1A1A] text-white pt-24 pb-16 px-4">
