@@ -57,8 +57,9 @@ export default function HomePage() {
               budućnosti
             </h1>
             <p className="text-gray-400 text-lg leading-relaxed mb-10 max-w-lg">
-              ZRK Lavice je ženski rukometni klub osnovan od strane olimpijskih medaljaša.
-              Odgajamo sportski karakter, timski duh i pobjedničku mentalnost.
+              ZRK Lavice je ženski rukometni klub osnovan od strane evropskih šampionki i
+              osvajačica jedine olimpijske medalje za Crnu Goru.
+              Odgajamo sportski karakter, timski duh i pobjednički mentalitet.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link href="/registracija" className="btn-primary flex items-center gap-2">

@@ -11,7 +11,7 @@ export default function OKlubuPage() {
           <div className="bg-[#2A2A2A] rounded-xl p-8">
             <h2 className="text-2xl font-bold text-[#D4AC0D] mb-4">Naša Priča</h2>
             <p className="text-gray-300 leading-relaxed">
-              ZRK Lavice je ženski rukometni klub osnovan 2026. godine od strane olimpijskih medaljaša.
+              ZRK Lavice je ženski rukometni klub osnovan 2026. godine od strane evropskih šampionki i osvajačica jedine olimpijske medalje za Crnu Goru.
               Klub je osnovan sa ciljem razvoja ženskog rukometa u Crnoj Gori i pružanja kvalitetnog
               sportskog obrazovanja mladim igračicama iz Podgorice i okoline.
             </p>
@@ -21,7 +21,7 @@ export default function OKlubuPage() {
             <h2 className="text-2xl font-bold text-[#D4AC0D] mb-4">Misija i Vizija</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
               Naša misija je razvoj šampionki budućnosti — ne samo na terenu, već i kao osoba.
-              Odgajamo sportski karakter, timski duh i pobjedničku mentalnost.
+              Odgajamo sportski karakter, timski duh i pobjednički mentalitet.
             </p>
             <p className="text-gray-300 leading-relaxed">
               Vizija kluba je postati vodeći ženski rukometni klub u Crnoj Gori i regionu,
