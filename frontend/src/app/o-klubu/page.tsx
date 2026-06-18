@@ -9,7 +9,7 @@ export default function OKlubuPage() {
           <div className="bg-[#2A2A2A] rounded-xl p-8">
             <h2 className="text-2xl font-bold text-[#D4AC0D] mb-4">Naša Priča</h2>
             <p className="text-gray-300 leading-relaxed">
-              ZRK Lavice je ženski rukometni klub osnovan 2022. godine od strane olimpijskih medaljaša.
+              ZRK Lavice je ženski rukometni klub osnovan 2026. godine od strane olimpijskih medaljaša.
               Klub je osnovan sa ciljem razvoja ženskog rukometa u Crnoj Gori i pružanja kvalitetnog
               sportskog obrazovanja mladim igračicama iz Podgorice i okoline.
             </p>
@@ -29,7 +29,7 @@ export default function OKlubuPage() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: '🏆', title: 'Osnovan', value: '2022.' },
+              { icon: '🏆', title: 'Osnovan', value: '2026.' },
               { icon: '👧', title: 'Igračice', value: '47+' },
               { icon: '🏅', title: 'Ekipe', value: '3' },
             ].map(item => (

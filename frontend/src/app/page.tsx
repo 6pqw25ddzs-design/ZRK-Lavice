@@ -4,8 +4,8 @@ import { ArrowRight, Calendar, Users, Trophy, MapPin } from 'lucide-react';
 const stats = [
   { num: '47', label: 'Aktivnih igračica' },
   { num: '3', label: 'Ekipe' },
-  { num: '5', label: 'Trenera' },
-  { num: '2022', label: 'Godina osnivanja' },
+  { num: '7', label: 'Trenera' },
+  { num: '2026', label: 'Godina osnivanja' },
 ];
 
 const teams = [
