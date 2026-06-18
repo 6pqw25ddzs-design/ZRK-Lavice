@@ -1,0 +1,349 @@
+openapi: 3.0.3
+info:
+  title: ZRK Lavice API
+  version: 1.0.0
+  description: REST API za web sajt i mobilnu aplikaciju ZRK Lavice Podgorica
+
+servers:
+  - url: https://api.zrklavice.me/api
+    description: Produkcija
+  - url: http://localhost:3001/api
+    description: Lokalni razvoj
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        fullName: { type: string }
+        role: { type: string, enum: [parent, coach, admin] }
+    Player:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        firstName: { type: string }
+        lastName: { type: string }
+        birthDate: { type: string, format: date }
+        jerseyNumber: { type: integer }
+        position: { type: string }
+        photoUrl: { type: string, format: uri }
+        team: { $ref: '#/components/schemas/Team' }
+    Team:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        category: { type: string, enum: [mini, pioniri, prva_liga] }
+        season: { type: string }
+    ScheduleEvent:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [training, match] }
+        title: { type: string }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: string, format: date-time }
+        location: { type: string }
+        opponent: { type: string }
+        isCancelled: { type: boolean }
+        team: { $ref: '#/components/schemas/Team' }
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Registracija novog korisnika
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, fullName]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+                fullName: { type: string }
+                phone: { type: string }
+                role: { type: string, enum: [parent, coach, admin], default: parent }
+      responses:
+        '201':
+          description: Kreiran korisnik i JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { $ref: '#/components/schemas/User' }
+                  token: { type: string }
+        '409':
+          description: Email već postoji
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Prijava korisnika
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: JWT token
+        '401':
+          description: Pogrešni podaci za prijavu
+
+  /players:
+    get:
+      tags: [Players]
+      summary: Lista igračica (opcionalno filtriraj po timu)
+      parameters:
+        - name: teamId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Lista igračica
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Player' }
+    post:
+      tags: [Players]
+      summary: Dodaj igračicu (coach/admin)
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [teamId, firstName, lastName, birthDate]
+              properties:
+                teamId: { type: string, format: uuid }
+                firstName: { type: string }
+                lastName: { type: string }
+                birthDate: { type: string, format: date }
+                jerseyNumber: { type: integer }
+                position: { type: string }
+      responses:
+        '201': { description: Kreirana igračica }
+
+  /players/{id}:
+    get:
+      tags: [Players]
+      summary: Detalji igračice s historijom prisustva
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Igračica s prisustvom }
+        '404': { description: Nije pronađena }
+    patch:
+      tags: [Players]
+      summary: Izmijeni igračicu (coach/admin)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Izmjenjena igračica }
+    delete:
+      tags: [Players]
+      summary: Deaktiviraj igračicu (admin)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204': { description: Deaktivirana }
+
+  /teams:
+    get:
+      tags: [Teams]
+      summary: Lista svih ekipa s brojem igračica
+      responses:
+        '200': { description: Lista ekipa }
+
+  /schedule:
+    get:
+      tags: [Schedule]
+      summary: Raspored događaja
+      parameters:
+        - name: teamId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: from
+          in: query
+          schema: { type: string, format: date-time }
+        - name: to
+          in: query
+          schema: { type: string, format: date-time }
+      responses:
+        '200':
+          description: Lista događaja
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ScheduleEvent' }
+    post:
+      tags: [Schedule]
+      summary: Kreiraj termin (coach/admin) — automatski šalje push notifikaciju
+      security: [{ BearerAuth: [] }]
+      responses:
+        '201': { description: Kreiran termin + notifikacija poslana }
+
+  /schedule/{id}:
+    patch:
+      tags: [Schedule]
+      summary: Izmijeni termin — ako je otkazan ili pomjeren, notifikacija se šalje automatski
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Izmjenjen termin }
+
+  /results:
+    get:
+      tags: [Results]
+      summary: Rezultati utakmica
+      parameters:
+        - name: teamId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Lista rezultata }
+    post:
+      tags: [Results]
+      summary: Unesi rezultat utakmice (coach/admin)
+      security: [{ BearerAuth: [] }]
+      responses:
+        '201': { description: Kreiran rezultat }
+
+  /news:
+    get:
+      tags: [News]
+      summary: Objavljene vijesti
+      parameters:
+        - name: tag
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200': { description: Lista vijesti }
+    post:
+      tags: [News]
+      summary: Kreiraj vijest (admin/coach)
+      security: [{ BearerAuth: [] }]
+      responses:
+        '201': { description: Kreirana vijest }
+
+  /messages/inbox:
+    get:
+      tags: [Messages]
+      summary: Inbox prijavljenog korisnika
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200': { description: Lista poruka }
+
+  /messages:
+    post:
+      tags: [Messages]
+      summary: Pošalji poruku (direktnu ili grupnu)
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body]
+              properties:
+                recipientId: { type: string, format: uuid }
+                teamId: { type: string, format: uuid }
+                body: { type: string }
+                isGroup: { type: boolean, default: false }
+      responses:
+        '201': { description: Poruka poslana }
+
+  /registrations:
+    post:
+      tags: [Registrations]
+      summary: Javna prijava nove igračice (bez autentifikacije)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [childName, birthYear, parentName, parentPhone, parentEmail]
+              properties:
+                childName: { type: string }
+                birthYear: { type: integer }
+                parentName: { type: string }
+                parentPhone: { type: string }
+                parentEmail: { type: string, format: email }
+      responses:
+        '201': { description: Registracija primljena }
+    get:
+      tags: [Registrations]
+      summary: Lista svih registracija (admin/coach)
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200': { description: Lista registracija }
+
+  /notifications/send:
+    post:
+      tags: [Notifications]
+      summary: Pošalji push notifikaciju timu ili svima (coach/admin)
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, body]
+              properties:
+                title: { type: string }
+                body: { type: string }
+                teamId: { type: string, format: uuid, description: "Ako izostavi, šalje svima" }
+      responses:
+        '200': { description: Notifikacija poslana }
+
+  /sponsors:
+    get:
+      tags: [Sponsors]
+      summary: Lista aktivnih sponzora (javno)
+      responses:
+        '200': { description: Lista sponzora }
+    post:
+      tags: [Sponsors]
+      summary: Dodaj sponzora (admin)
+      security: [{ BearerAuth: [] }]
+      responses:
+        '201': { description: Kreiran sponzor }
