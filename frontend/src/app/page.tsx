@@ -45,8 +45,25 @@ export default function HomePage() {
   return (
     <>
       {/* ─── HERO ─── */}
-      <section className="bg-dark min-h-[92vh] flex items-center">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-20 grid lg:grid-cols-2 gap-16 items-center w-full">
+      <section className="bg-dark min-h-[92vh] flex items-center relative overflow-hidden">
+        {/* Handball court markings — perspective decoration */}
+        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '55%', overflow: 'hidden', pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', inset: 0, perspective: '380px', perspectiveOrigin: '50% 100%' }}>
+            <svg aria-hidden="true" viewBox="0 0 400 400"
+              style={{ width: '100%', height: '140%', opacity: 0.09, transform: 'rotateX(68deg)', transformOrigin: '50% 100%' }}>
+              <line x1="0" y1="0" x2="400" y2="0" stroke="white" strokeWidth="2.5"/>
+              <line x1="0" y1="400" x2="400" y2="400" stroke="white" strokeWidth="2.5"/>
+              <line x1="400" y1="0" x2="400" y2="400" stroke="white" strokeWidth="2.5"/>
+              <line x1="0" y1="0" x2="0" y2="400" stroke="white" strokeWidth="2.5"/>
+              <path d="M 400 80 A 120 120 0 0 0 400 320" fill="none" stroke="white" strokeWidth="2.5"/>
+              <path d="M 400 20 A 180 180 0 0 0 400 380" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="12 8"/>
+              <path d="M 0 140 A 60 60 0 0 1 0 260" fill="none" stroke="white" strokeWidth="2"/>
+              <circle cx="260" cy="200" r="5" fill="white"/>
+              <line x1="320" y1="170" x2="320" y2="230" stroke="white" strokeWidth="2"/>
+            </svg>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-20 grid lg:grid-cols-2 gap-16 items-center w-full relative z-10">
           <div className="animate-fade-up">
             <span className="inline-block mb-6 text-xs font-bold tracking-widest text-gold border border-gold/30 bg-gold/10 px-4 py-1.5 rounded-full uppercase">
               📍 Podgorica, Crna Gora
