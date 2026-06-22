@@ -18,18 +18,18 @@ export default async function HomePage() {
           overflow: 'hidden', pointerEvents: 'none',
         }}>
           <div style={{
-            position: 'absolute', right: '-5%', top: '-20%', bottom: '-20%', left: 0,
-            perspective: '700px',
-            perspectiveOrigin: '40% 60%',
+            position: 'absolute', inset: 0,
+            perspective: '380px',
+            perspectiveOrigin: '50% 100%',
           }}>
             <svg
               aria-hidden="true"
               viewBox="0 0 400 400"
               style={{
-                width: '100%', height: '100%',
+                width: '100%', height: '140%',
                 opacity: 0.13,
-                transform: 'rotateX(52deg) rotateY(8deg)',
-                transformOrigin: '50% 50%',
+                transform: 'rotateX(68deg)',
+                transformOrigin: '50% 100%',
               }}
             >
               {/* Top-down right half court. x=0 centre, x=400 goal. y=0 top, y=400 bottom. 1m=20px */}
