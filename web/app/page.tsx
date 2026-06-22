@@ -11,57 +11,55 @@ export default async function HomePage() {
     <div>
       {/* Hero */}
       <section style={{ background: 'linear-gradient(135deg, #1A1A1A 0%, #2A1A1A 100%)', position: 'relative', overflow: 'hidden' }} className="py-24 px-4">
-        {/* Handball court — perspective, right half only */}
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 600 400"
-          preserveAspectRatio="xMaxYMid meet"
-          style={{
-            position: 'absolute', right: 0, top: '50%',
-            transform: 'translateY(-50%)',
-            width: '56%', height: '88%',
-            opacity: 0.10, pointerEvents: 'none',
-          }}
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/*
-            Perspective projection of right half of handball court (20m×20m).
-            Camera: looking from front-bottom at ~55°.
-            svgX(u,v) = (100+90v) + u*(420-160v)   u=0 centre, u=1 goal
-            svgY(v)   = 360 - 290v                  v=0 near, v=1 far
-            => BL(100,360) BR(520,360) TR(450,70) TL(190,70)
-          */}
+          {/* Handball court — CSS 3D perspective, right half top-down tilted */}
+        <div style={{
+          position: 'absolute', right: 0, bottom: 0,
+          width: '60%', height: '110%',
+          overflow: 'hidden', pointerEvents: 'none',
+        }}>
+          <div style={{
+            position: 'absolute', right: '-10%', bottom: '-15%',
+            width: '90%', height: '90%',
+            perspective: '550px',
+            perspectiveOrigin: '55% 75%',
+          }}>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 400 400"
+              style={{
+                width: '100%', height: '100%',
+                opacity: 0.11,
+                transform: 'rotateX(58deg) rotateZ(-4deg)',
+                transformOrigin: '50% 100%',
+              }}
+            >
+              {/*
+                Top-down view of right half court (20m × 20m).
+                x=0: centre line  x=400: goal line
+                y=0: top sideline  y=400: bottom sideline
+                Scale: 1m = 20px
+              */}
 
-          {/* Sidelines */}
-          <line x1="100" y1="360" x2="520" y2="360" stroke="white" strokeWidth="2.5"/>
-          <line x1="190" y1="70"  x2="450" y2="70"  stroke="white" strokeWidth="2.5"/>
-          {/* Centre line */}
-          <line x1="100" y1="360" x2="190" y2="70"  stroke="white" strokeWidth="2.5"/>
-          {/* Goal line */}
-          <line x1="520" y1="360" x2="450" y2="70"  stroke="white" strokeWidth="2.5"/>
+              {/* Court boundary */}
+              <rect x="0" y="0" width="400" height="400" fill="none" stroke="white" strokeWidth="3"/>
 
-          {/* Centre circle — right semicircle, projected */}
-          <path d="M 158 172 Q 247 215 132 259" fill="none" stroke="white" strokeWidth="2"/>
+              {/* 6m D-arc — centre (400,200) r=120 — sweeps into court */}
+              <path d="M 400 80 A 120 120 0 0 0 400 320" fill="none" stroke="white" strokeWidth="2.5"/>
 
-          {/* 6m goal area D */}
-          <path d="M 511 324 Q 398 316 385 237 L 381 192 Q 386 115 459 106"
-            fill="none" stroke="white" strokeWidth="2.5"/>
+              {/* 9m dashed D-arc — centre (400,200) r=180 */}
+              <path d="M 400 20 A 180 180 0 0 0 400 380" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="12 8"/>
 
-          {/* 9m free-throw dashed D */}
-          <path d="M 458 360 Q 333 326 332 237 L 332 192 Q 342 105 412 70"
-            fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="10 7"/>
+              {/* Centre circle right half — centre (0,200) r=60 */}
+              <path d="M 0 140 A 60 60 0 0 1 0 260" fill="none" stroke="white" strokeWidth="2"/>
 
-          {/* Goal box */}
-          <line x1="490" y1="237" x2="504" y2="233" stroke="white" strokeWidth="3"/>
-          <line x1="480" y1="192" x2="493" y2="188" stroke="white" strokeWidth="3"/>
-          <line x1="504" y1="233" x2="493" y2="188" stroke="white" strokeWidth="3"/>
+              {/* 7m spot — 7m from goal = 400-140=260 */}
+              <circle cx="260" cy="200" r="5" fill="white"/>
 
-          {/* 7m spot */}
-          <circle cx="366" cy="215" r="4" fill="white"/>
-
-          {/* 4m keeper line */}
-          <line x1="420" y1="237" x2="414" y2="192" stroke="white" strokeWidth="2"/>
-        </svg>
+              {/* 4m goalkeeper line — 4m from goal = 400-80=320 */}
+              <line x1="320" y1="170" x2="320" y2="230" stroke="white" strokeWidth="2"/>
+            </svg>
+          </div>
+        </div>
         <div className="max-w-6xl mx-auto" style={{ position: 'relative', zIndex: 1 }}>
           <p style={{ color: 'var(--gold)' }} className="text-sm font-bold tracking-widest uppercase mb-4">Podgorica, Crna Gora</p>
           <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
