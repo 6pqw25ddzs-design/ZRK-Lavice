@@ -11,39 +11,38 @@ export default async function HomePage() {
     <div>
       {/* Hero */}
       <section style={{ background: 'linear-gradient(135deg, #1A1A1A 0%, #2A1A1A 100%)', position: 'relative', overflow: 'hidden' }} className="py-24 px-4">
-          {/* Handball court — CSS 3D perspective, right half top-down tilted */}
+          {/* Handball court markings — CSS 3D perspective */}
         <div style={{
-          position: 'absolute', right: 0, bottom: 0,
-          width: '60%', height: '110%',
+          position: 'absolute', right: 0, top: 0, bottom: 0,
+          width: '58%',
           overflow: 'hidden', pointerEvents: 'none',
         }}>
           <div style={{
-            position: 'absolute', right: '-10%', bottom: '-15%',
-            width: '90%', height: '90%',
-            perspective: '550px',
-            perspectiveOrigin: '55% 75%',
+            position: 'absolute', right: '-5%', top: '-20%', bottom: '-20%', left: 0,
+            perspective: '700px',
+            perspectiveOrigin: '40% 60%',
           }}>
             <svg
               aria-hidden="true"
               viewBox="0 0 400 400"
               style={{
                 width: '100%', height: '100%',
-                opacity: 0.11,
-                transform: 'rotateX(58deg) rotateZ(-4deg)',
-                transformOrigin: '50% 100%',
+                opacity: 0.13,
+                transform: 'rotateX(52deg) rotateY(8deg)',
+                transformOrigin: '50% 50%',
               }}
             >
-              {/*
-                Top-down view of right half court (20m × 20m).
-                x=0: centre line  x=400: goal line
-                y=0: top sideline  y=400: bottom sideline
-                Scale: 1m = 20px
-              */}
+              {/* Top-down right half court. x=0 centre, x=400 goal. y=0 top, y=400 bottom. 1m=20px */}
 
-              {/* Court boundary */}
-              <rect x="0" y="0" width="400" height="400" fill="none" stroke="white" strokeWidth="3"/>
+              {/* Sidelines (top and bottom) */}
+              <line x1="0" y1="0" x2="400" y2="0" stroke="white" strokeWidth="2.5"/>
+              <line x1="0" y1="400" x2="400" y2="400" stroke="white" strokeWidth="2.5"/>
+              {/* Goal line */}
+              <line x1="400" y1="0" x2="400" y2="400" stroke="white" strokeWidth="2.5"/>
+              {/* Centre line */}
+              <line x1="0" y1="0" x2="0" y2="400" stroke="white" strokeWidth="2.5"/>
 
-              {/* 6m D-arc — centre (400,200) r=120 — sweeps into court */}
+              {/* 6m D-arc — centre (400,200) r=120 */}
               <path d="M 400 80 A 120 120 0 0 0 400 320" fill="none" stroke="white" strokeWidth="2.5"/>
 
               {/* 9m dashed D-arc — centre (400,200) r=180 */}
@@ -52,10 +51,10 @@ export default async function HomePage() {
               {/* Centre circle right half — centre (0,200) r=60 */}
               <path d="M 0 140 A 60 60 0 0 1 0 260" fill="none" stroke="white" strokeWidth="2"/>
 
-              {/* 7m spot — 7m from goal = 400-140=260 */}
+              {/* 7m spot */}
               <circle cx="260" cy="200" r="5" fill="white"/>
 
-              {/* 4m goalkeeper line — 4m from goal = 400-80=320 */}
+              {/* 4m goalkeeper line */}
               <line x1="320" y1="170" x2="320" y2="230" stroke="white" strokeWidth="2"/>
             </svg>
           </div>
