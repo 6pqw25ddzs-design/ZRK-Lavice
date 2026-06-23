@@ -11,56 +11,76 @@ const playerSchema = z.object({
   parentUserId: z.string().uuid().optional(),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  birthDate: z.string(),
+  birthDate: z.string().datetime(),
   jerseyNumber: z.number().int().min(1).max(99).optional(),
   position: z.string().optional(),
   photoUrl: z.string().url().optional(),
 });
 
 router.get('/', async (req, res) => {
-  const { teamId } = req.query;
-  const players = await prisma.player.findMany({
-    where: { ...(teamId ? { teamId: String(teamId) } : {}), isActive: true },
-    include: { team: { select: { name: true, category: true } } },
-    orderBy: { lastName: 'asc' },
-  });
-  res.json(players);
+  try {
+    const { teamId } = req.query;
+    const players = await prisma.player.findMany({
+      where: { ...(teamId ? { teamId: String(teamId) } : {}), isActive: true },
+      include: { team: { select: { name: true, category: true } } },
+      orderBy: { lastName: 'asc' },
+    });
+    res.json(players);
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.get('/:id', async (req, res) => {
-  const player = await prisma.player.findUnique({
-    where: { id: req.params.id },
-    include: {
-      team: true,
-      attendance: {
-        include: { event: true },
-        orderBy: { event: { startsAt: 'desc' } },
-        take: 20,
+  try {
+    const player = await prisma.player.findUnique({
+      where: { id: req.params.id },
+      include: {
+        team: true,
+        attendance: {
+          include: { event: true },
+          orderBy: { event: { startsAt: 'desc' } },
+          take: 20,
+        },
       },
-    },
-  });
-  if (!player) return res.status(404).json({ error: 'Not found' });
-  res.json(player);
+    });
+    if (!player) return res.status(404).json({ error: 'Not found' });
+    res.json(player);
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.post('/', requireAuth, requireRole('coach', 'admin'), async (req: AuthRequest, res: Response) => {
-  const parse = playerSchema.safeParse(req.body);
-  if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
-  const player = await prisma.player.create({ data: parse.data as any });
-  res.status(201).json(player);
+  try {
+    const parse = playerSchema.safeParse(req.body);
+    if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
+    const player = await prisma.player.create({ data: parse.data as any });
+    res.status(201).json(player);
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.patch('/:id', requireAuth, requireRole('coach', 'admin'), async (_req: AuthRequest, res: Response) => {
-  const player = await prisma.player.update({
-    where: { id: _req.params.id },
-    data: _req.body,
-  });
-  res.json(player);
+  try {
+    const player = await prisma.player.update({
+      where: { id: _req.params.id },
+      data: _req.body,
+    });
+    res.json(player);
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.delete('/:id', requireAuth, requireRole('admin'), async (req, res) => {
-  await prisma.player.update({ where: { id: req.params.id }, data: { isActive: false } });
-  res.status(204).send();
+  try {
+    await prisma.player.update({ where: { id: req.params.id }, data: { isActive: false } });
+    res.status(204).send();
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 export default router;

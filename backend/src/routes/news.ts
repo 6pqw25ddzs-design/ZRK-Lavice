@@ -16,59 +16,79 @@ const articleSchema = z.object({
 });
 
 router.get('/', async (req, res) => {
-  const { tag, limit } = req.query;
-  const articles = await prisma.newsArticle.findMany({
-    where: {
-      isPublished: true,
-      ...(tag ? { tags: { has: String(tag) } } : {}),
-    },
-    select: { id: true, title: true, slug: true, coverUrl: true, publishedAt: true, tags: true },
-    orderBy: { publishedAt: 'desc' },
-    take: limit ? parseInt(String(limit)) : 20,
-  });
-  res.json(articles);
+  try {
+    const { tag, limit } = req.query;
+    const articles = await prisma.newsArticle.findMany({
+      where: {
+        isPublished: true,
+        ...(tag ? { tags: { has: String(tag) } } : {}),
+      },
+      select: { id: true, title: true, slug: true, coverUrl: true, publishedAt: true, tags: true },
+      orderBy: { publishedAt: 'desc' },
+      take: limit ? parseInt(String(limit)) : 20,
+    });
+    res.json(articles);
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.get('/:slug', async (req, res) => {
-  const article = await prisma.newsArticle.findUnique({
-    where: { slug: req.params.slug },
-    include: { author: { select: { fullName: true } } },
-  });
-  if (!article || (!article.isPublished)) return res.status(404).json({ error: 'Not found' });
-  res.json(article);
+  try {
+    const article = await prisma.newsArticle.findUnique({
+      where: { slug: req.params.slug },
+      include: { author: { select: { fullName: true } } },
+    });
+    if (!article || !article.isPublished) return res.status(404).json({ error: 'Not found' });
+    res.json(article);
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.post('/', requireAuth, requireRole('admin', 'coach'), async (req: AuthRequest, res: Response) => {
-  const parse = articleSchema.safeParse(req.body);
-  if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
+  try {
+    const parse = articleSchema.safeParse(req.body);
+    if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
 
-  const article = await prisma.newsArticle.create({
-    data: {
-      ...parse.data,
-      authorId: req.user!.id,
-      publishedAt: parse.data.isPublished ? new Date() : null,
-    } as any,
-  });
-  res.status(201).json(article);
+    const article = await prisma.newsArticle.create({
+      data: {
+        ...parse.data,
+        authorId: req.user!.id,
+        publishedAt: parse.data.isPublished ? new Date() : null,
+      } as any,
+    });
+    res.status(201).json(article);
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.patch('/:id', requireAuth, requireRole('admin', 'coach'), async (req: AuthRequest, res: Response) => {
-  const current = await prisma.newsArticle.findUnique({ where: { id: req.params.id } });
-  if (!current) return res.status(404).json({ error: 'Not found' });
+  try {
+    const current = await prisma.newsArticle.findUnique({ where: { id: req.params.id } });
+    if (!current) return res.status(404).json({ error: 'Not found' });
 
-  const article = await prisma.newsArticle.update({
-    where: { id: req.params.id },
-    data: {
-      ...req.body,
-      publishedAt: req.body.isPublished && !current.publishedAt ? new Date() : current.publishedAt,
-    },
-  });
-  res.json(article);
+    const article = await prisma.newsArticle.update({
+      where: { id: req.params.id },
+      data: {
+        ...req.body,
+        publishedAt: req.body.isPublished && !current.publishedAt ? new Date() : current.publishedAt,
+      },
+    });
+    res.json(article);
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.delete('/:id', requireAuth, requireRole('admin'), async (req, res) => {
-  await prisma.newsArticle.delete({ where: { id: req.params.id } });
-  res.status(204).send();
+  try {
+    await prisma.newsArticle.delete({ where: { id: req.params.id } });
+    res.status(204).send();
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 export default router;

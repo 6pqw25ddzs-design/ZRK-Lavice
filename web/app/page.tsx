@@ -11,53 +11,53 @@ export default async function HomePage() {
     <div>
       {/* Hero */}
       <section style={{ background: 'linear-gradient(135deg, #1A1A1A 0%, #2A1A1A 100%)', position: 'relative', overflow: 'hidden' }} className="py-24 px-4">
-          {/* Handball court markings — CSS 3D perspective */}
+          {/* Handball court — top-down SVG + CSS 3D rotateX+Z for diagonal perspective */}
         <div style={{
-          position: 'absolute', right: 0, top: 0, bottom: 0,
-          width: '58%',
-          overflow: 'hidden', pointerEvents: 'none',
+          position: 'absolute', right: '-20%', top: '-30%', bottom: '-30%',
+          width: '75%', pointerEvents: 'none',
+          perspective: '700px', perspectiveOrigin: '30% 60%',
         }}>
-          <div style={{
-            position: 'absolute', inset: 0,
-            perspective: '380px',
-            perspectiveOrigin: '50% 100%',
-          }}>
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 400 400"
-              style={{
-                width: '100%', height: '140%',
-                opacity: 0.13,
-                transform: 'rotateX(68deg)',
-                transformOrigin: '50% 100%',
-              }}
-            >
-              {/* Top-down right half court. x=0 centre, x=400 goal. y=0 top, y=400 bottom. 1m=20px */}
+          <svg
+            aria-hidden="true"
+            viewBox="-60 -60 640 520"
+            style={{
+              width: '100%', height: '100%', opacity: 0.12,
+              transform: 'rotateX(58deg) rotateZ(-45deg)',
+              transformOrigin: '50% 50%',
+            }}
+          >
+            {/* Top-down right half court: x=0 centre, x=400 goal, y=0..400 width */}
+            <line x1="0" y1="0" x2="400" y2="0" stroke="white" strokeWidth="3"/>
+            <line x1="0" y1="400" x2="400" y2="400" stroke="white" strokeWidth="3"/>
+            <line x1="0" y1="0" x2="0" y2="400" stroke="white" strokeWidth="3"/>
+            <line x1="400" y1="0" x2="400" y2="400" stroke="white" strokeWidth="3"/>
 
-              {/* Sidelines (top and bottom) */}
-              <line x1="0" y1="0" x2="400" y2="0" stroke="white" strokeWidth="2.5"/>
-              <line x1="0" y1="400" x2="400" y2="400" stroke="white" strokeWidth="2.5"/>
-              {/* Goal line */}
-              <line x1="400" y1="0" x2="400" y2="400" stroke="white" strokeWidth="2.5"/>
-              {/* Centre line */}
-              <line x1="0" y1="0" x2="0" y2="400" stroke="white" strokeWidth="2.5"/>
+            {/* 6m D arc — centre at (400,200), r=120 */}
+            <path d="M 400 80 A 120 120 0 0 0 400 320" fill="none" stroke="white" strokeWidth="2.5"/>
 
-              {/* 6m D-arc — centre (400,200) r=120 */}
-              <path d="M 400 80 A 120 120 0 0 0 400 320" fill="none" stroke="white" strokeWidth="2.5"/>
+            {/* 9m dashed arc — centre at (400,200), r=180 */}
+            <path d="M 400 20 A 180 180 0 0 0 400 380" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="14 9"/>
 
-              {/* 9m dashed D-arc — centre (400,200) r=180 */}
-              <path d="M 400 20 A 180 180 0 0 0 400 380" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="12 8"/>
+            {/* Centre circle right half — centre at (0,200), r=60 */}
+            <path d="M 0 140 A 60 60 0 0 1 0 260" fill="none" stroke="white" strokeWidth="2"/>
 
-              {/* Centre circle right half — centre (0,200) r=60 */}
-              <path d="M 0 140 A 60 60 0 0 1 0 260" fill="none" stroke="white" strokeWidth="2"/>
+            {/* 7m line — short perpendicular line, 7m from goal */}
+            <line x1="260" y1="190" x2="260" y2="210" stroke="white" strokeWidth="3"/>
 
-              {/* 7m spot */}
-              <circle cx="260" cy="200" r="5" fill="white"/>
-
-              {/* 4m goalkeeper line */}
-              <line x1="320" y1="170" x2="320" y2="230" stroke="white" strokeWidth="2"/>
-            </svg>
-          </div>
+            {/* Goal 3D frame — floor footprint */}
+            <path d="M 400 170 L 430 170 L 430 230 L 400 230" fill="none" stroke="white" strokeWidth="2.5"/>
+            {/* Vertical posts — offset (+90,-40) */}
+            <line x1="400" y1="170" x2="490" y2="130" stroke="white" strokeWidth="3"/>
+            <line x1="400" y1="230" x2="490" y2="190" stroke="white" strokeWidth="3"/>
+            <line x1="430" y1="170" x2="520" y2="130" stroke="white" strokeWidth="2"/>
+            <line x1="430" y1="230" x2="520" y2="190" stroke="white" strokeWidth="2"/>
+            {/* Front crossbar */}
+            <line x1="490" y1="130" x2="490" y2="190" stroke="white" strokeWidth="3"/>
+            {/* Back crossbar + top sides */}
+            <line x1="520" y1="130" x2="520" y2="190" stroke="white" strokeWidth="1.5"/>
+            <line x1="490" y1="130" x2="520" y2="130" stroke="white" strokeWidth="1.5"/>
+            <line x1="490" y1="190" x2="520" y2="190" stroke="white" strokeWidth="1.5"/>
+          </svg>
         </div>
         <div className="max-w-6xl mx-auto" style={{ position: 'relative', zIndex: 1 }}>
           <p style={{ color: 'var(--gold)' }} className="text-sm font-bold tracking-widest uppercase mb-4">Podgorica, Crna Gora</p>

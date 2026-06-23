@@ -1,14 +1,10 @@
-import * as SecureStore from 'expo-secure-store';
-
 const API_URL = 'https://zrk-lavice-api.onrender.com';
 
 async function request(path: string, options: RequestInit = {}) {
-  const token = await SecureStore.getItemAsync('token');
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
   });
