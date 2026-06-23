@@ -59,8 +59,9 @@ router.post('/', requireAuth, requireRole('admin', 'coach'), async (req: AuthReq
       } as any,
     });
     res.status(201).json(article);
-  } catch (e) {
-    res.status(500).json({ error: 'Server error' });
+  } catch (e: any) {
+    console.error('News create error:', e);
+    res.status(500).json({ error: e?.message || 'Server error' });
   }
 });
 
