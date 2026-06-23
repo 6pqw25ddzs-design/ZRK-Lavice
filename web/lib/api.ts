@@ -16,5 +16,6 @@ export const getTeams = () => request('/api/teams');
 export const getPlayers = (teamId?: string) =>
   request(`/api/players${teamId ? `?teamId=${teamId}` : ''}`);
 export const getNews = (limit = 10) => request(`/api/news?limit=${limit}`);
+export const getNewsBySlug = (slug: string) => request(`/api/news/${slug}`);
 export const getResults = (teamId?: string) =>
   request(`/api/results${teamId ? `?teamId=${teamId}` : ''}`);

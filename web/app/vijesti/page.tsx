@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getNews } from '@/lib/api';
 
 export const revalidate = 0;
@@ -13,10 +14,12 @@ export default async function VijestiPage() {
       ) : (
         <div className="flex flex-col gap-6">
           {articles.map((a: any) => (
-            <article key={a.id} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-xl p-6">
+            <Link key={a.id} href={`/vijesti/${a.slug}`}
+              style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
+              className="rounded-xl p-6 block hover:border-red-800 transition-colors">
               <div style={{ color: 'var(--text-muted)' }} className="text-xs mb-2">{new Date(a.publishedAt).toLocaleDateString('sr-Latn-ME', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
               <h2 className="text-white font-black text-xl mb-3">{a.title}</h2>
-              {a.body && <p style={{ color: 'var(--text-muted)' }} className="leading-relaxed">{a.body}</p>}
+              {a.body && <p style={{ color: 'var(--text-muted)' }} className="leading-relaxed line-clamp-3">{a.body}</p>}
               {a.tags?.length > 0 && (
                 <div className="flex gap-2 mt-4 flex-wrap">
                   {a.tags.map((t: string) => (
@@ -24,7 +27,7 @@ export default async function VijestiPage() {
                   ))}
                 </div>
               )}
-            </article>
+            </Link>
           ))}
         </div>
       )}

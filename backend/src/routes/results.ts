@@ -15,28 +15,42 @@ const resultSchema = z.object({
 });
 
 router.get('/', async (req, res) => {
-  const { teamId, season } = req.query;
-  const results = await prisma.matchResult.findMany({
-    include: {
-      event: {
-        include: { team: { select: { name: true, category: true } } },
+  try {
+    const results = await prisma.matchResult.findMany({
+      include: {
+        event: {
+          include: { team: { select: { name: true, category: true } } },
+        },
       },
-    },
-    orderBy: { event: { startsAt: 'desc' } },
-  } as any);
-  res.json(results);
+      orderBy: { event: { startsAt: 'desc' } },
+    } as any);
+    res.json(results);
+  } catch (e: any) {
+    console.error('Results list error:', e);
+    res.status(500).json({ error: e?.message || 'Server error' });
+  }
 });
 
 router.post('/', requireAuth, requireRole('coach', 'admin'), async (req: AuthRequest, res: Response) => {
-  const parse = resultSchema.safeParse(req.body);
-  if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
-  const result = await prisma.matchResult.create({ data: parse.data as any });
-  res.status(201).json(result);
+  try {
+    const parse = resultSchema.safeParse(req.body);
+    if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
+    const result = await prisma.matchResult.create({ data: parse.data as any });
+    res.status(201).json(result);
+  } catch (e: any) {
+    console.error('Result create error:', e);
+    res.status(500).json({ error: e?.message || 'Server error' });
+  }
 });
 
 router.patch('/:id', requireAuth, requireRole('coach', 'admin'), async (req: AuthRequest, res: Response) => {
-  const result = await prisma.matchResult.update({ where: { id: req.params.id }, data: req.body });
-  res.json(result);
+  try {
+    const result = await prisma.matchResult.update({ where: { id: req.params.id }, data: req.body });
+    res.json(result);
+  } catch (e: any) {
+    console.error('Result update error:', e);
+    res.status(500).json({ error: e?.message || 'Server error' });
+  }
 });
 
 export default router;

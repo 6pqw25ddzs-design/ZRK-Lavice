@@ -20,14 +20,16 @@ export default function AdminRasporedPage() {
 
   async function load() {
     try {
-      const [evts, tms] = await Promise.all([
-        adminRequest('/api/schedule', getToken()),
-        adminRequest('/api/teams', getToken()),
-      ]);
-      setEvents(evts);
+      const tms = await adminRequest('/api/teams', getToken());
       setTeams(tms);
     } catch {
-      setError('Greška pri učitavanju');
+      setError('Greška pri učitavanju ekipa');
+    }
+    try {
+      const evts = await adminRequest('/api/schedule', getToken());
+      setEvents(evts);
+    } catch (e: any) {
+      setError('Greška pri učitavanju rasporeda: ' + (e?.message || ''));
     } finally {
       setLoading(false);
     }
@@ -52,8 +54,8 @@ export default function AdminRasporedPage() {
       }
       resetForm();
       await load();
-    } catch {
-      setError('Greška pri čuvanju');
+    } catch (e: any) {
+      setError('Greška pri čuvanju: ' + (e?.message || ''));
     } finally {
       setSaving(false);
     }

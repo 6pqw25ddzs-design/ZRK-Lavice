@@ -17,14 +17,16 @@ export default function AdminRezultatiPage() {
 
   async function load() {
     try {
-      const [res, evts] = await Promise.all([
-        adminRequest('/api/results', getToken()),
-        adminRequest('/api/schedule?type=match', getToken()),
-      ]);
-      setResults(res);
+      const evts = await adminRequest('/api/schedule?type=match', getToken());
       setMatches(evts.filter((e: Event) => !e.result));
     } catch {
-      setError('Greška pri učitavanju');
+      setError('Greška pri učitavanju utakmica');
+    }
+    try {
+      const res = await adminRequest('/api/results', getToken());
+      setResults(res);
+    } catch (e: any) {
+      setError('Greška pri učitavanju rezultata: ' + (e?.message || ''));
     } finally {
       setLoading(false);
     }
@@ -49,8 +51,8 @@ export default function AdminRezultatiPage() {
       });
       setForm({ eventId: '', homeScore: '', awayScore: '', notes: '' });
       await load();
-    } catch {
-      setError('Greška pri čuvanju');
+    } catch (e: any) {
+      setError('Greška pri čuvanju: ' + (e?.message || ''));
     } finally {
       setSaving(false);
     }

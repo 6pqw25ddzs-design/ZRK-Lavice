@@ -40,11 +40,12 @@ export default function AdminVijestiPage() {
           body: JSON.stringify(form),
         });
       } else {
-        const slug = form.title
+        const baseSlug = form.title
           .toLowerCase()
           .replace(/[čć]/g, 'c').replace(/[šđ]/g, 's').replace(/ž/g, 'z')
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-|-$/g, '');
+        const slug = `${baseSlug}-${Date.now().toString(36)}`;
         await adminRequest('/api/news', getToken(), {
           method: 'POST',
           body: JSON.stringify({ ...form, slug, isPublished: true }),
