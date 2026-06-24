@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Colors } from '../../constants/AppColors';
 import { getNews } from '../../lib/api';
 
 export default function VijestiScreen() {
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     getNews(20).then((r: any) => {
@@ -23,7 +25,8 @@ export default function VijestiScreen() {
 
       <View style={s.list}>
         {articles.map((a: any) => (
-          <View key={a.id} style={s.card}>
+          <TouchableOpacity key={a.id} style={s.card} activeOpacity={0.7}
+            onPress={() => router.push(`/vijest/${a.slug}`)}>
             <View style={s.cardImg}>
               <Text style={s.cardEmoji}>🏐</Text>
             </View>
@@ -38,7 +41,7 @@ export default function VijestiScreen() {
               <Text style={s.cardTitle}>{a.title}</Text>
               <Text style={s.cardDate}>{new Date(a.publishedAt).toLocaleDateString('sr-Latn-ME')}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
         {!loading && articles.length === 0 && (
           <Text style={s.empty}>Nema objavljenih vijesti.</Text>

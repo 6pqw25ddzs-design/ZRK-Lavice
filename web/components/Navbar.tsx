@@ -7,9 +7,11 @@ import { useState } from 'react';
 const links = [
   { href: '/', label: 'Početna' },
   { href: '/raspored', label: 'Raspored' },
+  { href: '/rezultati', label: 'Rezultati' },
   { href: '/ekipe', label: 'Ekipe' },
   { href: '/vijesti', label: 'Vijesti' },
   { href: '/o-nama', label: 'O nama' },
+  { href: '/sponzori', label: 'Sponzori' },
   { href: '/podrzi-nas', label: 'Podržite nas' },
 ];
 

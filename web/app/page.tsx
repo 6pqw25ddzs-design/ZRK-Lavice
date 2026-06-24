@@ -110,8 +110,11 @@ export default async function HomePage() {
               {results.slice(0, 3).map((r: any) => (
                 <div key={r.id} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-xl p-4 flex items-center justify-between">
                   <div>
-                    <div className="text-white font-semibold">{r.homeTeam} vs {r.awayTeam}</div>
-                    <div style={{ color: 'var(--text-muted)' }} className="text-sm">{new Date(r.playedAt).toLocaleDateString('sr-Latn-ME')}</div>
+                    <div className="text-white font-semibold">{r.event?.title}</div>
+                    <div style={{ color: 'var(--text-muted)' }} className="text-sm">
+                      {r.event?.startsAt && new Date(r.event.startsAt).toLocaleDateString('sr-Latn-ME')}
+                      {r.event?.team?.name && ` · ${r.event.team.name}`}
+                    </div>
                   </div>
                   <div style={{ color: 'var(--primary)' }} className="text-2xl font-black">{r.homeScore}:{r.awayScore}</div>
                 </div>
@@ -130,11 +133,11 @@ export default async function HomePage() {
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {news.map((a: any) => (
-              <div key={a.id} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-xl p-6 hover:border-red-800 transition-colors">
+              <Link key={a.id} href={`/vijesti/${a.slug}`} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-xl p-6 block hover:border-red-800 transition-colors">
                 <div style={{ color: 'var(--text-muted)' }} className="text-xs mb-2">{new Date(a.publishedAt).toLocaleDateString('sr-Latn-ME')}</div>
                 <h3 className="text-white font-bold text-lg leading-snug">{a.title}</h3>
                 {a.body && <p style={{ color: 'var(--text-muted)' }} className="text-sm mt-2 line-clamp-2">{a.body}</p>}
-              </div>
+              </Link>
             ))}
           </div>
         </div>

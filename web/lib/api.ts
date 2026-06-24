@@ -19,3 +19,4 @@ export const getNews = (limit = 10) => request(`/api/news?limit=${limit}`);
 export const getNewsBySlug = (slug: string) => request(`/api/news/${slug}`);
 export const getResults = (teamId?: string) =>
   request(`/api/results${teamId ? `?teamId=${teamId}` : ''}`);
+export const getSponsors = () => request('/api/sponsors');

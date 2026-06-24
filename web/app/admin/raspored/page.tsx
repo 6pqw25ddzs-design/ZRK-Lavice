@@ -43,7 +43,11 @@ export default function AdminRasporedPage() {
   }
 
   async function handleSave() {
-    if (!form.teamId || !form.title || !form.startsAt) { setError('Popunite obavezna polja'); return; }
+    const missing = [];
+    if (!form.teamId) missing.push('ekipa');
+    if (!form.title) missing.push('naslov');
+    if (!form.startsAt) missing.push('datum/vrijeme');
+    if (missing.length) { setError('Nedostaje: ' + missing.join(', ')); return; }
     setSaving(true); setError('');
     try {
       const body = { ...form, startsAt: new Date(form.startsAt).toISOString() };

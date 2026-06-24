@@ -9,6 +9,7 @@ const navItems = [
   { href: '/admin/raspored', label: 'Raspored', icon: '📅' },
   { href: '/admin/rezultati', label: 'Rezultati', icon: '🏆' },
   { href: '/admin/igraci', label: 'Igrači', icon: '👥' },
+  { href: '/admin/sponzori', label: 'Sponzori', icon: '🤝' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
