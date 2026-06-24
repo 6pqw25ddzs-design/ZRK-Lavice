@@ -1,0 +1,78 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { adminRequest } from '@/lib/auth';
+
+const FIELDS = [
+  { key: 'contact_email', label: 'Email', placeholder: 'info@zrklavice.me' },
+  { key: 'contact_phone', label: 'Telefon', placeholder: '+382 ...' },
+  { key: 'contact_location', label: 'Naziv lokacije', placeholder: 'SC Morača' },
+  { key: 'contact_address', label: 'Adresa', placeholder: 'Ulica Moskovska bb, Podgorica' },
+  { key: 'contact_training', label: 'Termini treninga', placeholder: 'Utorak, četvrtak i petak...' },
+];
+
+export default function AdminPodesavanjaPage() {
+  const [form, setForm] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [error, setError] = useState('');
+
+  function getToken() { return localStorage.getItem('admin_token') || ''; }
+
+  async function load() {
+    try {
+      const data = await adminRequest('/api/settings', getToken());
+      setForm(data || {});
+    } catch (e: any) {
+      setError('Greška pri učitavanju: ' + (e?.message || ''));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { load(); }, []);
+
+  async function handleSave() {
+    setSaving(true); setError(''); setMsg('');
+    try {
+      await adminRequest('/api/settings', getToken(), { method: 'PUT', body: JSON.stringify(form) });
+      setMsg('Sačuvano.');
+    } catch (e: any) {
+      setError('Greška pri čuvanju: ' + (e?.message || ''));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const inputClass = "px-4 py-2 rounded-lg outline-none focus:border-red-600 w-full";
+  const inputStyle = { backgroundColor: 'var(--background)', border: '1px solid var(--border)', color: 'white' };
+
+  return (
+    <div className="max-w-2xl">
+      <h1 className="text-2xl font-black text-white mb-6">Podešavanja</h1>
+
+      <div style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-xl p-6">
+        <h2 className="text-white font-bold mb-4">Kontakt informacije</h2>
+        {loading ? <p style={{ color: 'var(--text-muted)' }}>Učitavanje...</p> : (
+          <div className="flex flex-col gap-4">
+            {FIELDS.map(f => (
+              <div key={f.key}>
+                <label style={{ color: 'var(--text-muted)' }} className="text-xs block mb-1">{f.label}</label>
+                <input value={form[f.key] || ''} placeholder={f.placeholder}
+                  onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+                  className={inputClass} style={inputStyle} />
+              </div>
+            ))}
+            {error && <p style={{ color: 'var(--primary)' }} className="text-sm">{error}</p>}
+            {msg && <p style={{ color: '#22c55e' }} className="text-sm">{msg}</p>}
+            <button onClick={handleSave} disabled={saving}
+              style={{ backgroundColor: 'var(--primary)' }}
+              className="px-6 py-2 text-white font-bold rounded-lg hover:opacity-90 disabled:opacity-50 mt-2 w-fit">
+              {saving ? 'Čuvanje...' : 'Sačuvaj'}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

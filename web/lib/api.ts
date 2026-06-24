@@ -24,6 +24,7 @@ export const getSponsors = () => request('/api/sponsors');
 export const getPublicDocuments = () => request('/api/documents/public');
 export const getGallery = () => request('/api/gallery');
 export const getStandings = () => request('/api/standings');
+export const getSettings = () => request('/api/settings');
 export const submitRegistration = (data: {
   childName: string; birthYear: number; parentName: string; parentPhone: string; parentEmail: string;
 }) => request('/api/registrations', { method: 'POST', body: JSON.stringify(data) });

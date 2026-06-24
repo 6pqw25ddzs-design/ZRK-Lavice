@@ -14,6 +14,7 @@ const navItems = [
   { href: '/admin/prijave', label: 'Prijave', icon: '📝' },
   { href: '/admin/dokumenti', label: 'Dokumenti', icon: '📄' },
   { href: '/admin/galerija', label: 'Galerija', icon: '🖼️' },
+  { href: '/admin/podesavanja', label: 'Podešavanja', icon: '⚙️' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -266,6 +266,14 @@ model GalleryImage {
   @@map("gallery_images")
 }
 
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
 model LeagueStanding {
   id            String   @id @default(uuid())
   league        String
