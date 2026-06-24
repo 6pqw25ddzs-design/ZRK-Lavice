@@ -8,6 +8,7 @@ const links = [
   { href: '/', label: 'Početna' },
   { href: '/raspored', label: 'Raspored' },
   { href: '/rezultati', label: 'Rezultati' },
+  { href: '/tabela', label: 'Tabela' },
   { href: '/ekipe', label: 'Ekipe' },
   { href: '/vijesti', label: 'Vijesti' },
   { href: '/galerija', label: 'Galerija' },
@@ -15,6 +16,7 @@ const links = [
   { href: '/dokumenti', label: 'Dokumenti' },
   { href: '/sponzori', label: 'Sponzori' },
   { href: '/registracija', label: 'Upis' },
+  { href: '/kontakt', label: 'Kontakt' },
   { href: '/podrzi-nas', label: 'Podržite nas' },
 ];
 

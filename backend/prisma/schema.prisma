@@ -265,3 +265,20 @@ model GalleryImage {
 
   @@map("gallery_images")
 }
+
+model LeagueStanding {
+  id            String   @id @default(uuid())
+  league        String
+  teamName      String   @map("team_name")
+  played        Int      @default(0)
+  wins          Int      @default(0)
+  draws         Int      @default(0)
+  losses        Int      @default(0)
+  goalsFor      Int      @default(0) @map("goals_for")
+  goalsAgainst  Int      @default(0) @map("goals_against")
+  points        Int      @default(0)
+  isOwnTeam     Boolean  @default(false) @map("is_own_team")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("league_standings")
+}
