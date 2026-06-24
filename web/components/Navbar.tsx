@@ -11,6 +11,7 @@ const links = [
   { href: '/ekipe', label: 'Ekipe' },
   { href: '/vijesti', label: 'Vijesti' },
   { href: '/o-nama', label: 'O nama' },
+  { href: '/dokumenti', label: 'Dokumenti' },
   { href: '/sponzori', label: 'Sponzori' },
   { href: '/registracija', label: 'Upis' },
   { href: '/podrzi-nas', label: 'Podržite nas' },
