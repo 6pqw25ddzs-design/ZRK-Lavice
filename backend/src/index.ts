@@ -16,6 +16,7 @@ import registrationRoutes from './routes/registrations';
 import notificationRoutes from './routes/notifications';
 import sponsorRoutes from './routes/sponsors';
 import documentRoutes from './routes/documents';
+import galleryRoutes from './routes/gallery';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -39,6 +40,7 @@ app.use('/api/registrations', registrationRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/sponsors', sponsorRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api/gallery', galleryRoutes);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
 

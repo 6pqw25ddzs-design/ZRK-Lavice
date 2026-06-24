@@ -10,6 +10,7 @@ const links = [
   { href: '/rezultati', label: 'Rezultati' },
   { href: '/ekipe', label: 'Ekipe' },
   { href: '/vijesti', label: 'Vijesti' },
+  { href: '/galerija', label: 'Galerija' },
   { href: '/o-nama', label: 'O nama' },
   { href: '/dokumenti', label: 'Dokumenti' },
   { href: '/sponzori', label: 'Sponzori' },
