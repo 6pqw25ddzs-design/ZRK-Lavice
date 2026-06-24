@@ -12,6 +12,7 @@ const links = [
   { href: '/vijesti', label: 'Vijesti' },
   { href: '/o-nama', label: 'O nama' },
   { href: '/sponzori', label: 'Sponzori' },
+  { href: '/registracija', label: 'Upis' },
   { href: '/podrzi-nas', label: 'Podržite nas' },
 ];
 
