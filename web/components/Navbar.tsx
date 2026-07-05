@@ -41,6 +41,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  // Coming-soon teaser + premium homepage imaju svoj header
+  if (pathname === '/' || pathname === '/pocetna') return null;
+
   const linkCls = (href: string) =>
     `text-sm font-medium transition-colors ${pathname === href ? 'text-red-600' : 'text-gray-400 hover:text-white'}`;
 

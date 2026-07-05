@@ -18,9 +18,14 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
       <Link href="/ekipe" style={{ color: 'var(--primary)' }} className="text-sm font-medium hover:underline">← Sve ekipe</Link>
 
       <div className="flex items-center gap-5 mt-6 mb-8">
-        <div style={{ backgroundColor: 'var(--primary)' }} className="w-20 h-20 rounded-full flex items-center justify-center text-white font-black text-2xl shrink-0">
-          {p.jerseyNumber ?? (p.firstName?.charAt(0) ?? '?')}
-        </div>
+        {p.photoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={p.photoUrl} alt={`${p.firstName} ${p.lastName}`} className="w-24 h-24 rounded-full object-cover shrink-0" style={{ border: '2px solid var(--primary)' }} />
+        ) : (
+          <div style={{ backgroundColor: 'var(--primary)' }} className="w-20 h-20 rounded-full flex items-center justify-center text-white font-black text-2xl shrink-0">
+            {p.jerseyNumber ?? (p.firstName?.charAt(0) ?? '?')}
+          </div>
+        )}
         <div>
           <h1 className="text-3xl font-black text-white leading-tight">{p.firstName} {p.lastName}</h1>
           <div style={{ color: 'var(--text-muted)' }} className="mt-1">

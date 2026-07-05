@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat, Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const montserrat = Montserrat({
   subsets: ["latin", "latin-ext"],
@@ -26,9 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-full flex flex-col" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
         <Navbar />
         <main className="flex-1">{children}</main>
-        <footer style={{ backgroundColor: 'var(--card)', borderTop: '1px solid var(--border)' }} className="py-6 text-center text-sm" >
-          <span style={{ color: 'var(--text-muted)' }}>© 2026 ZRK Lavice · Podgorica, Crna Gora</span>
-        </footer>
+        <Footer />
       </body>
     </html>
   );

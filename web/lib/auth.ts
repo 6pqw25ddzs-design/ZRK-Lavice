@@ -24,5 +24,8 @@ export async function adminRequest(path: string, token: string, options: Request
     try { const d = await res.json(); msg = d.detail || d.message || JSON.stringify(d); } catch {}
     throw new Error(msg);
   }
-  return res.json();
+  // 204 No Content (npr. DELETE) ili prazno tijelo — nema JSON-a za parsiranje
+  if (res.status === 204) return null;
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
 }

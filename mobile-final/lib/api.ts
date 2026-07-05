@@ -26,6 +26,14 @@ export const getNewsBySlug = (slug: string) => request(`/api/news/${slug}`);
 export const getResults = (teamId?: string) =>
   request(`/api/results${teamId ? `?teamId=${teamId}` : ''}`);
 
+export const getGallery = () => request('/api/gallery');
+export const getSponsors = () => request('/api/sponsors');
+export const getStandings = () => request('/api/standings');
+export const getSettings = () => request('/api/settings');
+export const getPublicDocuments = () => request('/api/documents/public');
+export const submitRegistration = (data: { childName: string; birthYear: number; parentName: string; parentPhone: string; parentEmail: string }) =>
+  request('/api/registrations', { method: 'POST', body: JSON.stringify(data) });
+
 export const getInbox = () => request('/api/messages/inbox');
 
 export const sendMessage = (data: { recipientId?: string; teamId?: string; body: string; isGroup?: boolean }) =>

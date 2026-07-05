@@ -58,6 +58,16 @@ export default function AdminRezultatiPage() {
     }
   }
 
+  async function handleDelete(id: string) {
+    if (!confirm('Obrisati ovaj rezultat?')) return;
+    try {
+      await adminRequest(`/api/results/${id}`, getToken(), { method: 'DELETE' });
+      await load();
+    } catch (e: any) {
+      setError('Greška pri brisanju: ' + (e?.message || ''));
+    }
+  }
+
   const inputClass = "px-4 py-2 rounded-lg outline-none focus:border-red-600";
   const inputStyle = { backgroundColor: 'var(--background)', border: '1px solid var(--border)', color: 'white' };
 
@@ -106,8 +116,14 @@ export default function AdminRezultatiPage() {
                   {new Date(r.event.startsAt).toLocaleDateString('sr-Latn-ME')} · {r.event.team.name}
                 </div>
               </div>
-              <div className="text-xl font-black" style={{ color: 'var(--gold)' }}>
-                {r.homeScore} : {r.awayScore}
+              <div className="flex items-center gap-4 shrink-0">
+                <div className="text-xl font-black" style={{ color: 'var(--gold)' }}>
+                  {r.homeScore} : {r.awayScore}
+                </div>
+                <button onClick={() => handleDelete(r.id)}
+                  className="px-3 py-1 rounded-lg text-sm bg-red-900 text-white hover:bg-red-700 transition-colors">
+                  Briši
+                </button>
               </div>
             </div>
           ))}

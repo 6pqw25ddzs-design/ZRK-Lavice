@@ -31,3 +31,25 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-montserrat), var(--font-inter), Arial, sans-serif;
 }
+
+/* Teaser animacije */
+@keyframes teaserFadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes teaserGlow {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.08); }
+}
+@keyframes teaserFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.t-fade { opacity: 0; animation: teaserFadeUp 0.9s ease forwards; }
+.t-d1 { animation-delay: 0.1s; }
+.t-d2 { animation-delay: 0.25s; }
+.t-d3 { animation-delay: 0.4s; }
+.t-d4 { animation-delay: 0.55s; }
+.t-d5 { animation-delay: 0.7s; }
+.t-glow { animation: teaserGlow 5s ease-in-out infinite; }
+.t-float { animation: teaserFloat 6s ease-in-out infinite; }

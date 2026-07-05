@@ -23,9 +23,14 @@ export default async function EkipePage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {teamPlayers.map((p: any) => (
                   <Link key={p.id} href={`/igrac/${p.id}`} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-xl p-4 text-center block hover:border-red-800 transition-colors">
-                    <div style={{ backgroundColor: 'var(--border)' }} className="w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-lg">
-                      {p.jerseyNumber || (p.firstName?.charAt(0) ?? '?')}
-                    </div>
+                    {p.photoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.photoUrl} alt={`${p.firstName} ${p.lastName}`} className="w-16 h-16 rounded-full mx-auto mb-3 object-cover" style={{ border: '2px solid var(--primary)' }} />
+                    ) : (
+                      <div style={{ backgroundColor: 'var(--border)' }} className="w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-lg">
+                        {p.jerseyNumber || (p.firstName?.charAt(0) ?? '?')}
+                      </div>
+                    )}
                     <div className="text-white text-sm font-semibold leading-tight">{p.firstName} {p.lastName}</div>
                     {p.position && <div style={{ color: 'var(--text-muted)' }} className="text-xs mt-1">{p.position}</div>}
                     {p.birthDate && <div style={{ color: 'var(--text-muted)' }} className="text-xs">{new Date(p.birthDate).getFullYear()}</div>}

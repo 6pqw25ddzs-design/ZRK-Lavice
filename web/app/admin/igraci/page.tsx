@@ -5,7 +5,7 @@ import { adminRequest } from '@/lib/auth';
 type Team = { id: string; name: string; category: string; };
 type Player = { id: string; firstName: string; lastName: string; jerseyNumber?: number; position?: string; birthDate: string; team: { name: string; category: string; }; };
 
-const POSITIONS = ['Golman', 'Lijevo krilo', 'Desno krilo', 'Lijevo bek', 'Desno bek', 'Centar', 'Pivot'];
+const POSITIONS = ['Golman', 'Lijevo krilo', 'Desno krilo', 'Lijevi bek', 'Desni bek', 'Srednji bek', 'Pivot'];
 
 export default function AdminIgraciPage() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -15,7 +15,7 @@ export default function AdminIgraciPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({
-    teamId: '', firstName: '', lastName: '', birthDate: '', jerseyNumber: '', position: '',
+    teamId: '', firstName: '', lastName: '', birthDate: '', jerseyNumber: '', position: '', photoUrl: '',
   });
 
   function getToken() { return localStorage.getItem('admin_token') || ''; }
@@ -40,7 +40,7 @@ export default function AdminIgraciPage() {
   useEffect(() => { load(); }, []);
 
   function resetForm() {
-    setForm({ teamId: '', firstName: '', lastName: '', birthDate: '', jerseyNumber: '', position: '' });
+    setForm({ teamId: '', firstName: '', lastName: '', birthDate: '', jerseyNumber: '', position: '', photoUrl: '' });
     setEditing(null);
     setError('');
   }
@@ -59,6 +59,7 @@ export default function AdminIgraciPage() {
       };
       if (form.jerseyNumber) body.jerseyNumber = Number(form.jerseyNumber);
       if (form.position) body.position = form.position;
+      if (form.photoUrl.trim()) body.photoUrl = form.photoUrl.trim();
 
       if (editing) {
         await adminRequest(`/api/players/${editing}`, getToken(), { method: 'PATCH', body: JSON.stringify(body) });
@@ -79,8 +80,8 @@ export default function AdminIgraciPage() {
     try {
       await adminRequest(`/api/players/${id}`, getToken(), { method: 'DELETE' });
       await load();
-    } catch {
-      setError('Greška pri brisanju');
+    } catch (e: any) {
+      setError('Greška pri brisanju: ' + (e?.message || ''));
     }
   }
 
@@ -93,6 +94,7 @@ export default function AdminIgraciPage() {
       birthDate: p.birthDate?.slice(0, 10) || '',
       jerseyNumber: p.jerseyNumber?.toString() || '',
       position: p.position || '',
+      photoUrl: (p as any).photoUrl || '',
     });
   }
 
@@ -131,7 +133,13 @@ export default function AdminIgraciPage() {
             <option value="">Pozicija (opciono)</option>
             {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
+          <input placeholder="Link na sliku igračice (https://...) — opciono" value={form.photoUrl}
+            onChange={e => setForm(f => ({ ...f, photoUrl: e.target.value }))}
+            className={`${inputClass} col-span-2`} style={inputStyle} />
         </div>
+        <p style={{ color: 'var(--text-muted)' }} className="text-xs mt-2">
+          Slika igračice: postavi je (postimages.org) i zalijepi direktan link na .jpg/.png. Bez slike, prikazuje se broj dresa.
+        </p>
         {error && <p style={{ color: 'var(--primary)' }} className="text-sm mt-3">{error}</p>}
         <div className="flex gap-3 mt-4">
           <button onClick={handleSave} disabled={saving}

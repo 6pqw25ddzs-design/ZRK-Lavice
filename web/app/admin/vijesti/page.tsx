@@ -2,12 +2,12 @@
 import { useEffect, useState } from 'react';
 import { adminRequest } from '@/lib/auth';
 
-type Article = { id: string; title: string; body?: string; publishedAt: string; };
+type Article = { id: string; title: string; body?: string; coverUrl?: string; publishedAt: string; };
 
 export default function AdminVijestiPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ title: '', body: '' });
+  const [form, setForm] = useState({ title: '', body: '', coverUrl: '' });
   const [editing, setEditing] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -34,10 +34,12 @@ export default function AdminVijestiPage() {
     setSaving(true);
     setError('');
     try {
+      const payload: Record<string, unknown> = { title: form.title, body: form.body };
+      if (form.coverUrl.trim()) payload.coverUrl = form.coverUrl.trim();
       if (editing) {
         await adminRequest(`/api/news/${editing}`, getToken(), {
           method: 'PATCH',
-          body: JSON.stringify(form),
+          body: JSON.stringify(payload),
         });
       } else {
         const baseSlug = form.title
@@ -48,10 +50,10 @@ export default function AdminVijestiPage() {
         const slug = `${baseSlug}-${Date.now().toString(36)}`;
         await adminRequest('/api/news', getToken(), {
           method: 'POST',
-          body: JSON.stringify({ ...form, slug, isPublished: true }),
+          body: JSON.stringify({ ...payload, slug, isPublished: true }),
         });
       }
-      setForm({ title: '', body: '' });
+      setForm({ title: '', body: '', coverUrl: '' });
       setEditing(null);
       await load();
     } catch (e: any) {
@@ -73,7 +75,7 @@ export default function AdminVijestiPage() {
 
   function startEdit(a: Article) {
     setEditing(a.id);
-    setForm({ title: a.title, body: a.body || '' });
+    setForm({ title: a.title, body: a.body || '', coverUrl: a.coverUrl || '' });
   }
 
   return (
@@ -99,6 +101,16 @@ export default function AdminVijestiPage() {
             style={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', color: 'white' }}
             className="px-4 py-2 rounded-lg outline-none focus:border-red-600 resize-none"
           />
+          <input
+            placeholder="Link na sliku (https://...) — opciono"
+            value={form.coverUrl}
+            onChange={e => setForm(f => ({ ...f, coverUrl: e.target.value }))}
+            style={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', color: 'white' }}
+            className="px-4 py-2 rounded-lg outline-none focus:border-red-600"
+          />
+          <p style={{ color: 'var(--text-muted)' }} className="text-xs">
+            Slika za vijest: postavi je (postimages.org, Imgur ili sajt) i zalijepi direktan link na .jpg/.png. Bez slike, prikazuje se podrazumijevani izgled.
+          </p>
           {error && <p style={{ color: 'var(--primary)' }} className="text-sm">{error}</p>}
           <div className="flex gap-3">
             <button onClick={handleSave} disabled={saving}
@@ -107,7 +119,7 @@ export default function AdminVijestiPage() {
               {saving ? 'Čuvanje...' : editing ? 'Sačuvaj izmjene' : 'Objavi vijest'}
             </button>
             {editing && (
-              <button onClick={() => { setEditing(null); setForm({ title: '', body: '' }); }}
+              <button onClick={() => { setEditing(null); setForm({ title: '', body: '', coverUrl: '' }); }}
                 style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
                 className="px-6 py-2 rounded-lg hover:text-white transition-colors">
                 Otkaži

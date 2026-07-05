@@ -53,4 +53,14 @@ router.patch('/:id', requireAuth, requireRole('coach', 'admin'), async (req: Aut
   }
 });
 
+router.delete('/:id', requireAuth, requireRole('admin'), async (req, res) => {
+  try {
+    await prisma.matchResult.delete({ where: { id: req.params.id } });
+    res.status(204).send();
+  } catch (e: any) {
+    console.error('Result delete error:', e);
+    res.status(500).json({ error: e?.message || 'Server error' });
+  }
+});
+
 export default router;
