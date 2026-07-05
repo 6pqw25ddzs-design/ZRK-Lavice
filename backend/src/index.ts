@@ -19,6 +19,7 @@ import documentRoutes from './routes/documents';
 import galleryRoutes from './routes/gallery';
 import standingsRoutes from './routes/standings';
 import settingsRoutes from './routes/settings';
+import treneriRoutes from './routes/treneri';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -45,6 +46,7 @@ app.use('/api/documents', documentRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/standings', standingsRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/treneri', treneriRoutes);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
 

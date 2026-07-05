@@ -2,7 +2,7 @@ import Image from 'next/image';
 import PremiumHeader from '@/components/PremiumHeader';
 import UpisForm from '@/components/UpisForm';
 import Link from 'next/link';
-import { getSponsors, getSettings, getTeams, getPlayers, getSchedule, getNews } from '@/lib/api';
+import { getSponsors, getSettings, getTeams, getPlayers, getSchedule, getNews, getTreneri } from '@/lib/api';
 
 export const revalidate = 60;
 export const metadata = {
@@ -58,15 +58,25 @@ function GoldLine() {
 }
 
 export default async function PocetnaPage() {
-  const [sponsors, settings, teams, players, schedule, news] = await Promise.all([
+  const [sponsors, settings, teams, players, schedule, news, treneri] = await Promise.all([
     getSponsors().catch(() => []),
     getSettings().catch(() => ({} as Record<string, string>)),
     getTeams().catch(() => []),
     getPlayers().catch(() => []),
     getSchedule().catch(() => []),
     getNews(4).catch(() => []),
+    getTreneri().catch(() => []),
   ]);
   const upcoming = (Array.isArray(schedule) ? schedule : []).slice(0, 5);
+
+  // Statistika iz baze (2026 = godina osnivanja, fiksno)
+  const brojIgracica = Array.isArray(players) ? players.length : 0;
+  const brojEkipa = Array.isArray(teams) ? teams.length : 0;
+  const brojTrenera = (Array.isArray(treneri) && treneri.length > 0)
+    ? treneri.length
+    : (Array.isArray(teams)
+        ? new Set(teams.flatMap((t: any) => (t.coaches || []).map((c: any) => c.userId || c.id))).size
+        : 0);
   const email = settings.contact_email || 'info@zrklavice.me';
   const phone = settings.contact_phone || '+382 67 000 000';
   const address = settings.contact_address || 'SC Morača, Podgorica, Crna Gora';
@@ -117,9 +127,9 @@ export default async function PocetnaPage() {
       <div className="relative z-10 max-w-6xl mx-auto px-5 -mt-16 md:-mt-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { num: '47', label: 'Igračica', ikona: 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H2v-2a4 4 0 013-3.87m6-1a4 4 0 100-8 4 4 0 000 8z' },
-            { num: '3', label: 'Ekipe', ikona: 'M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4z' },
-            { num: '7', label: 'Trenera', ikona: 'M8 21l4-7 4 7M12 3a5 5 0 015 5c0 3-2.2 5.4-5 6-2.8-.6-5-3-5-6a5 5 0 015-5z' },
+            { num: String(brojIgracica || '—'), label: 'Igračica', ikona: 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H2v-2a4 4 0 013-3.87m6-1a4 4 0 100-8 4 4 0 000 8z' },
+            { num: String(brojEkipa || '—'), label: 'Ekipe', ikona: 'M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4z' },
+            { num: String(brojTrenera || '—'), label: 'Trenera', ikona: 'M8 21l4-7 4 7M12 3a5 5 0 015 5c0 3-2.2 5.4-5 6-2.8-.6-5-3-5-6a5 5 0 015-5z' },
             { num: '2026', label: 'Osnovano', ikona: 'M5 21V4h11l-1.5 3.5L16 11H7' },
           ].map(st => (
             <div key={st.label} className="rounded-2xl bg-white px-6 py-6 flex flex-col items-center text-center transition-transform hover:-translate-y-1"
@@ -422,6 +432,56 @@ export default async function PocetnaPage() {
           </div>
         </div>
       </section>
+
+      {/* STRUČNI TIM — treneri po kategorijama */}
+      {treneri.length > 0 && (
+        <section id="treneri" className="py-20 md:py-28" style={{ backgroundColor: '#F2F2F2' }}>
+          <div className="max-w-6xl mx-auto px-5">
+            <div className="max-w-2xl">
+              <GoldLine />
+              <h2 className="mt-5 text-3xl md:text-4xl font-black tracking-tight" style={{ color: '#1A1A1A' }}>Stručni tim</h2>
+              <p className="mt-5 text-lg leading-relaxed" style={{ color: '#5b5b5b' }}>
+                Treneri koji svakodnevno rade sa našim igračicama — po kategorijama.
+              </p>
+            </div>
+
+            <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {(treneri as any[]).map(t => (
+                <div key={t.id} className="rounded-2xl bg-white p-7 flex flex-col transition-transform hover:-translate-y-1"
+                  style={{ border: '1px solid #E7E7E7', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
+                  <div className="flex items-center gap-4 mb-4">
+                    {t.photoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={t.photoUrl} alt={t.fullName} className="w-16 h-16 rounded-full object-cover shrink-0" style={{ border: '2px solid #C41230' }} />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-black text-xl shrink-0"
+                        style={{ background: 'linear-gradient(135deg, #C41230, #9F0F28)' }}>
+                        {t.fullName.charAt(0)}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <h3 className="font-black leading-tight" style={{ color: '#1A1A1A' }}>{t.fullName}</h3>
+                      <div className="text-sm font-semibold mt-0.5" style={{ color: '#C41230' }}>{t.role}</div>
+                      {t.category && (
+                        <span className="inline-block text-[10.5px] font-bold px-2 py-0.5 rounded-full mt-1.5"
+                          style={{ backgroundColor: 'rgba(212,172,13,0.13)', color: '#A8860B' }}>
+                          {t.category}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {t.bio && <p className="text-sm leading-relaxed" style={{ color: '#6a6a6a' }}>{t.bio}</p>}
+                  {t.licenseNo && (
+                    <div className="mt-auto pt-4 text-xs" style={{ color: '#9a9a9a' }}>
+                      Licenca: {t.licenseNo}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ZA RODITELJE */}
       <section id="roditelji" className="py-20 md:py-28" style={{ backgroundColor: '#FFFFFF' }}>

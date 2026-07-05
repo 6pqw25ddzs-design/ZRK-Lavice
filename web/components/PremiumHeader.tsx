@@ -9,6 +9,7 @@ const LINKS = [
   { href: '#raspored', label: 'Raspored' },
   { href: '#vijesti', label: 'Vijesti' },
   { href: '#osnivaci', label: 'Osnivači' },
+  { href: '#treneri', label: 'Treneri' },
   { href: '#kontakt', label: 'Kontakt' },
 ];
 
