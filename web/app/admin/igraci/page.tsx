@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { adminRequest } from '@/lib/auth';
 
 type Team = { id: string; name: string; category: string; };
-type Player = { id: string; firstName: string; lastName: string; jerseyNumber?: number; position?: string; birthDate: string; team: { name: string; category: string; }; };
+type Player = { id: string; firstName: string; lastName: string; jerseyNumber?: number; position?: string; birthDate: string; teamId: string; team: { name: string; category: string; }; };
 
 const POSITIONS = ['Golman', 'Lijevo krilo', 'Desno krilo', 'Lijevi bek', 'Desni bek', 'Srednji bek', 'Pivot'];
 
@@ -87,8 +87,9 @@ export default function AdminIgraciPage() {
 
   function startEdit(p: Player) {
     setEditing(p.id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setForm({
-      teamId: '',
+      teamId: p.teamId || '',
       firstName: p.firstName,
       lastName: p.lastName,
       birthDate: p.birthDate?.slice(0, 10) || '',

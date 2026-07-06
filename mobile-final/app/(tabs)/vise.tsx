@@ -13,8 +13,9 @@ import ONamaView from '../../components/sections/ONamaView';
 import DokumentiView from '../../components/sections/DokumentiView';
 import UpisView from '../../components/sections/UpisView';
 import PodrziView from '../../components/sections/PodrziView';
+import TreneriView from '../../components/sections/TreneriView';
 
-type Section = 'menu' | 'tabela' | 'galerija' | 'sponzori' | 'kontakt' | 'rezultati' | 'onama' | 'dokumenti' | 'upis' | 'podrzi';
+type Section = 'menu' | 'tabela' | 'galerija' | 'sponzori' | 'kontakt' | 'rezultati' | 'onama' | 'dokumenti' | 'upis' | 'podrzi' | 'treneri';
 
 type Item = { key: Section; label: string; desc: string; icon: any };
 type Group = { title: string; items: Item[] };
@@ -24,6 +25,7 @@ const GROUPS: Group[] = [
     title: 'KLUB',
     items: [
       { key: 'onama', label: 'O nama', desc: 'Priča i osnivači kluba', icon: 'information-circle' },
+      { key: 'treneri', label: 'Stručni tim', desc: 'Treneri po kategorijama', icon: 'clipboard' },
       { key: 'galerija', label: 'Galerija', desc: 'Trenuci sa treninga i utakmica', icon: 'images' },
       { key: 'dokumenti', label: 'Dokumenti', desc: 'Obrasci i pravilnici', icon: 'document-text' },
       { key: 'sponzori', label: 'Sponzori', desc: 'Partneri kluba', icon: 'ribbon' },
@@ -79,6 +81,7 @@ export default function ViseScreen() {
           {active === 'dokumenti' && <DokumentiView />}
           {active === 'upis' && <UpisView />}
           {active === 'podrzi' && <PodrziView />}
+          {active === 'treneri' && <TreneriView />}
         </View>
       </View>
     );

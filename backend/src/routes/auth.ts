@@ -8,7 +8,7 @@ const router = Router();
 const prisma = new PrismaClient();
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-const JWT_EXPIRES = '7d';
+const JWT_EXPIRES = '30d';
 
 const registerSchema = z.object({
   email: z.string().email(),

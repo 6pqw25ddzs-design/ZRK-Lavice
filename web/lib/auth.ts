@@ -19,6 +19,14 @@ export async function adminRequest(path: string, token: string, options: Request
       ...options.headers,
     },
   });
+  if (res.status === 401 || res.status === 403) {
+    // Istekao/nevažeći token — vrati na prijavu
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('admin_token');
+      window.location.href = '/admin/login';
+    }
+    throw new Error('Sesija je istekla — prijavite se ponovo');
+  }
   if (!res.ok) {
     let msg = `HTTP ${res.status}`;
     try { const d = await res.json(); msg = d.detail || d.message || JSON.stringify(d); } catch {}
