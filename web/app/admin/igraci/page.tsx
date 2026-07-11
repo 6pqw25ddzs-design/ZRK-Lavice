@@ -17,6 +17,19 @@ export default function AdminIgraciPage() {
   const [form, setForm] = useState({
     teamId: '', firstName: '', lastName: '', birthDate: '', jerseyNumber: '', position: '', photoUrl: '',
   });
+  const [inviteCodes, setInviteCodes] = useState<Record<string, string>>({});
+
+  async function handleInvite(playerId: string) {
+    try {
+      const inv = await adminRequest('/api/invites', getToken(), {
+        method: 'POST', body: JSON.stringify({ playerId }),
+      });
+      setInviteCodes(prev => ({ ...prev, [playerId]: inv.code }));
+      try { await navigator.clipboard.writeText(inv.code); } catch {}
+    } catch (e: any) {
+      setError('Greška pri generisanju koda: ' + (e?.message || ''));
+    }
+  }
 
   function getToken() { return localStorage.getItem('admin_token') || ''; }
 
@@ -175,7 +188,20 @@ export default function AdminIgraciPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex gap-2 shrink-0">
+              <div className="flex gap-2 shrink-0 items-center">
+                {inviteCodes[p.id] ? (
+                  <span style={{ color: 'var(--primary)', border: '1px dashed var(--primary)' }}
+                    className="px-3 py-1 rounded-lg text-sm font-mono font-bold" title="Kopirano u clipboard">
+                    {inviteCodes[p.id]}
+                  </span>
+                ) : (
+                  <button onClick={() => handleInvite(p.id)}
+                    style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+                    className="px-3 py-1 rounded-lg text-sm hover:text-white transition-colors"
+                    title="Pozivni kod kojim roditelj aktivira nalog i vezuje se za dijete">
+                    Kod za roditelja
+                  </button>
+                )}
                 <button onClick={() => startEdit(p)}
                   style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
                   className="px-3 py-1 rounded-lg text-sm hover:text-white transition-colors">
