@@ -23,6 +23,9 @@ import treneriRoutes from './routes/treneri';
 import invitesRoutes from './routes/invites';
 import meRoutes from './routes/me';
 import seasonsRoutes from './routes/seasons';
+import attendanceRoutes from './routes/attendance';
+import availabilityRoutes from './routes/availability';
+import announcementsRoutes from './routes/announcements';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -53,6 +56,9 @@ app.use('/api/treneri', treneriRoutes);
 app.use('/api/invites', invitesRoutes);
 app.use('/api/me', meRoutes);
 app.use('/api/seasons', seasonsRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/availability', availabilityRoutes);
+app.use('/api/announcements', announcementsRoutes);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
 
