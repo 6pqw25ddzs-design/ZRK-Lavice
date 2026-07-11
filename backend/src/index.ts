@@ -29,6 +29,7 @@ import announcementsRoutes from './routes/announcements';
 import dossierRoutes from './routes/dossier';
 import feesRoutes from './routes/fees';
 import trialsRoutes from './routes/trials';
+import developmentRoutes from './routes/development';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -65,6 +66,7 @@ app.use('/api/announcements', announcementsRoutes);
 app.use('/api/dossier', dossierRoutes);
 app.use('/api/fees', feesRoutes);
 app.use('/api/trial-slots', trialsRoutes);
+app.use('/api/development', developmentRoutes);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
 

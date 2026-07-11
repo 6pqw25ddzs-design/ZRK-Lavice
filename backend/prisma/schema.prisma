@@ -57,6 +57,26 @@ enum FeeStatus {
   waived
 }
 
+enum EvalDomain {
+  technical
+  tactical
+  physical
+  mental
+  goalkeeper
+}
+
+enum GoalStatus {
+  active
+  done
+  paused
+}
+
+enum InjuryStatus {
+  ready
+  caution
+  out
+}
+
 enum SponsorLevel {
   gold
   silver
@@ -88,6 +108,8 @@ model User {
   announcements    Announcement[]
   announcementReads AnnouncementRead[]
   signedConsents   Consent[]
+  evaluationsGiven Evaluation[]
+  goalsGiven       DevelopmentGoal[]
 
   @@map("users")
 }
@@ -137,6 +159,10 @@ model Player {
   fees         MembershipFee[]
   medicalInfo  MedicalInfo?
   emergencyContacts EmergencyContact[]
+  evaluations  Evaluation[]
+  goals        DevelopmentGoal[]
+  milestones   Milestone[]
+  injuries     InjuryRecord[]
 
   @@map("players")
 }
@@ -556,6 +582,97 @@ model TrialSlot {
   registrations Registration[]
 
   @@map("trial_slots")
+}
+
+// ===== Faza 4: razvojni sloj =====
+
+// Šifarnik kriterijuma ocjenjivanja; category=null važi za sve kategorije
+model Criterion {
+  id        String       @id @default(uuid())
+  domain    EvalDomain
+  name      String
+  category  TeamCategory?
+  sortOrder Int          @default(0) @map("sort_order")
+  isActive  Boolean      @default(true) @map("is_active")
+
+  scores EvaluationScore[]
+
+  @@map("criteria")
+}
+
+// Formalna evaluacija igračice (2x po sezoni + vanredne)
+model Evaluation {
+  id          String   @id @default(uuid())
+  playerId    String   @map("player_id")
+  coachUserId String   @map("coach_user_id")
+  period      String
+  comment     String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  player Player            @relation(fields: [playerId], references: [id])
+  coach  User              @relation(fields: [coachUserId], references: [id])
+  scores EvaluationScore[]
+
+  @@map("evaluations")
+}
+
+model EvaluationScore {
+  id           String @id @default(uuid())
+  evaluationId String @map("evaluation_id")
+  criterionId  String @map("criterion_id")
+  score        Int
+
+  evaluation Evaluation @relation(fields: [evaluationId], references: [id])
+  criterion  Criterion  @relation(fields: [criterionId], references: [id])
+
+  @@unique([evaluationId, criterionId])
+  @@map("evaluation_scores")
+}
+
+// Razvojni cilj — jezik ohrabrenja, 1-3 aktivna po igračici
+model DevelopmentGoal {
+  id          String     @id @default(uuid())
+  playerId    String     @map("player_id")
+  coachUserId String     @map("coach_user_id")
+  title       String
+  description String?
+  status      GoalStatus @default(active)
+  dueDate     DateTime?  @map("due_date")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  doneAt      DateTime?  @map("done_at")
+
+  player Player @relation(fields: [playerId], references: [id])
+  coach  User   @relation(fields: [coachUserId], references: [id])
+
+  @@map("development_goals")
+}
+
+// Prekretnica/bedž (ručna ili automatska: promocija, jubilej treninga...)
+model Milestone {
+  id         String   @id @default(uuid())
+  playerId   String   @map("player_id")
+  title      String
+  kind       String   @default("manual")
+  badge      String?
+  achievedAt DateTime @default(now()) @map("achieved_at")
+
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@map("milestones")
+}
+
+// Povreda i povratak na teren; trener vidi status + sportsku napomenu
+model InjuryRecord {
+  id         String       @id @default(uuid())
+  playerId   String       @map("player_id")
+  status     InjuryStatus
+  note       String?
+  startedAt  DateTime     @default(now()) @map("started_at")
+  returnedAt DateTime?    @map("returned_at")
+
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@map("injury_records")
 }
 
 model PushToken {

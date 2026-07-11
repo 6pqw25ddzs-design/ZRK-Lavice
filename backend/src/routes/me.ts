@@ -243,6 +243,50 @@ router.delete('/emergency-contacts/:id', requireAuth, async (req: AuthRequest, r
   }
 });
 
+// Razvoj djeteta za roditelja: evaluacije (rezime), ciljevi, prekretnice, status povrede
+router.get('/development/:playerId', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const { playerId } = req.params;
+    const link = await prisma.parentLink.findUnique({
+      where: { userId_playerId: { userId: req.user!.id, playerId } },
+    });
+    if (!link) return res.status(403).json({ error: 'Niste povezani sa ovom igračicom' });
+
+    const [evaluations, goals, milestones, openInjury] = await Promise.all([
+      prisma.evaluation.findMany({
+        where: { playerId },
+        include: {
+          coach: { select: { fullName: true } },
+          scores: { include: { criterion: { select: { name: true, domain: true } } } },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 6,
+      }),
+      prisma.developmentGoal.findMany({ where: { playerId }, orderBy: { createdAt: 'desc' }, take: 10 }),
+      prisma.milestone.findMany({ where: { playerId }, orderBy: { achievedAt: 'desc' }, take: 20 }),
+      prisma.injuryRecord.findFirst({ where: { playerId, returnedAt: null, status: { not: 'ready' } } }),
+    ]);
+    // Rezime po domenu (prosjek), pun detalj ostaje dostupan
+    res.json({
+      evaluations: evaluations.map(ev => {
+        const byDomain: Record<string, number[]> = {};
+        ev.scores.forEach(s => { (byDomain[s.criterion.domain] ||= []).push(s.score); });
+        return {
+          id: ev.id, period: ev.period, comment: ev.comment, coach: ev.coach.fullName, createdAt: ev.createdAt,
+          domains: Object.fromEntries(Object.entries(byDomain).map(([d, arr]) =>
+            [d, Math.round((arr.reduce((a, b) => a + b, 0) / arr.length) * 10) / 10])),
+          scores: ev.scores.map(s => ({ name: s.criterion.name, domain: s.criterion.domain, score: s.score })),
+        };
+      }),
+      goals,
+      milestones,
+      injuryStatus: openInjury ? openInjury.status : 'ready',
+    });
+  } catch (e: any) {
+    res.status(500).json({ error: e?.message || 'Greška' });
+  }
+});
+
 // Registracija Expo push tokena za uređaj
 router.post('/push-token', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
