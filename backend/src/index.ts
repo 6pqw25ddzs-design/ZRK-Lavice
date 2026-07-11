@@ -26,6 +26,9 @@ import seasonsRoutes from './routes/seasons';
 import attendanceRoutes from './routes/attendance';
 import availabilityRoutes from './routes/availability';
 import announcementsRoutes from './routes/announcements';
+import dossierRoutes from './routes/dossier';
+import feesRoutes from './routes/fees';
+import trialsRoutes from './routes/trials';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -59,6 +62,9 @@ app.use('/api/seasons', seasonsRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/availability', availabilityRoutes);
 app.use('/api/announcements', announcementsRoutes);
+app.use('/api/dossier', dossierRoutes);
+app.use('/api/fees', feesRoutes);
+app.use('/api/trial-slots', trialsRoutes);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
 

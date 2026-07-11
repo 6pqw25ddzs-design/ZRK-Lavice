@@ -41,10 +41,14 @@ router.get('/', requireAuth, requireRole('admin', 'coach'), async (_req, res) =>
 // Admin: update status
 router.patch('/:id', requireAuth, requireRole('admin'), async (req: AuthRequest, res: Response) => {
   try {
-    const { status, notes } = req.body;
+    const { status, notes, trialSlotId } = req.body;
     const reg = await prisma.registration.update({
       where: { id: req.params.id },
-      data: { status, notes },
+      data: {
+        ...(status !== undefined ? { status } : {}),
+        ...(notes !== undefined ? { notes } : {}),
+        ...(trialSlotId !== undefined ? { trialSlotId } : {}),
+      },
     });
     res.json(reg);
   } catch (e: any) {

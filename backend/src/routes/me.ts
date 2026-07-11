@@ -126,6 +126,123 @@ router.post('/announcements/:id/read', requireAuth, async (req: AuthRequest, res
   }
 });
 
+// Dosije djeteta za roditelja: dokumenti (checklist), saglasnosti, članarine, medicina, hitni kontakti
+router.get('/dossier/:playerId', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const { playerId } = req.params;
+    const link = await prisma.parentLink.findUnique({
+      where: { userId_playerId: { userId: req.user!.id, playerId } },
+    });
+    if (!link) return res.status(403).json({ error: 'Niste povezani sa ovom igračicom' });
+
+    const [types, documents, consents, fees, medical, contacts] = await Promise.all([
+      prisma.documentType.findMany({ orderBy: { sortOrder: 'asc' } }),
+      prisma.playerDocument.findMany({ where: { playerId }, orderBy: { createdAt: 'desc' } }),
+      prisma.consent.findMany({ where: { playerId, revokedAt: null } }),
+      prisma.membershipFee.findMany({ where: { playerId }, orderBy: [{ year: 'desc' }, { month: 'desc' }], take: 12 }),
+      prisma.medicalInfo.findUnique({ where: { playerId } }),
+      prisma.emergencyContact.findMany({ where: { playerId } }),
+    ]);
+    res.json({ types, documents, consents, fees, medical, contacts });
+  } catch (e: any) {
+    res.status(500).json({ error: e?.message || 'Greška' });
+  }
+});
+
+// Roditelj potpisuje saglasnost za svoje dijete
+router.post('/consents', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const { playerId, type } = req.body;
+    if (!playerId || !['media', 'data', 'travel'].includes(type)) {
+      return res.status(400).json({ error: 'playerId i type (media/data/travel) su obavezni' });
+    }
+    const link = await prisma.parentLink.findUnique({
+      where: { userId_playerId: { userId: req.user!.id, playerId } },
+    });
+    if (!link) return res.status(403).json({ error: 'Niste povezani sa ovom igračicom' });
+
+    const existing = await prisma.consent.findFirst({ where: { playerId, type, revokedAt: null } });
+    if (existing) return res.status(409).json({ error: 'Saglasnost je već potpisana' });
+
+    const consent = await prisma.consent.create({
+      data: { playerId, type, signedById: req.user!.id },
+    });
+    res.status(201).json(consent);
+  } catch (e: any) {
+    res.status(500).json({ error: e?.message || 'Greška' });
+  }
+});
+
+// Roditelj povlači saglasnost
+router.post('/consents/:id/revoke', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const consent = await prisma.consent.findUnique({ where: { id: req.params.id } });
+    if (!consent) return res.status(404).json({ error: 'Saglasnost ne postoji' });
+    const link = await prisma.parentLink.findUnique({
+      where: { userId_playerId: { userId: req.user!.id, playerId: consent.playerId } },
+    });
+    if (!link) return res.status(403).json({ error: 'Niste povezani sa ovom igračicom' });
+
+    const updated = await prisma.consent.update({ where: { id: consent.id }, data: { revokedAt: new Date() } });
+    res.json(updated);
+  } catch (e: any) {
+    res.status(500).json({ error: e?.message || 'Greška' });
+  }
+});
+
+// Roditelj održava medicinske napomene i hitne kontakte svog djeteta
+router.put('/medical/:playerId', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const { playerId } = req.params;
+    const link = await prisma.parentLink.findUnique({
+      where: { userId_playerId: { userId: req.user!.id, playerId } },
+    });
+    if (!link) return res.status(403).json({ error: 'Niste povezani sa ovom igračicom' });
+
+    const { notes, coachNote } = req.body;
+    const medical = await prisma.medicalInfo.upsert({
+      where: { playerId },
+      update: { notes: notes ?? null, coachNote: coachNote ?? null },
+      create: { playerId, notes: notes ?? null, coachNote: coachNote ?? null },
+    });
+    res.json(medical);
+  } catch (e: any) {
+    res.status(500).json({ error: e?.message || 'Greška' });
+  }
+});
+
+router.post('/emergency-contacts', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const { playerId, name, phone, relation } = req.body;
+    if (!playerId || !name || !phone) return res.status(400).json({ error: 'playerId, name i phone su obavezni' });
+    const link = await prisma.parentLink.findUnique({
+      where: { userId_playerId: { userId: req.user!.id, playerId } },
+    });
+    if (!link) return res.status(403).json({ error: 'Niste povezani sa ovom igračicom' });
+
+    const contact = await prisma.emergencyContact.create({ data: { playerId, name, phone, relation: relation || null } });
+    res.status(201).json(contact);
+  } catch (e: any) {
+    res.status(500).json({ error: e?.message || 'Greška' });
+  }
+});
+
+router.delete('/emergency-contacts/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const contact = await prisma.emergencyContact.findUnique({ where: { id: req.params.id } });
+    if (!contact) return res.status(404).json({ error: 'Kontakt ne postoji' });
+    const link = await prisma.parentLink.findUnique({
+      where: { userId_playerId: { userId: req.user!.id, playerId: contact.playerId } },
+    });
+    if (!link) return res.status(403).json({ error: 'Niste povezani sa ovom igračicom' });
+
+    await prisma.emergencyContact.delete({ where: { id: contact.id } });
+    res.status(204).end();
+  } catch (e: any) {
+    res.status(500).json({ error: e?.message || 'Greška' });
+  }
+});
+
 // Registracija Expo push tokena za uređaj
 router.post('/push-token', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
