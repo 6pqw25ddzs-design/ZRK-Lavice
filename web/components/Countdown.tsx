@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-const TARGET = new Date('2026-07-16T19:00:00+02:00').getTime();
+const TARGET = new Date('2026-07-16T10:00:00+02:00').getTime();
 
 function calc() {
   const diff = Math.max(0, TARGET - Date.now());
@@ -17,7 +17,15 @@ export default function Countdown() {
 
   useEffect(() => {
     setT(calc());
-    const id = setInterval(() => setT(calc()), 1000);
+    const id = setInterval(() => {
+      const next = calc();
+      setT(next);
+      // U trenutku lansiranja stranica se sama osvježava i otkriva punu naslovnu
+      if (next.d === 0 && next.h === 0 && next.m === 0 && next.s === 0) {
+        clearInterval(id);
+        setTimeout(() => window.location.reload(), 1500);
+      }
+    }, 1000);
     return () => clearInterval(id);
   }, []);
 
