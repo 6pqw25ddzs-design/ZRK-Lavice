@@ -107,7 +107,7 @@ export default async function PocetnaPage() {
               Stvaramo<br />nove <span style={{ color: '#E8546F' }}>lavice.</span>
             </h1>
             <p className="mt-7 text-xl md:text-2xl leading-snug max-w-lg font-light" style={{ color: 'rgba(255,255,255,0.85)' }}>
-              Razvojni rukometni klub za djevojčice koji vode evropske šampionke i olimpijske medaljistkinje.
+              Razvojni rukometni klub za djevojčice koji vode evropske šampionke i osvajačice jedine olimpijske medalje za Crnu Goru.
             </p>
             <div className="mt-9 flex flex-wrap gap-4">
               <a href="#upis" style={{ backgroundColor: '#C41230' }}
