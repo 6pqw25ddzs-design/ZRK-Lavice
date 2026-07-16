@@ -32,6 +32,16 @@ export default function AdminPrijavePage() {
 
   useEffect(() => { load(); }, []);
 
+  async function handleDelete(id: string, childName: string) {
+    if (!confirm(`Trajno obrisati prijavu za "${childName}"?`)) return;
+    try {
+      await adminRequest(`/api/registrations/${id}`, getToken(), { method: 'DELETE' });
+      await load();
+    } catch (e: any) {
+      setError('Greška pri brisanju: ' + (e?.message || ''));
+    }
+  }
+
   async function setStatus(id: string, status: string) {
     try {
       await adminRequest(`/api/registrations/${id}`, getToken(), { method: 'PATCH', body: JSON.stringify({ status }) });
@@ -81,6 +91,13 @@ export default function AdminPrijavePage() {
                   className="px-3 py-1 rounded-lg text-sm bg-red-900 text-white hover:bg-red-700 transition-colors">
                   Odbij
                 </button>
+                {r.status === 'rejected' && (
+                  <button onClick={() => handleDelete(r.id, r.childName)}
+                    style={{ border: '1px solid #7f1d1d', color: '#f87171' }}
+                    className="px-3 py-1 rounded-lg text-sm hover:bg-red-950 transition-colors ml-auto">
+                    Briši trajno
+                  </button>
+                )}
               </div>
             </div>
           ))}

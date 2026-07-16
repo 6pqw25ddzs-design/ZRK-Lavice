@@ -57,4 +57,14 @@ router.patch('/:id', requireAuth, requireRole('admin'), async (req: AuthRequest,
   }
 });
 
+// Admin: trajno brisanje prijave (testne/odbijene)
+router.delete('/:id', requireAuth, requireRole('admin'), async (req: AuthRequest, res: Response) => {
+  try {
+    await prisma.registration.delete({ where: { id: req.params.id } });
+    res.status(204).end();
+  } catch (e: any) {
+    res.status(500).json({ error: e?.message || 'Server error' });
+  }
+});
+
 export default router;
