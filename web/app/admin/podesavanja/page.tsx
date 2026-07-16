@@ -14,6 +14,7 @@ const FIELDS = [
 const SECRET_FIELDS = [
   { key: 'secret_resend_api_key', label: 'Resend API ključ (za email obavještenja o prijavama)', placeholder: 're_...' },
   { key: 'secret_notify_email', label: 'Email na koji stižu prijave', placeholder: 'pedjab@me.com' },
+  { key: 'secret_notify_from', label: 'Šalje sa adrese (tek kad se domen verifikuje u Resendu)', placeholder: 'ŽRK Lavice <prijave@zrklavice.me>' },
 ];
 
 export default function AdminPodesavanjaPage() {
