@@ -19,6 +19,8 @@ const SECRET_FIELDS = [
 
 export default function AdminPodesavanjaPage() {
   const [form, setForm] = useState<Record<string, string>>({});
+  const [userForm, setUserForm] = useState({ email: '', fullName: '', password: '', role: 'admin' });
+  const [userMsg, setUserMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
@@ -48,6 +50,20 @@ export default function AdminPodesavanjaPage() {
       setError('Greška pri čuvanju: ' + (e?.message || ''));
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleCreateUser() {
+    setUserMsg('');
+    if (!userForm.email || !userForm.fullName || userForm.password.length < 8) {
+      setUserMsg('Popunite sva polja (lozinka najmanje 8 znakova)'); return;
+    }
+    try {
+      const u = await adminRequest('/api/auth/users', getToken(), { method: 'POST', body: JSON.stringify(userForm) });
+      setUserMsg(`✓ Nalog kreiran: ${u.email} (${u.role === 'admin' ? 'administrator' : 'trener'})`);
+      setUserForm({ email: '', fullName: '', password: '', role: 'admin' });
+    } catch (e: any) {
+      setUserMsg('Greška: ' + (e?.message || ''));
     }
   }
 
@@ -88,6 +104,29 @@ export default function AdminPodesavanjaPage() {
             </button>
           </div>
         )}
+      </div>
+
+      <div style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-xl p-6 mt-6">
+        <h2 className="text-white font-bold mb-4">Novi nalog za panel</h2>
+        <div className="flex flex-col gap-4">
+          <input value={userForm.email} placeholder="Email" type="email"
+            onChange={e => setUserForm(p => ({ ...p, email: e.target.value }))} className={inputClass} style={inputStyle} />
+          <input value={userForm.fullName} placeholder="Ime i prezime"
+            onChange={e => setUserForm(p => ({ ...p, fullName: e.target.value }))} className={inputClass} style={inputStyle} />
+          <input value={userForm.password} placeholder="Lozinka (najmanje 8 znakova)" type="text"
+            onChange={e => setUserForm(p => ({ ...p, password: e.target.value }))} className={inputClass} style={inputStyle} />
+          <select value={userForm.role} onChange={e => setUserForm(p => ({ ...p, role: e.target.value }))}
+            className={inputClass} style={inputStyle}>
+            <option value="admin">Administrator (pun pristup)</option>
+            <option value="coach">Trener (svoja ekipa: prisustvo, objave, razvoj)</option>
+          </select>
+          {userMsg && <p className="text-sm" style={{ color: userMsg.startsWith('✓') ? '#22c55e' : 'var(--primary)' }}>{userMsg}</p>}
+          <button onClick={handleCreateUser}
+            style={{ backgroundColor: 'var(--primary)' }}
+            className="px-6 py-2 text-white font-bold rounded-lg hover:opacity-90 w-fit">
+            Kreiraj nalog
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
+import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -22,6 +23,14 @@ const activateSchema = z.object({
   fullName: z.string().min(2),
   phone: z.string().optional(),
   relation: z.string().optional(),
+});
+
+const createUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  fullName: z.string().min(2),
+  role: z.enum(['admin', 'coach']),
+  phone: z.string().optional(),
 });
 
 function signToken(id: string, role: string) {
@@ -81,6 +90,27 @@ router.post('/activate', async (req: Request, res: Response) => {
     });
   } catch (e: any) {
     res.status(500).json({ error: e?.message || 'Greška pri aktivaciji' });
+  }
+});
+
+// Admin kreira nalog za drugog admina ili trenera
+router.post('/users', requireAuth, requireRole('admin'), async (req: AuthRequest, res: Response) => {
+  try {
+    const parse = createUserSchema.safeParse(req.body);
+    if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
+    const { email, password, fullName, role, phone } = parse.data;
+
+    const exists = await prisma.user.findUnique({ where: { email } });
+    if (exists) return res.status(409).json({ error: 'Nalog sa ovim emailom već postoji' });
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const user = await prisma.user.create({
+      data: { email, passwordHash, fullName, phone, role },
+      select: { id: true, email: true, fullName: true, role: true },
+    });
+    res.status(201).json(user);
+  } catch (e: any) {
+    res.status(500).json({ error: e?.message || 'Greška pri kreiranju naloga' });
   }
 });
 
