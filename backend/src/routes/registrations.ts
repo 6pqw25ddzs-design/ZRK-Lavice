@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
+import { sendNotifyEmail, registrationEmailHtml } from '../services/email';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -20,6 +21,11 @@ router.post('/', async (req, res) => {
     const parse = registrationSchema.safeParse(req.body);
     if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
     const reg = await prisma.registration.create({ data: parse.data as any });
+    // Obavještenje klubu mejlom — ne blokira i ne obara registraciju ako padne
+    void sendNotifyEmail(
+      `Nova prijava: ${reg.childName} (${reg.birthYear})`,
+      registrationEmailHtml(reg)
+    );
     res.status(201).json({ id: reg.id, message: 'Registracija primljena. Kontaktiraćemo vas uskoro.' });
   } catch (e: any) {
     console.error('Registration create error:', e);
