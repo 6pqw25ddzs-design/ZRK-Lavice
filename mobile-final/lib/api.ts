@@ -1,15 +1,28 @@
 const API_URL = 'https://zrk-lavice-api.onrender.com';
 
+let authToken: string | null = null;
+export function setAuthToken(token: string | null) { authToken = token; }
+
 async function request(path: string, options: RequestInit = {}) {
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
       ...options.headers,
     },
   });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+  if (!res.ok) {
+    let msg = `HTTP ${res.status}`;
+    try {
+      const d = await res.json();
+      msg = (typeof d.error === 'string' ? d.error : d.error?.formErrors?.join?.(', ')) || d.message || msg;
+    } catch {}
+    throw new Error(msg);
+  }
+  if (res.status === 204) return null;
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
 }
 
 export const getSchedule = (teamId?: string) =>
@@ -44,3 +57,23 @@ export const getPlayerProfile = (id: string) => request(`/api/players/${id}`);
 
 export const login = (email: string, password: string) =>
   request('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+
+// ===== Prijavljeni korisnik (roditelj) =====
+export const api = {
+  login,
+  activate: (data: { code: string; email: string; password: string; fullName: string; phone?: string }) =>
+    request('/api/auth/activate', { method: 'POST', body: JSON.stringify(data) }),
+  me: () => request('/api/me'),
+  myChildren: () => request('/api/me/children'),
+  savePushToken: (token: string, platform: string) =>
+    request('/api/me/push-token', { method: 'POST', body: JSON.stringify({ token, platform }) }),
+  setAvailability: (eventId: string, playerId: string, status: 'yes' | 'no' | 'maybe', reason?: string) =>
+    request('/api/me/availability', { method: 'POST', body: JSON.stringify({ eventId, playerId, status, reason }) }),
+  myAnnouncements: () => request('/api/me/announcements'),
+  markAnnouncementRead: (id: string) =>
+    request(`/api/me/announcements/${id}/read`, { method: 'POST' }),
+  dossier: (playerId: string) => request(`/api/me/dossier/${playerId}`),
+  development: (playerId: string) => request(`/api/me/development/${playerId}`),
+  scheduleForTeam: (teamId: string) =>
+    request(`/api/schedule?teamId=${teamId}&from=${new Date().toISOString()}`),
+};

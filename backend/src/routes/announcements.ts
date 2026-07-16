@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { canManageTeam } from '../util/scope';
+import { sendTeamPushNotification } from '../services/notifications';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -16,6 +17,8 @@ router.post('/', requireAuth, requireRole('admin', 'coach'), async (req: AuthReq
     const announcement = await prisma.announcement.create({
       data: { teamId, title, body, requiresAck: !!requiresAck, authorId: req.user!.id },
     });
+    // Push roditeljima ekipe — ne blokira odgovor
+    void sendTeamPushNotification(teamId, { title: `📣 ${title}`, body: body.slice(0, 160) });
     res.status(201).json(announcement);
   } catch (e: any) {
     res.status(500).json({ error: e?.message || 'Greška pri objavi' });

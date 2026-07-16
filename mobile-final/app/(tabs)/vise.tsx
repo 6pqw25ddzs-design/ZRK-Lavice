@@ -14,8 +14,13 @@ import DokumentiView from '../../components/sections/DokumentiView';
 import UpisView from '../../components/sections/UpisView';
 import PodrziView from '../../components/sections/PodrziView';
 import TreneriView from '../../components/sections/TreneriView';
+import PrijavaView from '../../components/sections/PrijavaView';
+import MojeView from '../../components/sections/MojeView';
+import DosijeView from '../../components/sections/DosijeView';
+import RazvojView from '../../components/sections/RazvojView';
+import { useAuth } from '../../lib/auth';
 
-type Section = 'menu' | 'tabela' | 'galerija' | 'sponzori' | 'kontakt' | 'rezultati' | 'onama' | 'dokumenti' | 'upis' | 'podrzi' | 'treneri';
+type Section = 'menu' | 'tabela' | 'galerija' | 'sponzori' | 'kontakt' | 'rezultati' | 'onama' | 'dokumenti' | 'upis' | 'podrzi' | 'treneri' | 'prijava' | 'dosije' | 'razvoj';
 
 type Item = { key: Section; label: string; desc: string; icon: any };
 type Group = { title: string; items: Item[] };
@@ -48,12 +53,19 @@ const GROUPS: Group[] = [
   },
 ];
 
-const ALL_ITEMS = GROUPS.flatMap(g => g.items);
+const EXTRA_ITEMS: Item[] = [
+  { key: 'prijava', label: 'Prijava za roditelje', desc: 'Pozivni kod, potvrde, razvoj', icon: 'key' },
+  { key: 'dosije', label: 'Dosije', desc: 'Dokumenti, saglasnosti, članarina', icon: 'folder-open' },
+  { key: 'razvoj', label: 'Razvoj', desc: 'Evaluacije, ciljevi, prekretnice', icon: 'trending-up' },
+];
+
+const ALL_ITEMS = [...GROUPS.flatMap(g => g.items), ...EXTRA_ITEMS];
 
 export default function ViseScreen() {
   const insets = useSafeAreaInsets();
   const [active, setActive] = useState<Section>('menu');
   const params = useLocalSearchParams<{ open?: string }>();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (params.open && ALL_ITEMS.some(i => i.key === params.open)) {
@@ -82,6 +94,9 @@ export default function ViseScreen() {
           {active === 'upis' && <UpisView />}
           {active === 'podrzi' && <PodrziView />}
           {active === 'treneri' && <TreneriView />}
+          {active === 'prijava' && (user ? <MojeView onOpen={sec => setActive(sec)} /> : <PrijavaView />)}
+          {active === 'dosije' && (user ? <DosijeView /> : <PrijavaView />)}
+          {active === 'razvoj' && (user ? <RazvojView /> : <PrijavaView />)}
         </View>
       </View>
     );
@@ -91,6 +106,27 @@ export default function ViseScreen() {
     <ScrollView style={s.container} contentContainerStyle={{ padding: 20, paddingTop: insets.top + 18, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
       <Text style={s.title}>Klub</Text>
       <Text style={s.subtitle}>Sve o ŽRK Lavice na jednom mjestu.</Text>
+
+      {/* MOJE — lični kutak roditelja */}
+      <View style={{ marginTop: 28 }}>
+        <Text style={s.groupTitle}>MOJE</Text>
+        <View style={s.groupCard}>
+          {(user ? EXTRA_ITEMS.map(it => it.key === 'prijava' ? { ...it, label: 'Moj kutak', desc: 'Termini, potvrde i objave', icon: 'person-circle' as any } : it) : [EXTRA_ITEMS[0]]).map((it, idx, arr) => (
+            <TouchableOpacity key={it.key} activeOpacity={0.6}
+              style={[s.row, idx < arr.length - 1 && s.rowBorder]}
+              onPress={() => setActive(it.key)}>
+              <View style={s.iconWrap}>
+                <Ionicons name={it.icon} size={19} color={Colors.primary} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={s.label}>{it.label}</Text>
+                <Text style={s.desc}>{it.desc}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={17} color="#C9C9C9" />
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
 
       {GROUPS.map(g => (
         <View key={g.title} style={{ marginTop: 28 }}>
