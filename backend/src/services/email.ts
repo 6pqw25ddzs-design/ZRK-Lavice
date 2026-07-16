@@ -2,11 +2,33 @@
 // Ako RESEND_API_KEY/NOTIFY_EMAIL nisu podešeni ili slanje padne, greška se samo loguje —
 // email nikad ne smije oboriti registraciju.
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 const FROM = process.env.NOTIFY_FROM || 'ŽRK Lavice <onboarding@resend.dev>';
 
+// Ključ i adresa se čitaju iz baze (admin Podešavanja), uz env kao fallback; keš 5 min.
+let cache: { key?: string; email?: string; at: number } = { at: 0 };
+async function getConfig() {
+  if (Date.now() - cache.at < 5 * 60 * 1000) return cache;
+  try {
+    const rows = await prisma.siteSetting.findMany({
+      where: { key: { in: ['secret_resend_api_key', 'secret_notify_email'] } },
+    });
+    const map = Object.fromEntries(rows.map(r => [r.key, r.value]));
+    cache = {
+      key: map.secret_resend_api_key || process.env.RESEND_API_KEY,
+      email: map.secret_notify_email || process.env.NOTIFY_EMAIL,
+      at: Date.now(),
+    };
+  } catch {
+    cache = { key: process.env.RESEND_API_KEY, email: process.env.NOTIFY_EMAIL, at: Date.now() };
+  }
+  return cache;
+}
+
 export async function sendNotifyEmail(subject: string, html: string): Promise<void> {
+  const { key: RESEND_API_KEY, email: NOTIFY_EMAIL } = await getConfig();
   if (!RESEND_API_KEY || !NOTIFY_EMAIL) return;
   try {
     const res = await fetch('https://api.resend.com/emails', {

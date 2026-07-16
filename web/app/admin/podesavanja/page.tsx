@@ -10,6 +10,12 @@ const FIELDS = [
   { key: 'contact_training', label: 'Termini treninga', placeholder: 'Utorak, četvrtak i petak...' },
 ];
 
+// Tajni ključevi — javni API ih nikad ne vraća, čita ih samo backend
+const SECRET_FIELDS = [
+  { key: 'secret_resend_api_key', label: 'Resend API ključ (za email obavještenja o prijavama)', placeholder: 're_...' },
+  { key: 'secret_notify_email', label: 'Email na koji stižu prijave', placeholder: 'pedjab@me.com' },
+];
+
 export default function AdminPodesavanjaPage() {
   const [form, setForm] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -21,7 +27,7 @@ export default function AdminPodesavanjaPage() {
 
   async function load() {
     try {
-      const data = await adminRequest('/api/settings', getToken());
+      const data = await adminRequest('/api/settings/all', getToken());
       setForm(data || {});
     } catch (e: any) {
       setError('Greška pri učitavanju: ' + (e?.message || ''));
@@ -56,6 +62,15 @@ export default function AdminPodesavanjaPage() {
         {loading ? <p style={{ color: 'var(--text-muted)' }}>Učitavanje...</p> : (
           <div className="flex flex-col gap-4">
             {FIELDS.map(f => (
+              <div key={f.key}>
+                <label style={{ color: 'var(--text-muted)' }} className="text-xs block mb-1">{f.label}</label>
+                <input value={form[f.key] || ''} placeholder={f.placeholder}
+                  onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+                  className={inputClass} style={inputStyle} />
+              </div>
+            ))}
+            <h2 className="text-white font-bold mt-4">Email obavještenja</h2>
+            {SECRET_FIELDS.map(f => (
               <div key={f.key}>
                 <label style={{ color: 'var(--text-muted)' }} className="text-xs block mb-1">{f.label}</label>
                 <input value={form[f.key] || ''} placeholder={f.placeholder}
