@@ -1,4 +1,5 @@
-import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { Colors, Fonts } from '../../constants/AppColors';
 
 const BASE = 'https://zrklavice.me/osnivaci';
@@ -24,7 +25,7 @@ export default function ONamaView() {
       </Text>
       {OSNIVACI.map(o => (
         <View key={o.ime} style={s.card}>
-          <Image source={{ uri: o.foto }} style={s.photo} resizeMode="cover" />
+          <Image source={{ uri: o.foto }} style={s.photo} contentFit="cover" contentPosition="top" transition={150} />
           <View style={s.body}>
             <Text style={s.name}>{o.ime}</Text>
             <Text style={s.role}>{o.uloga}</Text>
