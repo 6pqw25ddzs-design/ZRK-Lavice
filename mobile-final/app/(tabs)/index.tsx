@@ -68,7 +68,7 @@ export default function HomeScreen() {
           </FadeInView>
           <FadeInView delay={280}>
             <Text style={s.heroText}>
-              Razvojni rukometni klub za djevojčice koji vode evropske šampionke i olimpijske medaljistkinje.
+              Razvojni rukometni klub za djevojčice koji vode evropske šampionke i osvajačice jedine olimpijske medalje za Crnu Goru.
             </Text>
           </FadeInView>
           <FadeInView delay={380}>
