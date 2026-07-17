@@ -77,6 +77,11 @@ export default function AdminClanarinePage() {
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
+      {!teamId && <p style={{ color: 'var(--text-muted)' }}>Izaberi ekipu da vidiš igračice i zaduženja za izabrani mjesec.</p>}
+      {teamId && rows.length === 0 && !error && (
+        <p style={{ color: 'var(--text-muted)' }}>U ovoj ekipi nema aktivnih igračica — dodaj ih u sekciji Igrači, pa se vrati ovdje da ih zadužiš.</p>
+      )}
+
       {teamId && rows.length > 0 && (
         <>
           {charged < rows.length && (
