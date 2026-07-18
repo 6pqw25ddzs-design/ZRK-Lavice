@@ -515,15 +515,38 @@ export default async function PocetnaPage() {
       {sponsors.length > 0 && (
         <section className="py-16" style={{ backgroundColor: '#F2F2F2' }}>
           <div className="max-w-6xl mx-auto px-5 text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] mb-8" style={{ color: '#8a8a8a' }}>Partneri i sponzori</p>
-            <div className="flex flex-wrap items-center justify-center gap-8">
-              {sponsors.map((s: any) => (
-                s.logoUrl
-                  // eslint-disable-next-line @next/next/no-img-element
-                  ? <img key={s.id} src={s.logoUrl} alt={s.name} className="h-12 object-contain opacity-70 hover:opacity-100 transition-opacity" />
-                  : <span key={s.id} className="font-black text-lg" style={{ color: '#1A1A1A' }}>{s.name}</span>
-              ))}
-            </div>
+            {/* Zlatni = generalni sponzor: izdvojen, krupan prikaz */}
+            {sponsors.filter((s: any) => s.level === 'gold').length > 0 && (
+              <div className="mb-4">
+                <p className="text-xs font-bold uppercase tracking-[0.25em] mb-8" style={{ color: 'var(--gold, #A8860B)' }}>Generalni sponzor</p>
+                <div className="flex flex-wrap items-center justify-center gap-14">
+                  {sponsors.filter((s: any) => s.level === 'gold').map((s: any) => (
+                    <a key={s.id} href={s.websiteUrl || '#'} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex flex-col items-center gap-4 group">
+                      {s.logoUrl
+                        // eslint-disable-next-line @next/next/no-img-element
+                        ? <img src={s.logoUrl} alt={s.name} className="h-28 md:h-36 object-contain transition-transform group-hover:scale-105" />
+                        : null}
+                      <span className="font-black text-xl md:text-2xl" style={{ color: '#1A1A1A' }}>{s.name}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Ostali partneri */}
+            {sponsors.filter((s: any) => s.level !== 'gold').length > 0 && (
+              <div className="mt-12">
+                <p className="text-xs font-bold uppercase tracking-[0.25em] mb-8" style={{ color: '#8a8a8a' }}>Partneri i sponzori</p>
+                <div className="flex flex-wrap items-center justify-center gap-8">
+                  {sponsors.filter((s: any) => s.level !== 'gold').map((s: any) => (
+                    s.logoUrl
+                      // eslint-disable-next-line @next/next/no-img-element
+                      ? <img key={s.id} src={s.logoUrl} alt={s.name} className="h-12 object-contain opacity-70 hover:opacity-100 transition-opacity" />
+                      : <span key={s.id} className="font-black text-lg" style={{ color: '#1A1A1A' }}>{s.name}</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
       )}
