@@ -37,7 +37,7 @@ export default function PremiumHeader() {
         <a href="#top" className="flex items-center gap-2.5 shrink-0">
           <Image src="/logo.png" alt="ŽRK Lavice Podgorica" width={40} height={40} className="object-contain" />
           <span className="font-black text-lg tracking-tight text-white">
-            ŽRK <span style={{ color: '#C41230' }}>Lavice</span>
+            ŽRK <span style={{ color: '#C41230' }}>Lavice</span>-UDG
           </span>
         </a>
 

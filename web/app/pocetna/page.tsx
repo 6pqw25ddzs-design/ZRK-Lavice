@@ -6,7 +6,7 @@ import { getSponsors, getSettings, getTeams, getPlayers, getSchedule, getNews, g
 
 export const revalidate = 60;
 export const metadata = {
-  title: 'ŽRK Lavice Podgorica — Stvaramo nove lavice',
+  title: 'ŽRK Lavice-UDG Podgorica — Stvaramo nove lavice',
   description: 'Razvojni ženski rukometni klub za djevojčice u Podgorici, osnovan od strane evropskih šampionki i olimpijskih medaljistkinja.',
 };
 
@@ -646,7 +646,7 @@ export default async function PocetnaPage() {
             </div>
           </div>
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3" style={{ borderTop: '1px solid #262626' }}>
-            <span className="text-sm text-white/40">© 2026 ŽRK Lavice Podgorica</span>
+            <span className="text-sm text-white/40">© 2026 ŽRK Lavice-UDG Podgorica</span>
             <span className="text-xs text-white/30">Podgorica, Crna Gora</span>
           </div>
         </div>

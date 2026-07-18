@@ -17,7 +17,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ZRK Lavice",
+  title: "ŽRK Lavice-UDG",
   description: "Ženski rukometni klub Lavice – Podgorica, Crna Gora",
 };
 

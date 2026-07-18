@@ -53,7 +53,7 @@ export default function Navbar() {
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <Image src="/logo.png" alt="ŽRK Lavice" width={40} height={40} className="object-contain" />
           <span style={{ color: 'var(--primary)' }} className="text-2xl font-black">ŽRK</span>
-          <span className="text-white font-bold text-xl">Lavice</span>
+          <span className="text-white font-bold text-xl">Lavice-UDG</span>
         </Link>
 
         {/* Desktop */}
