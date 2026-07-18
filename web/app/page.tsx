@@ -8,7 +8,7 @@ const LAUNCH_AT = new Date('2026-07-16T10:00:00+02:00').getTime();
 export const revalidate = 60;
 
 export const metadata = {
-  title: 'ŽRK Lavice Podgorica — Stvaramo nove lavice',
+  title: 'ŽRK Lavice-UDG Podgorica — Stvaramo nove lavice',
   description: 'Razvojni ženski rukometni klub za djevojčice u Podgorici, osnovan od strane evropskih šampionki i olimpijskih medaljistkinja.',
 };
 
