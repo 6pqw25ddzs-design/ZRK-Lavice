@@ -25,9 +25,19 @@ export default async function VijestPage({ params }: { params: Promise<{ slug: s
       )}
 
       {article.body && (
-        <div style={{ color: 'var(--text-muted)' }} className="leading-relaxed whitespace-pre-wrap text-lg">
-          {article.body}
-        </div>
+        /<[a-z][\s\S]*>/i.test(article.body) ? (
+          // HTML sadržaj iz editora (backend ga sanitizuje pri upisu)
+          <div
+            style={{ color: 'var(--text-muted)' }}
+            className="news-body leading-relaxed text-lg"
+            dangerouslySetInnerHTML={{ __html: article.body }}
+          />
+        ) : (
+          // Stare vijesti pisane kao čist tekst
+          <div style={{ color: 'var(--text-muted)' }} className="leading-relaxed whitespace-pre-wrap text-lg">
+            {article.body}
+          </div>
+        )
       )}
 
       {article.tags?.length > 0 && (

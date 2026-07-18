@@ -5,6 +5,19 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '../constants/AppColors';
 import { getNewsBySlug } from '../lib/api';
 
+// Vijesti iz WYSIWYG editora stižu kao HTML — pretvori u čitljiv tekst
+// (novi redovi za pasuse/liste, bez tagova). Puni HTML prikaz stiže uz sljedeći build.
+function htmlToText(html: string): string {
+  if (!/<[a-z][\s\S]*>/i.test(html)) return html;
+  return html
+    .replace(/<\s*(br|\/p|\/h2|\/h3|\/li|\/blockquote)[^>]*>/gi, '\n')
+    .replace(/<\s*li[^>]*>/gi, '• ')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 export default function VijestDetailView({ slug, onBack }: { slug: string; onBack: () => void }) {
   const insets = useSafeAreaInsets();
   const [article, setArticle] = useState<any>(null);
@@ -45,7 +58,7 @@ export default function VijestDetailView({ slug, onBack }: { slug: string; onBac
             </View>
             <Text style={s.title}>{article.title}</Text>
             <Text style={s.date}>{new Date(article.publishedAt).toLocaleDateString('sr-Latn-ME')}</Text>
-            {!!article.body && <Text style={s.body}>{article.body}</Text>}
+            {!!article.body && <Text style={s.body}>{htmlToText(article.body)}</Text>}
           </View>
         </ScrollView>
       )}

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { adminRequest } from '@/lib/auth';
+import RichEditor from '@/components/RichEditor';
 
 type Article = { id: string; title: string; body?: string; coverUrl?: string; publishedAt: string; };
 
@@ -93,13 +94,10 @@ export default function AdminVijestiPage() {
             style={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', color: 'white' }}
             className="px-4 py-2 rounded-lg outline-none focus:border-red-600"
           />
-          <textarea
-            placeholder="Tekst vijesti..."
+          <RichEditor
             value={form.body}
-            onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
-            rows={5}
-            style={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', color: 'white' }}
-            className="px-4 py-2 rounded-lg outline-none focus:border-red-600 resize-none"
+            onChange={html => setForm(f => ({ ...f, body: html }))}
+            placeholder="Tekst vijesti — koristi alatke iznad za naslove, podebljano, liste, linkove i slike"
           />
           <input
             placeholder="Link na sliku (https://...) — opciono"

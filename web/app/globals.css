@@ -53,3 +53,15 @@ h1, h2, h3, h4, h5, h6 {
 .t-d5 { animation-delay: 0.7s; }
 .t-glow { animation: teaserGlow 5s ease-in-out infinite; }
 .t-float { animation: teaserFloat 6s ease-in-out infinite; }
+
+/* HTML sadržaj vijesti (iz WYSIWYG editora) */
+.news-body h2 { font-size: 1.5rem; font-weight: 800; color: white; margin: 1.2em 0 0.5em; }
+.news-body h3 { font-size: 1.2rem; font-weight: 700; color: white; margin: 1em 0 0.4em; }
+.news-body p { margin: 0.7em 0; }
+.news-body ul { list-style: disc; padding-left: 1.5em; margin: 0.7em 0; }
+.news-body ol { list-style: decimal; padding-left: 1.5em; margin: 0.7em 0; }
+.news-body a { color: #E8546F; text-decoration: underline; }
+.news-body a:hover { color: #C41230; }
+.news-body img { max-width: 100%; border-radius: 12px; margin: 1em 0; }
+.news-body blockquote { border-left: 3px solid #C41230; padding-left: 1em; margin: 1em 0; font-style: italic; }
+.news-body strong, .news-body b { color: white; }

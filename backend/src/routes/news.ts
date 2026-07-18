@@ -2,9 +2,25 @@ import { Router, Response } from 'express';
 import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
+import sanitizeHtml from 'sanitize-html';
 
 const router = Router();
 const prisma = new PrismaClient();
+
+// HTML tijela vijesti: dozvoljeni samo bezbjedni tagovi (protiv XSS-a)
+function cleanBody(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'img', 'blockquote'],
+    allowedAttributes: {
+      a: ['href', 'target', 'rel'],
+      img: ['src', 'alt'],
+    },
+    allowedSchemes: ['https', 'http', 'mailto'],
+    transformTags: {
+      a: sanitizeHtml.simpleTransform('a', { target: '_blank', rel: 'noopener noreferrer' }),
+    },
+  });
+}
 
 const articleSchema = z.object({
   title: z.string().min(3),
@@ -54,6 +70,7 @@ router.post('/', requireAuth, requireRole('admin', 'coach'), async (req: AuthReq
     const article = await prisma.newsArticle.create({
       data: {
         ...parse.data,
+        body: cleanBody(parse.data.body),
         authorId: req.user!.id,
         publishedAt: parse.data.isPublished ? new Date() : null,
       } as any,
@@ -74,6 +91,7 @@ router.patch('/:id', requireAuth, requireRole('admin', 'coach'), async (req: Aut
       where: { id: req.params.id },
       data: {
         ...req.body,
+        ...(typeof req.body.body === 'string' ? { body: cleanBody(req.body.body) } : {}),
         publishedAt: req.body.isPublished && !current.publishedAt ? new Date() : current.publishedAt,
       },
     });
