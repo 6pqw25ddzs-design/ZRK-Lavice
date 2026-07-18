@@ -94,7 +94,7 @@ router.get('/announcements', requireAuth, async (req: AuthRequest, res: Response
       where: { teamId: { in: teamIds } },
       include: {
         team: { select: { name: true } },
-        author: { select: { fullName: true } },
+        author: { select: { fullName: true, role: true } },
         reads: { where: { userId: req.user!.id }, select: { readAt: true } },
       },
       orderBy: { createdAt: 'desc' },
@@ -102,7 +102,10 @@ router.get('/announcements', requireAuth, async (req: AuthRequest, res: Response
     });
     res.json(items.map(a => ({
       id: a.id, teamName: a.team.name, title: a.title, body: a.body,
-      requiresAck: a.requiresAck, author: a.author.fullName, createdAt: a.createdAt,
+      // Objave uprave se potpisuju imenom kluba; treneri svojim imenom
+      requiresAck: a.requiresAck,
+      author: a.author.role === 'admin' ? 'ŽRK Lavice-UDG' : a.author.fullName,
+      createdAt: a.createdAt,
       readAt: a.reads[0]?.readAt ?? null,
     })));
   } catch (e: any) {
