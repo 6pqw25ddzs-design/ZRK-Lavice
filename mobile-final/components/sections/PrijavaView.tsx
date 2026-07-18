@@ -19,11 +19,14 @@ export default function PrijavaView() {
 
   async function submit() {
     setError('');
-    if (!email || password.length < 8 || (mode === 'activate' && (!code || !fullName))) {
-      setError(mode === 'activate'
-        ? 'Popunite kod, ime, email i lozinku (najmanje 8 znakova).'
-        : 'Unesite email i lozinku (najmanje 8 znakova).');
-      return;
+    if (mode === 'activate' && (!code.trim() || !fullName.trim())) {
+      setError('Unesite pozivni kod i ime i prezime.'); return;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
+      setError('Unesite ispravnu email adresu (npr. ime@gmail.com).'); return;
+    }
+    if (password.length < 8) {
+      setError('Lozinka mora imati najmanje 8 znakova.'); return;
     }
     setBusy(true);
     try {

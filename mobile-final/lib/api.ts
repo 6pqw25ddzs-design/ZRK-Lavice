@@ -16,7 +16,21 @@ async function request(path: string, options: RequestInit = {}) {
     let msg = `HTTP ${res.status}`;
     try {
       const d = await res.json();
-      msg = (typeof d.error === 'string' ? d.error : d.error?.formErrors?.join?.(', ')) || d.message || msg;
+      if (typeof d.error === 'string') {
+        msg = d.error;
+      } else if (d.error && typeof d.error === 'object') {
+        // zod flatten(): { formErrors: [], fieldErrors: { email: [...], ... } }
+        const FIELD_LABELS: Record<string, string> = {
+          email: 'Email', password: 'Lozinka', fullName: 'Ime i prezime', code: 'Pozivni kod', phone: 'Telefon',
+        };
+        const parts: string[] = [...(d.error.formErrors || [])];
+        for (const [field, errs] of Object.entries(d.error.fieldErrors || {})) {
+          if (Array.isArray(errs) && errs.length) parts.push(`${FIELD_LABELS[field] || field} nije ispravno unesen`);
+        }
+        msg = parts.join(' · ') || d.message || msg;
+      } else {
+        msg = d.message || msg;
+      }
     } catch {}
     throw new Error(msg);
   }
