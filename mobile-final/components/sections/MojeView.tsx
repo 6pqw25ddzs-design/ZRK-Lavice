@@ -152,8 +152,15 @@ export default function MojeView({ onOpen }: { onOpen: (section: 'dosije' | 'raz
         </View>
       ))}
 
-      <TouchableOpacity onPress={() => logout()} style={s.logout}>
-        <Ionicons name="log-out-outline" size={16} color="#9a9a9a" />
+      <TouchableOpacity
+        onPress={() => {
+          Alert.alert('Odjava', `Odjaviti nalog ${user?.email}?`, [
+            { text: 'Otkaži', style: 'cancel' },
+            { text: 'Odjavi se', style: 'destructive', onPress: () => logout() },
+          ]);
+        }}
+        style={s.logout} activeOpacity={0.7} hitSlop={12}>
+        <Ionicons name="log-out-outline" size={18} color={Colors.primary} />
         <Text style={s.logoutText}>Odjavi se ({user?.email})</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -213,6 +220,10 @@ const s = StyleSheet.create({
     alignItems: 'center', marginTop: 10,
   },
   ackBtnText: { color: Colors.primary, fontSize: 13, fontFamily: Fonts.bodyBold },
-  logout: { flexDirection: 'row', gap: 6, alignItems: 'center', justifyContent: 'center', marginTop: 26 },
-  logoutText: { color: '#9a9a9a', fontSize: 13, fontFamily: Fonts.body },
+  logout: {
+    flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center',
+    marginTop: 26, paddingVertical: 13, borderRadius: 999,
+    borderWidth: 1, borderColor: 'rgba(200,16,46,0.35)', backgroundColor: '#FFFFFF',
+  },
+  logoutText: { color: Colors.primary, fontSize: 14, fontFamily: Fonts.bodyBold },
 });
