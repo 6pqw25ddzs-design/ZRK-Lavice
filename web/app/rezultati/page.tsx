@@ -18,7 +18,7 @@ export default async function RezultatiPage() {
               <div>
                 <div className="text-white font-semibold">{r.event?.title}</div>
                 <div style={{ color: 'var(--text-muted)' }} className="text-sm mt-1">
-                  {r.event?.startsAt && new Date(r.event.startsAt).toLocaleDateString('sr-Latn-ME', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {r.event?.startsAt && new Date(r.event.startsAt).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric', month: 'long', year: 'numeric' })}
                   {r.event?.team?.name && ` · ${r.event.team.name}`}
                 </div>
                 {r.notes && <div style={{ color: 'var(--text-muted)' }} className="text-sm mt-1">{r.notes}</div>}

@@ -292,9 +292,9 @@ export default async function PocetnaPage() {
                   <div key={e.id} className="flex gap-4 md:gap-6">
                     {/* Timeline kolona */}
                     <div className="flex flex-col items-center w-12 shrink-0">
-                      <div className="text-2xl font-black leading-none" style={{ color: '#1A1A1A' }}>{d.getDate()}</div>
+                      <div className="text-2xl font-black leading-none" style={{ color: '#1A1A1A' }}>{Number(d.toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric' }).replace(/\D/g, ''))}</div>
                       <div className="text-[10px] font-bold uppercase tracking-widest mt-0.5" style={{ color: '#a0a0a0' }}>
-                        {d.toLocaleDateString('sr-Latn-ME', { month: 'short' }).replace('.', '')}
+                        {d.toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', month: 'short' }).replace('.', '')}
                       </div>
                       <span className="w-2.5 h-2.5 rounded-full mt-2" style={{ backgroundColor: accent }} />
                       {i < upcoming.length - 1 && <span className="flex-1 w-px my-1" style={{ backgroundColor: '#E5E5E5' }} />}
@@ -305,7 +305,7 @@ export default async function PocetnaPage() {
                       <div className="p-4 md:p-5 flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-3">
                           <span className="font-black" style={{ color: '#1A1A1A' }}>
-                            {d.toLocaleTimeString('sr-Latn-ME', { hour: '2-digit', minute: '2-digit' })}
+                            {d.toLocaleTimeString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', hour: '2-digit', minute: '2-digit' })}
                           </span>
                           <span className="text-[10.5px] font-bold px-2.5 py-1 rounded-full"
                             style={{ backgroundColor: isMatch ? 'rgba(196,18,48,0.09)' : 'rgba(212,172,13,0.13)', color: isMatch ? '#C41230' : '#A8860B' }}>
@@ -357,7 +357,7 @@ export default async function PocetnaPage() {
                       <span className="inline-block text-[10px] font-bold tracking-[0.15em] text-white px-3 py-1.5 rounded-full mb-4" style={{ backgroundColor: '#C41230' }}>NAJNOVIJE</span>
                       <h3 className="text-2xl md:text-[2rem] font-black text-white leading-tight">{featured.title}</h3>
                       <div className="text-sm mt-3" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                        {new Date(featured.publishedAt).toLocaleDateString('sr-Latn-ME', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        {new Date(featured.publishedAt).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric', month: 'long', year: 'numeric' })}
                       </div>
                     </div>
                   </Link>
@@ -371,7 +371,7 @@ export default async function PocetnaPage() {
                         <div className="flex-1 min-w-0">
                           {a.tags?.[0] && <div className="text-[10.5px] font-bold tracking-widest mb-1.5" style={{ color: '#C41230' }}>{String(a.tags[0]).toUpperCase()}</div>}
                           <h3 className="font-black leading-snug group-hover:underline" style={{ color: '#1A1A1A' }}>{a.title}</h3>
-                          <div className="text-xs mt-2" style={{ color: '#9a9a9a' }}>{new Date(a.publishedAt).toLocaleDateString('sr-Latn-ME', { day: 'numeric', month: 'long' })}</div>
+                          <div className="text-xs mt-2" style={{ color: '#9a9a9a' }}>{new Date(a.publishedAt).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric', month: 'long' })}</div>
                         </div>
                         <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0" style={{ backgroundColor: '#F2F2F2' }}>
                           {a.coverUrl ? (

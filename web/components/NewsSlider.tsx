@@ -41,7 +41,7 @@ export default function NewsSlider({ articles }: { articles: Article[] }) {
               )}
               <h3 className="text-white font-black text-2xl md:text-4xl leading-tight max-w-3xl">{a.title}</h3>
               <div style={{ color: 'rgba(255,255,255,0.7)' }} className="text-sm mt-3">
-                {new Date(a.publishedAt).toLocaleDateString('sr-Latn-ME', { day: 'numeric', month: 'long', year: 'numeric' })}
+                {new Date(a.publishedAt).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric', month: 'long', year: 'numeric' })}
               </div>
             </div>
           </Link>

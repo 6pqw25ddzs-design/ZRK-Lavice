@@ -17,7 +17,7 @@ export default async function VijestiPage() {
             <Link key={a.id} href={`/vijesti/${a.slug}`}
               style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
               className="rounded-xl p-6 block hover:border-red-800 transition-colors">
-              <div style={{ color: 'var(--text-muted)' }} className="text-xs mb-2">{new Date(a.publishedAt).toLocaleDateString('sr-Latn-ME', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+              <div style={{ color: 'var(--text-muted)' }} className="text-xs mb-2">{new Date(a.publishedAt).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric', month: 'long', year: 'numeric' })}</div>
               <h2 className="text-white font-black text-xl mb-3">{a.title}</h2>
               {a.body && <p style={{ color: 'var(--text-muted)' }} className="leading-relaxed line-clamp-3">{a.body}</p>}
               {a.tags?.length > 0 && (

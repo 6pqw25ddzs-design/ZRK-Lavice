@@ -15,7 +15,7 @@ export default async function VijestPage({ params }: { params: Promise<{ slug: s
       <Link href="/vijesti" style={{ color: 'var(--primary)' }} className="text-sm font-medium hover:underline">← Sve vijesti</Link>
 
       <div style={{ color: 'var(--text-muted)' }} className="text-sm mt-6 mb-2">
-        {new Date(article.publishedAt).toLocaleDateString('sr-Latn-ME', { day: 'numeric', month: 'long', year: 'numeric' })}
+        {new Date(article.publishedAt).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric', month: 'long', year: 'numeric' })}
       </div>
       <h1 className="text-3xl md:text-4xl font-black text-white mb-6 leading-tight">{article.title}</h1>
 
