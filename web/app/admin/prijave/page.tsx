@@ -19,6 +19,25 @@ export default function AdminPrijavePage() {
 
   function getToken() { return localStorage.getItem('admin_token') || ''; }
 
+  // Izvoz svih prijava u CSV (Excel ga otvara direktno; BOM zbog naših slova)
+  function exportCsv() {
+    const rows = [
+      ['Dijete', 'Godište', 'Roditelj', 'Telefon', 'Email', 'Status', 'Napomena', 'Datum prijave'],
+      ...regs.map(r => [
+        r.childName, String(r.birthYear), r.parentName, r.parentPhone, r.parentEmail,
+        STATUS_LABEL[r.status] || r.status, r.notes || '',
+        new Date(r.createdAt).toLocaleString('sr-Latn-ME', { timeZone: 'Europe/Podgorica' }),
+      ]),
+    ];
+    const csv = rows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';')).join('\r\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `prijave-zrk-lavice-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
   async function load() {
     try {
       const data = await adminRequest('/api/registrations', getToken());
@@ -53,7 +72,16 @@ export default function AdminPrijavePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black text-white mb-6">Prijave za upis</h1>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <h1 className="text-2xl font-black text-white">Prijave za upis</h1>
+        {regs.length > 0 && (
+          <button onClick={exportCsv}
+            style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+            className="px-4 py-2 rounded-lg text-sm hover:text-white transition-colors">
+            ⬇️ Izvezi za Excel ({regs.length})
+          </button>
+        )}
+      </div>
       {error && <p style={{ color: 'var(--primary)' }} className="text-sm mb-4">{error}</p>}
 
       {loading ? <p style={{ color: 'var(--text-muted)' }}>Učitavanje...</p> : (
