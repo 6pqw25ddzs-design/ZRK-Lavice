@@ -19,8 +19,9 @@ const SECRET_FIELDS = [
 
 export default function AdminPodesavanjaPage() {
   const [form, setForm] = useState<Record<string, string>>({});
-  const [userForm, setUserForm] = useState({ email: '', fullName: '', password: '', role: 'admin' });
+  const [userForm, setUserForm] = useState({ email: '', fullName: '', password: '', role: 'admin', teamId: '' });
   const [userMsg, setUserMsg] = useState('');
+  const [teams, setTeams] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
@@ -39,7 +40,10 @@ export default function AdminPodesavanjaPage() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    adminRequest('/api/teams', getToken()).then(setTeams).catch(() => {});
+  }, []);
 
   async function handleSave() {
     setSaving(true); setError(''); setMsg('');
@@ -58,10 +62,16 @@ export default function AdminPodesavanjaPage() {
     if (!userForm.email || !userForm.fullName || userForm.password.length < 8) {
       setUserMsg('Popunite sva polja (lozinka najmanje 8 znakova)'); return;
     }
+    if (userForm.role === 'coach' && !userForm.teamId) {
+      setUserMsg('Izaberite ekipu za trenera'); return;
+    }
     try {
-      const u = await adminRequest('/api/auth/users', getToken(), { method: 'POST', body: JSON.stringify(userForm) });
+      const payload: Record<string, string> = { ...userForm };
+      if (payload.role !== 'coach') delete payload.teamId;
+      if (!payload.teamId) delete payload.teamId;
+      const u = await adminRequest('/api/auth/users', getToken(), { method: 'POST', body: JSON.stringify(payload) });
       setUserMsg(`✓ Nalog kreiran: ${u.email} (${u.role === 'admin' ? 'administrator' : 'trener'})`);
-      setUserForm({ email: '', fullName: '', password: '', role: 'admin' });
+      setUserForm({ email: '', fullName: '', password: '', role: 'admin', teamId: '' });
     } catch (e: any) {
       setUserMsg('Greška: ' + (e?.message || ''));
     }
@@ -120,6 +130,13 @@ export default function AdminPodesavanjaPage() {
             <option value="admin">Administrator (pun pristup)</option>
             <option value="coach">Trener (svoja ekipa: prisustvo, objave, razvoj)</option>
           </select>
+          {userForm.role === 'coach' && (
+            <select value={userForm.teamId} onChange={e => setUserForm(p => ({ ...p, teamId: e.target.value }))}
+              className={inputClass} style={inputStyle}>
+              <option value="">— Ekipa trenera —</option>
+              {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          )}
           {userMsg && <p className="text-sm" style={{ color: userMsg.startsWith('✓') ? '#22c55e' : 'var(--primary)' }}>{userMsg}</p>}
           <button onClick={handleCreateUser}
             style={{ backgroundColor: 'var(--primary)' }}

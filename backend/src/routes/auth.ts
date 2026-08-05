@@ -31,6 +31,7 @@ const createUserSchema = z.object({
   fullName: z.string().min(2),
   role: z.enum(['admin', 'coach']),
   phone: z.string().optional(),
+  teamId: z.string().uuid().optional(),
 });
 
 function signToken(id: string, role: string) {
@@ -98,7 +99,10 @@ router.post('/users', requireAuth, requireRole('admin'), async (req: AuthRequest
   try {
     const parse = createUserSchema.safeParse(req.body);
     if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
-    const { email, password, fullName, role, phone } = parse.data;
+    const { email, password, fullName, role, phone, teamId } = parse.data;
+    if (role === 'coach' && !teamId) {
+      return res.status(400).json({ error: 'Trenerski nalog mora biti vezan za ekipu (teamId)' });
+    }
 
     const exists = await prisma.user.findUnique({ where: { email } });
     if (exists) return res.status(409).json({ error: 'Nalog sa ovim emailom već postoji' });
@@ -108,6 +112,10 @@ router.post('/users', requireAuth, requireRole('admin'), async (req: AuthRequest
       data: { email, passwordHash, fullName, phone, role },
       select: { id: true, email: true, fullName: true, role: true },
     });
+    // Veza trener → ekipa (osnov za scope: trener vidi samo svoju ekipu)
+    if (role === 'coach' && teamId) {
+      await prisma.coach.create({ data: { userId: user.id, teamId } });
+    }
     res.status(201).json(user);
   } catch (e: any) {
     res.status(500).json({ error: e?.message || 'Greška pri kreiranju naloga' });

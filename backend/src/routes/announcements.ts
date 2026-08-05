@@ -32,8 +32,14 @@ router.get('/', requireAuth, requireRole('admin', 'coach'), async (req: AuthRequ
     if (teamId && !(await canManageTeam(req.user!, String(teamId)))) {
       return res.status(403).json({ error: 'Nemate pristup ovoj ekipi' });
     }
+    // Trener bez filtera vidi samo objave svoje ekipe
+    let where: Record<string, unknown> = teamId ? { teamId: String(teamId) } : {};
+    if (!teamId && req.user!.role === 'coach') {
+      const coach = await prisma.coach.findUnique({ where: { userId: req.user!.id } });
+      where = { teamId: coach?.teamId ?? '__none__' };
+    }
     const items = await prisma.announcement.findMany({
-      where: teamId ? { teamId: String(teamId) } : {},
+      where,
       include: {
         team: { select: { name: true } },
         author: { select: { fullName: true } },

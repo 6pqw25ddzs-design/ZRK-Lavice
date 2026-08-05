@@ -16,10 +16,10 @@ export default function AdminLoginPage() {
     setLoading(true);
     try {
       const { token, user } = await adminLogin(email, password);
-      if (user.role !== 'admin') throw new Error('Nemate admin pristup');
+      if (user.role !== 'admin' && user.role !== 'coach') throw new Error('Nemate pristup panelu');
       localStorage.setItem('admin_token', token);
       localStorage.setItem('admin_user', JSON.stringify(user));
-      router.push('/admin');
+      router.push(user.role === 'coach' ? '/admin/prisustvo' : '/admin');
     } catch (err: any) {
       setError(err.message);
     } finally {

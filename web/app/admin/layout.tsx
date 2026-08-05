@@ -24,6 +24,9 @@ const navItems = [
   { href: '/admin/podesavanja', label: 'Podešavanja', icon: '⚙️' },
 ];
 
+// Trener vidi samo operativu svoje ekipe (API dodatno štiti svaku rutu)
+const COACH_ROUTES = ['/admin/prisustvo', '/admin/objave', '/admin/razvoj'];
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -37,7 +40,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.push('/admin/login');
       return;
     }
-    setUser(JSON.parse(u));
+    const parsed = JSON.parse(u);
+    // Trenera preusmjeri sa stranica koje mu nisu dostupne
+    if (parsed.role === 'coach' && !COACH_ROUTES.includes(pathname)) {
+      router.push('/admin/prisustvo');
+      return;
+    }
+    setUser(parsed);
   }, [pathname, router]);
 
   if (pathname === '/admin/login') return <>{children}</>;
@@ -55,11 +64,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside style={{ backgroundColor: 'var(--card)', borderRight: '1px solid var(--border)' }} className="w-56 flex flex-col">
         <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
           <div style={{ color: 'var(--primary)' }} className="font-black text-lg">ŽRK Lavice</div>
-          <div style={{ color: 'var(--text-muted)' }} className="text-xs mt-1">Admin panel</div>
+          <div style={{ color: 'var(--text-muted)' }} className="text-xs mt-1">
+            {user.role === 'coach' ? 'Trenerski panel' : 'Admin panel'}
+          </div>
         </div>
 
         <nav className="flex-1 p-3 flex flex-col gap-1">
-          {navItems.map(item => (
+          {(user.role === 'coach' ? navItems.filter(i => COACH_ROUTES.includes(i.href)) : navItems).map(item => (
             <Link key={item.href} href={item.href}
               className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
               style={{

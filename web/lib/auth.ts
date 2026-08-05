@@ -19,13 +19,19 @@ export async function adminRequest(path: string, token: string, options: Request
       ...options.headers,
     },
   });
-  if (res.status === 401 || res.status === 403) {
-    // Istekao/nevažeći token — vrati na prijavu
+  if (res.status === 401) {
+    // Istekao/nevažeći token — vrati na prijavu (403 = nema dozvolu, NE odjavljujemo)
     if (typeof window !== 'undefined') {
       localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
       window.location.href = '/admin/login';
     }
     throw new Error('Sesija je istekla — prijavite se ponovo');
+  }
+  if (res.status === 403) {
+    let msg = 'Nemate dozvolu za ovu radnju';
+    try { const d = await res.json(); msg = d.error || msg; } catch {}
+    throw new Error(msg);
   }
   if (!res.ok) {
     let msg = `HTTP ${res.status}`;
