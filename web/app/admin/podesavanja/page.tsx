@@ -8,6 +8,9 @@ const FIELDS = [
   { key: 'contact_location', label: 'Naziv lokacije', placeholder: 'SC Morača' },
   { key: 'contact_address', label: 'Adresa', placeholder: 'Ulica Moskovska bb, Podgorica' },
   { key: 'contact_training', label: 'Termini treninga', placeholder: 'Utorak, četvrtak i petak...' },
+  { key: 'donation_recipient', label: 'Donacije — naziv primaoca', placeholder: 'ŽRK Lavice-UDG' },
+  { key: 'donation_iban', label: 'Donacije — žiro račun / IBAN', placeholder: '510-XXXXX-XX' },
+  { key: 'donation_bank', label: 'Donacije — banka', placeholder: 'CKB / NLB / ...' },
 ];
 
 // Tajni ključevi — javni API ih nikad ne vraća, čita ih samo backend

@@ -10,6 +10,7 @@ const LINKS = [
   { href: '#vijesti', label: 'Vijesti' },
   { href: '#osnivaci', label: 'Osnivači' },
   { href: '#treneri', label: 'Treneri' },
+  { href: '/podrzi-nas', label: 'Podrži klub' },
   { href: '#kontakt', label: 'Kontakt' },
 ];
 

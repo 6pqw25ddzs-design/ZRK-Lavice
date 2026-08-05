@@ -511,6 +511,27 @@ export default async function PocetnaPage() {
         </div>
       </section>
 
+      {/* PODRŽI KLUB */}
+      <section className="py-16 md:py-20" style={{ background: 'linear-gradient(135deg, #141414 0%, #3a0e16 100%)' }}>
+        <div className="max-w-6xl mx-auto px-5 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] mb-4" style={{ color: '#D4AC0D' }}>Budite dio priče</p>
+          <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">Podržite Lavice</h2>
+          <p className="mt-4 text-lg max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.75)' }}>
+            Donacijom ili ulaskom u sponzorski pool direktno pomažete razvoj mladih rukometašica.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-4 justify-center">
+            <Link href="/podrzi-nas" style={{ backgroundColor: '#C41230' }}
+              className="px-8 py-3.5 rounded-full text-white font-bold hover:brightness-110 transition-all">
+              Doniraj klubu
+            </Link>
+            <Link href="/podrzi-nas" style={{ border: '1.5px solid rgba(255,255,255,0.5)', color: '#fff' }}
+              className="px-8 py-3.5 rounded-full font-bold hover:bg-white/10 transition-all">
+              Sponzorski pool →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* PARTNERI */}
       {sponsors.length > 0 && (
         <section className="py-16" style={{ backgroundColor: '#F2F2F2' }}>
