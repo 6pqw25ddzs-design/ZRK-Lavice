@@ -48,7 +48,7 @@ export default function Navbar() {
     `text-sm font-medium transition-colors ${pathname === href ? 'text-red-600' : 'text-gray-400 hover:text-white'}`;
 
   return (
-    <nav style={{ backgroundColor: 'var(--card)', borderBottom: '1px solid var(--border)' }} className="sticky top-0 z-50">
+    <nav style={{ backgroundColor: 'var(--card)', borderBottom: '1px solid var(--border)' }} className="global-nav sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <Image src="/logo.png" alt="ŽRK Lavice" width={40} height={40} className="object-contain" />
