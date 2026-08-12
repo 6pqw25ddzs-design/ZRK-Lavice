@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import { Colors, Fonts } from '../../constants/AppColors';
+import { getSettings } from '../../lib/api';
 
 const REASONS = [
   { icon: '🏐', title: 'Oprema', desc: 'Lopte, dresovi, štitnici i ostala oprema za treninge i utakmice.' },
@@ -7,15 +9,20 @@ const REASONS = [
   { icon: '🏟️', title: 'Dvorane', desc: 'Iznajmljivanje prostora za treninge i razvoj kluba.' },
 ];
 
-const PAYMENT = [
-  { label: 'Naziv primaoca', value: 'ŽRK Lavice' },
-  { label: 'IBAN', value: 'Uskoro dostupno' },
-  { label: 'BIC / SWIFT', value: 'Uskoro dostupno' },
-  { label: 'Banka', value: 'Uskoro dostupno' },
-  { label: 'Svrha uplate', value: 'Donacija — ŽRK Lavice' },
-];
-
 export default function PodrziView() {
+  const [settings, setSettings] = useState<Record<string, string>>({});
+  useEffect(() => {
+    getSettings().then(s => setSettings(s || {})).catch(() => {});
+  }, []);
+
+  // Isti izvor kao sajt: admin Podešavanja
+  const PAYMENT = [
+    { label: 'Naziv primaoca', value: settings.donation_recipient || 'ŽRK Lavice-UDG' },
+    { label: 'Žiro račun / IBAN', value: settings.donation_iban || 'Uskoro dostupno' },
+    { label: 'Banka', value: settings.donation_bank || 'Uskoro dostupno' },
+    { label: 'Svrha uplate', value: 'Donacija — ŽRK Lavice-UDG' },
+  ];
+
   return (
     <ScrollView style={s.container} contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
       <Text style={s.intro}>
