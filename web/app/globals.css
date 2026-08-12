@@ -69,3 +69,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Naslovna (#top wrapper) ima svoj header/footer — globalne sakrij i bez JS-a (protiv duplog hedera pri hidraciji) */
 body:has(#top) .global-nav,
 body:has(#top) .global-footer { display: none; }
+
+/* Osigurač: ako hidracija ikad duplira globalni header/footer (Safari keš), višak se ne prikazuje */
+.global-nav ~ .global-nav,
+.global-footer ~ .global-footer { display: none; }
