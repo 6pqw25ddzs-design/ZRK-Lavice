@@ -45,7 +45,21 @@ router.get('/:id', async (req, res) => {
       },
     });
     if (!player) return res.status(404).json({ error: 'Not found' });
-    res.json(player);
+
+    // Ukupno golova iz zvaničnih rezultata (scorers: { playerId: broj })
+    let goals = 0;
+    try {
+      const results = await prisma.matchResult.findMany({
+        where: { event: { teamId: player.teamId } },
+        select: { scorers: true },
+      });
+      for (const r of results) {
+        const s = r.scorers as Record<string, unknown> | null;
+        if (s && typeof s === 'object') goals += Number(s[player.id]) || 0;
+      }
+    } catch {}
+
+    res.json({ ...player, goals });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });
   }

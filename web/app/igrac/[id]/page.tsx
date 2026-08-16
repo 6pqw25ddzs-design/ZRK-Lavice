@@ -12,6 +12,8 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
 
   const trainings = (p.attendance || []).filter((a: any) => a.event?.type === 'training').length;
   const matches = (p.attendance || []).filter((a: any) => a.event?.type === 'match').length;
+  // Prvi tim: javna metrika su golovi, ne treninzi
+  const isFirstTeam = p.team?.category === 'prva_liga';
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
@@ -38,7 +40,9 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
         {[
           { label: 'Broj dresa', value: p.jerseyNumber ?? '—' },
           { label: 'Godište', value: p.birthDate ? new Date(p.birthDate).getFullYear() : '—' },
-          { label: 'Treninga', value: trainings },
+          isFirstTeam
+            ? { label: 'Golova', value: p.goals ?? 0 }
+            : { label: 'Treninga', value: trainings },
           { label: 'Utakmica', value: matches },
         ].map(s => (
           <div key={s.label} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-xl p-4 text-center">

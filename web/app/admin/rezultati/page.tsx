@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react';
 import { adminRequest } from '@/lib/auth';
 
-type Event = { id: string; title: string; startsAt: string; opponent?: string; team: { name: string; }; result?: { id: string; homeScore: number; awayScore: number; }; };
+type Event = { id: string; teamId: string; title: string; startsAt: string; opponent?: string; team: { name: string; }; result?: { id: string; homeScore: number; awayScore: number; }; };
+type RosterPlayer = { id: string; firstName: string; lastName: string; jerseyNumber?: number };
 type Result = { id: string; homeScore: number; awayScore: number; event: { title: string; startsAt: string; team: { name: string; }; }; };
 
 export default function AdminRezultatiPage() {
@@ -12,8 +13,20 @@ export default function AdminRezultatiPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({ eventId: '', homeScore: '', awayScore: '', notes: '' });
+  const [roster, setRoster] = useState<RosterPlayer[]>([]);
+  const [goals, setGoals] = useState<Record<string, string>>({});
 
   function getToken() { return localStorage.getItem('admin_token') || ''; }
+
+  // Kad se izabere utakmica, učitaj igračice te ekipe za unos golova
+  useEffect(() => {
+    const ev = matches.find(m => m.id === form.eventId);
+    setGoals({});
+    if (!ev?.teamId) { setRoster([]); return; }
+    adminRequest(`/api/players?teamId=${ev.teamId}`, getToken())
+      .then((ps: RosterPlayer[]) => setRoster([...ps].sort((a, b) => a.lastName.localeCompare(b.lastName))))
+      .catch(() => setRoster([]));
+  }, [form.eventId, matches]);
 
   async function load() {
     try {
@@ -47,9 +60,13 @@ export default function AdminRezultatiPage() {
           homeScore: Number(form.homeScore),
           awayScore: Number(form.awayScore),
           notes: form.notes,
+          scorers: Object.fromEntries(
+            Object.entries(goals).map(([id, g]) => [id, Number(g)]).filter(([, g]) => Number(g) > 0)
+          ),
         }),
       });
       setForm({ eventId: '', homeScore: '', awayScore: '', notes: '' });
+      setGoals({});
       await load();
     } catch (e: any) {
       setError('Greška pri čuvanju: ' + (e?.message || ''));
@@ -97,6 +114,25 @@ export default function AdminRezultatiPage() {
             onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
             className={`${inputClass} col-span-2`} style={inputStyle} />
         </div>
+
+        {roster.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-white font-semibold text-sm mb-2">Golovi po igračici (opciono)</h3>
+            <div className="grid sm:grid-cols-2 gap-x-6 gap-y-1.5">
+              {roster.map(p => (
+                <div key={p.id} className="flex items-center justify-between gap-3">
+                  <span style={{ color: 'var(--text-muted)' }} className="text-sm">
+                    {p.jerseyNumber != null ? `${p.jerseyNumber} · ` : ''}{p.lastName} {p.firstName}
+                  </span>
+                  <input type="number" min="0" placeholder="0" value={goals[p.id] || ''}
+                    onChange={e => setGoals(g => ({ ...g, [p.id]: e.target.value }))}
+                    className="px-2 py-1 rounded-md outline-none w-16 text-center"
+                    style={inputStyle} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         {error && <p style={{ color: 'var(--primary)' }} className="text-sm mt-3">{error}</p>}
         <button onClick={handleSave} disabled={saving}
           style={{ backgroundColor: 'var(--primary)' }}
