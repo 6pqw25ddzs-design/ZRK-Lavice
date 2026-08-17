@@ -248,21 +248,26 @@ export default async function PocetnaPage() {
                       <h3 className="text-xl font-black" style={{ color: '#1A1A1A' }}>{team.name}</h3>
                       <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: '#F2F2F2', color: '#8a8a8a' }}>{tp.length} igračica</span>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                       {tp.map((p: any) => (
                         <Link key={p.id} href={`/igrac/${p.id}`}
-                          className="rounded-2xl p-4 text-center transition-all hover:-translate-y-0.5"
+                          className="rounded-2xl overflow-hidden text-center transition-all hover:-translate-y-0.5 group"
                           style={{ backgroundColor: '#F7F7F7', border: '1px solid #ECECEC' }}>
                           {p.photoUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={p.photoUrl} alt={`${p.firstName} ${p.lastName}`} className="w-14 h-14 rounded-full mx-auto mb-2.5 object-cover" style={{ border: '2px solid #C41230' }} />
+                            <img src={p.photoUrl} alt={`${p.firstName} ${p.lastName}`}
+                              className="w-full aspect-[4/5] object-cover object-top transition-transform group-hover:scale-[1.03]" />
                           ) : (
-                            <div className="w-14 h-14 rounded-full mx-auto mb-2.5 flex items-center justify-center text-white font-black" style={{ background: 'linear-gradient(135deg, #C41230, #9F0F28)' }}>
-                              {p.jerseyNumber ?? (p.firstName?.charAt(0) ?? '?')}
+                            <div className="w-full aspect-[4/5] flex items-center justify-center" style={{ backgroundColor: '#ECECEC' }}>
+                              <span className="w-16 h-16 rounded-full flex items-center justify-center text-white font-black text-xl" style={{ background: 'linear-gradient(135deg, #C41230, #9F0F28)' }}>
+                                {p.jerseyNumber ?? (p.firstName?.charAt(0) ?? '?')}
+                              </span>
                             </div>
                           )}
-                          <div className="text-sm font-bold leading-tight" style={{ color: '#1A1A1A' }}>{p.firstName} {p.lastName}</div>
-                          {p.position && <div className="text-xs mt-0.5" style={{ color: '#9a9a9a' }}>{p.position}</div>}
+                          <div className="p-3">
+                            <div className="text-sm font-bold leading-tight" style={{ color: '#1A1A1A' }}>{p.firstName} {p.lastName}</div>
+                            {p.position && <div className="text-xs mt-0.5" style={{ color: '#9a9a9a' }}>{p.position}</div>}
+                          </div>
                         </Link>
                       ))}
                     </div>
