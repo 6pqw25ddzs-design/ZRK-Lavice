@@ -18,6 +18,37 @@ export default function AdminIgraciPage() {
     teamId: '', firstName: '', lastName: '', birthDate: '', jerseyNumber: '', position: '', photoUrl: '',
   });
   const [inviteCodes, setInviteCodes] = useState<Record<string, string>>({});
+  const [linkingPhotos, setLinkingPhotos] = useState(false);
+  const [linkMsg, setLinkMsg] = useState('');
+
+  // "Lana Bajčeta" -> "lana-bajceta" (đ->dj, skidanje kvačica)
+  function slugifyName(s: string) {
+    return s.toLowerCase()
+      .replace(/đ/g, 'dj').replace(/ž/g, 'z').replace(/ć/g, 'c').replace(/č/g, 'c').replace(/š/g, 's')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+
+  // Za svaku igračicu provjeri postoji li /tim/<ime-prezime>.jpg i upiši ga kao fotografiju
+  async function linkPhotos() {
+    setLinkingPhotos(true); setLinkMsg(''); setError('');
+    let linked = 0, missing = 0;
+    for (const p of players) {
+      const slug = slugifyName(`${p.firstName} ${p.lastName}`);
+      const url = `https://zrklavice.me/tim/${slug}.jpg`;
+      try {
+        const head = await fetch(url, { method: 'HEAD' });
+        if (!head.ok) { missing++; continue; }
+        await adminRequest(`/api/players/${p.id}`, getToken(), {
+          method: 'PATCH', body: JSON.stringify({ photoUrl: url }),
+        });
+        linked++;
+      } catch { missing++; }
+    }
+    setLinkMsg(`✓ Povezano ${linked} fotografija · bez slike: ${missing}`);
+    setLinkingPhotos(false);
+    await load();
+  }
 
   async function handleInvite(playerId: string) {
     try {
@@ -117,7 +148,18 @@ export default function AdminIgraciPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black text-white mb-6">Igrači</h1>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <h1 className="text-2xl font-black text-white">Igrači</h1>
+        <div className="flex items-center gap-3">
+          {linkMsg && <span className="text-sm text-green-500">{linkMsg}</span>}
+          <button onClick={linkPhotos} disabled={linkingPhotos}
+            style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+            className="px-4 py-2 rounded-lg text-sm hover:text-white transition-colors disabled:opacity-50"
+            title="Za svaku igračicu traži zrklavice.me/tim/ime-prezime.jpg i upisuje je kao fotografiju">
+            {linkingPhotos ? 'Povezujem...' : '📸 Poveži fotografije'}
+          </button>
+        </div>
+      </div>
 
       <div style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-xl p-6 mb-8">
         <h2 className="text-white font-bold mb-4">{editing ? 'Uredi igrača' : 'Novi igrač'}</h2>
