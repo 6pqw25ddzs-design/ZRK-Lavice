@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '../../constants/AppColors';
 import { getTeams, getPlayers } from '../../lib/api';
@@ -49,13 +50,20 @@ export default function EkipeScreen() {
 
       <View style={s.grid}>
         {teamPlayers.map(p => (
-          <TouchableOpacity key={p.id} style={s.playerCard} activeOpacity={0.7} onPress={() => setOpenPlayer(p.id)}>
-            <View style={s.jersey}>
-              <Text style={s.jerseyNum}>{p.jerseyNumber ?? '?'}</Text>
+          <TouchableOpacity key={p.id} style={s.playerCard} activeOpacity={0.8} onPress={() => setOpenPlayer(p.id)}>
+            {p.photoUrl ? (
+              <Image source={{ uri: p.photoUrl }} style={s.photo} contentFit="cover" contentPosition="top" transition={150} />
+            ) : (
+              <View style={[s.photo, s.photoEmpty]}>
+                <View style={s.jersey}><Text style={s.jerseyNum}>{p.jerseyNumber ?? '?'}</Text></View>
+              </View>
+            )}
+            <View style={s.cardBody}>
+              <Text style={s.playerName}>{p.firstName} {p.lastName}</Text>
+              <Text style={s.playerPos}>
+                {[p.position ?? 'Igračica', p.birthDate ? String(new Date(p.birthDate).getFullYear()) : null].filter(Boolean).join(' · ')}
+              </Text>
             </View>
-            <Text style={s.playerName}>{p.firstName}{'\n'}{p.lastName}</Text>
-            <Text style={s.playerPos}>{p.position ?? 'Igračica'}</Text>
-            {p.birthDate && <Text style={s.playerYear}>{new Date(p.birthDate).getFullYear()}</Text>}
           </TouchableOpacity>
         ))}
         {!loading && teamPlayers.length === 0 && (
@@ -75,12 +83,14 @@ const s = StyleSheet.create({
   tabActive: { backgroundColor: Colors.primary },
   tabText: { color: Colors.textMuted, fontSize: 13, fontFamily: Fonts.bodyBold },
   tabTextActive: { color: '#fff' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 12, gap: 8 },
-  playerCard: { width: '30%', backgroundColor: Colors.card, borderWidth: 1, borderColor: Colors.border, borderRadius: 12, padding: 12, alignItems: 'center' },
-  jersey: { width: 52, height: 52, borderRadius: 26, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-  jerseyNum: { color: '#fff', fontSize: 20, fontFamily: Fonts.heading },
-  playerName: { color: Colors.text, fontSize: 12, fontFamily: Fonts.bodyBold, textAlign: 'center', marginBottom: 3 },
-  playerPos: { color: Colors.textMuted, fontSize: 11, textAlign: 'center' },
-  playerYear: { color: Colors.textMuted, fontSize: 11, textAlign: 'center', marginTop: 1 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 14, gap: 10 },
+  playerCard: { width: '47.8%', backgroundColor: Colors.card, borderWidth: 1, borderColor: Colors.border, borderRadius: 16, overflow: 'hidden' },
+  photo: { width: '100%', aspectRatio: 4 / 5 },
+  photoEmpty: { backgroundColor: '#ECECEC', alignItems: 'center', justifyContent: 'center' },
+  jersey: { width: 56, height: 56, borderRadius: 28, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center' },
+  jerseyNum: { color: '#fff', fontSize: 22, fontFamily: Fonts.heading },
+  cardBody: { padding: 10, alignItems: 'center' },
+  playerName: { color: Colors.text, fontSize: 13.5, fontFamily: Fonts.bodyBold, textAlign: 'center', marginBottom: 2 },
+  playerPos: { color: Colors.textMuted, fontSize: 11.5, textAlign: 'center' },
   empty: { color: Colors.textMuted, textAlign: 'center', marginTop: 60, fontSize: 15, width: '100%', paddingHorizontal: 16 },
 });

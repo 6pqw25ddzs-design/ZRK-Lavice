@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '../constants/AppColors';
@@ -35,7 +36,11 @@ export default function IgracView({ id, onBack }: { id: string; onBack: () => vo
       ) : (
         <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
           <View style={s.top}>
-            <View style={s.jersey}><Text style={s.jerseyNum}>{p.jerseyNumber ?? (p.firstName?.[0] ?? '?')}</Text></View>
+            {p.photoUrl ? (
+              <Image source={{ uri: p.photoUrl }} style={s.heroPhoto} contentFit="cover" contentPosition="top" transition={150} />
+            ) : (
+              <View style={s.jersey}><Text style={s.jerseyNum}>{p.jerseyNumber ?? (p.firstName?.[0] ?? '?')}</Text></View>
+            )}
             <View style={{ flex: 1 }}>
               <Text style={s.name}>{p.firstName} {p.lastName}</Text>
               <Text style={s.meta}>{p.position || 'Igračica'}{p.team?.name ? ` · ${p.team.name}` : ''}</Text>
@@ -45,7 +50,9 @@ export default function IgracView({ id, onBack }: { id: string; onBack: () => vo
             {[
               { label: 'Broj dresa', value: p.jerseyNumber ?? '—' },
               { label: 'Godište', value: p.birthDate ? new Date(p.birthDate).getFullYear() : '—' },
-              { label: 'Treninga', value: trainings },
+              p.team?.category === 'prva_liga'
+                ? { label: 'Golova', value: p.goals ?? 0 }
+                : { label: 'Treninga', value: trainings },
               { label: 'Utakmica', value: matches },
             ].map(st => (
               <View key={st.label} style={s.statCard}>
@@ -61,6 +68,7 @@ export default function IgracView({ id, onBack }: { id: string; onBack: () => vo
 }
 
 const s = StyleSheet.create({
+  heroPhoto: { width: 92, height: 115, borderRadius: 16, backgroundColor: '#ECECEC' },
   container: { flex: 1, backgroundColor: Colors.bg },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingTop: 12, paddingBottom: 4 },
   backBtn: { flexDirection: 'row', alignItems: 'center' },
