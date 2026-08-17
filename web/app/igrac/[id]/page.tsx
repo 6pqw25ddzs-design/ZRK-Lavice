@@ -19,18 +19,22 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
     <div className="max-w-3xl mx-auto px-4 py-12">
       <Link href="/ekipe" style={{ color: 'var(--primary)' }} className="text-sm font-medium hover:underline">← Sve ekipe</Link>
 
-      <div className="flex items-center gap-5 mt-6 mb-8">
+      <div className="flex items-center sm:items-end gap-6 mt-6 mb-8 flex-wrap">
         {p.photoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={p.photoUrl} alt={`${p.firstName} ${p.lastName}`} className="w-24 h-24 rounded-full object-cover shrink-0" style={{ border: '2px solid var(--primary)' }} />
+          <img src={p.photoUrl} alt={`${p.firstName} ${p.lastName}`}
+            className="w-44 sm:w-52 aspect-[4/5] rounded-2xl object-cover object-top shrink-0"
+            style={{ border: '1px solid var(--border)' }} />
         ) : (
-          <div style={{ backgroundColor: 'var(--primary)' }} className="w-20 h-20 rounded-full flex items-center justify-center text-white font-black text-2xl shrink-0">
-            {p.jerseyNumber ?? (p.firstName?.charAt(0) ?? '?')}
+          <div className="w-44 sm:w-52 aspect-[4/5] rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
+            <span style={{ backgroundColor: 'var(--primary)' }} className="w-20 h-20 rounded-full flex items-center justify-center text-white font-black text-2xl">
+              {p.jerseyNumber ?? (p.firstName?.charAt(0) ?? '?')}
+            </span>
           </div>
         )}
-        <div>
-          <h1 className="text-3xl font-black text-white leading-tight">{p.firstName} {p.lastName}</h1>
-          <div style={{ color: 'var(--text-muted)' }} className="mt-1">
+        <div className="pb-2">
+          <h1 className="text-3xl md:text-4xl font-black text-white leading-tight">{p.firstName} {p.lastName}</h1>
+          <div style={{ color: 'var(--text-muted)' }} className="mt-2 text-lg">
             {p.position || 'Igračica'}{p.team?.name ? ` · ${p.team.name}` : ''}
           </div>
         </div>
