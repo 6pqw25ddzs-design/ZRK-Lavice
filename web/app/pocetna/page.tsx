@@ -248,6 +248,11 @@ export default async function PocetnaPage() {
                       <h3 className="text-xl font-black" style={{ color: '#1A1A1A' }}>{team.name}</h3>
                       <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: '#F2F2F2', color: '#8a8a8a' }}>{tp.length} igračica</span>
                     </div>
+                    {team.category === 'prva_liga' && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src="/tim/ekipa-2026.jpg" alt={`${team.name} — zajednička fotografija 2026/27`}
+                        className="w-full max-w-2xl rounded-2xl mb-6 block" style={{ border: '1px solid #ECECEC' }} />
+                    )}
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                       {tp.map((p: any) => (
                         <Link key={p.id} href={`/igrac/${p.id}`}

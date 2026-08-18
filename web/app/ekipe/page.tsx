@@ -19,6 +19,12 @@ export default async function EkipePage() {
               <h2 className="text-xl font-black text-white">{team.name}</h2>
               {team.category && <span style={{ color: 'var(--text-muted)', borderColor: 'var(--border)' }} className="text-xs border px-2 py-1 rounded-full">{team.category}</span>}
             </div>
+            {team.category === 'prva_liga' && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src="/tim/ekipa-2026.jpg" alt={`${team.name} — zajednička fotografija 2026/27`}
+                className="w-full max-w-2xl mx-auto rounded-2xl mb-8 block"
+                style={{ border: '1px solid var(--border)' }} />
+            )}
             {teamPlayers.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {teamPlayers.map((p: any) => (
