@@ -9,6 +9,7 @@ const navItems = [
   { href: '/admin/raspored', label: 'Raspored', icon: '📅' },
   { href: '/admin/rezultati', label: 'Rezultati', icon: '🏆' },
   { href: '/admin/tabela', label: 'Tabela', icon: '📊' },
+  { href: '/admin/ekipe', label: 'Ekipe', icon: '🛡️' },
   { href: '/admin/igraci', label: 'Igrači', icon: '👥' },
   { href: '/admin/prisustvo', label: 'Prisustvo', icon: '✅' },
   { href: '/admin/objave', label: 'Objave', icon: '📣' },
