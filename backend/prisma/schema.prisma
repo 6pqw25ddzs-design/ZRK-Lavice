@@ -77,6 +77,11 @@ enum InjuryStatus {
   out
 }
 
+enum FinanceKind {
+  income
+  expense
+}
+
 enum SponsorLevel {
   gold
   silver
@@ -110,6 +115,7 @@ model User {
   signedConsents   Consent[]
   evaluationsGiven Evaluation[]
   goalsGiven       DevelopmentGoal[]
+  financeEntries   FinanceEntry[]
 
   @@map("users")
 }
@@ -673,6 +679,23 @@ model InjuryRecord {
   player Player @relation(fields: [playerId], references: [id])
 
   @@map("injury_records")
+}
+
+// ===== Finansijska evidencija (blagajna; zvanično knjigovodstvo radi knjigovođa) =====
+model FinanceEntry {
+  id          String      @id @default(uuid())
+  kind        FinanceKind
+  category    String
+  amountEur   Float       @map("amount_eur")
+  date        DateTime
+  description String?
+  receiptUrl  String?     @map("receipt_url")
+  createdById String      @map("created_by_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  createdBy User @relation(fields: [createdById], references: [id])
+
+  @@map("finance_entries")
 }
 
 model PushToken {
