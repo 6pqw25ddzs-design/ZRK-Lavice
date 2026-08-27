@@ -14,6 +14,7 @@ const navItems = [
   { href: '/admin/prisustvo', label: 'Prisustvo', icon: '✅' },
   { href: '/admin/objave', label: 'Objave', icon: '📣' },
   { href: '/admin/dosijei', label: 'Dosijei', icon: '🗂️' },
+  { href: '/admin/oprema', label: 'Oprema', icon: '🎽' },
   { href: '/admin/razvoj', label: 'Razvoj', icon: '📈' },
   { href: '/admin/clanarine', label: 'Članarine', icon: '💶' },
   { href: '/admin/finansije', label: 'Finansije', icon: '💰' },

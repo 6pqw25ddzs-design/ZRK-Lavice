@@ -169,6 +169,7 @@ model Player {
   goals        DevelopmentGoal[]
   milestones   Milestone[]
   injuries     InjuryRecord[]
+  equipment    EquipmentItem[]
 
   @@map("players")
 }
@@ -692,6 +693,23 @@ model ClubMember {
   createdAt DateTime           @default(now()) @map("created_at")
 
   @@map("club_members")
+}
+
+// Evidencija opreme — zaduženje po igračici (playerId=null → klupska oprema)
+model EquipmentItem {
+  id         String    @id @default(uuid())
+  playerId   String?   @map("player_id")
+  itemType   String    @map("item_type")
+  label      String?
+  size       String?
+  issuedAt   DateTime  @default(now()) @map("issued_at")
+  returnedAt DateTime? @map("returned_at")
+  note       String?
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  player Player? @relation(fields: [playerId], references: [id])
+
+  @@map("equipment_items")
 }
 
 // ===== Finansijska evidencija (blagajna; zvanično knjigovodstvo radi knjigovođa) =====
