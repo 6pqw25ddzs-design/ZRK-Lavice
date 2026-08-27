@@ -19,7 +19,10 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const parse = memberSchema.safeParse(req.body);
     if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
-    const m = await prisma.clubMember.create({ data: parse.data });
+    const { fullName, email, phone, message } = parse.data;
+    const m = await prisma.clubMember.create({
+      data: { fullName, email, phone: phone ?? null, message: message ?? null },
+    });
     void sendNotifyEmail(
       `Nova pristupnica za članstvo: ${m.fullName}`,
       `<div style="font-family:sans-serif"><h2 style="color:#C8102E">Nova pristupnica 🦁</h2>
