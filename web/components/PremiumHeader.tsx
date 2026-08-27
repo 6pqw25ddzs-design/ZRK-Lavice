@@ -11,6 +11,7 @@ const LINKS = [
   { href: '#osnivaci', label: 'Osnivači' },
   { href: '#treneri', label: 'Treneri' },
   { href: '/podrzi-nas', label: 'Podrži klub' },
+  { href: '/clanstvo', label: 'Članstvo' },
   { href: '#kontakt', label: 'Kontakt' },
 ];
 

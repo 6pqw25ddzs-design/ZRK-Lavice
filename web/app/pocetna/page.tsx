@@ -536,7 +536,11 @@ export default async function PocetnaPage() {
             </Link>
             <Link href="/podrzi-nas" style={{ border: '1.5px solid rgba(255,255,255,0.5)', color: '#fff' }}
               className="px-8 py-3.5 rounded-full font-bold hover:bg-white/10 transition-all">
-              Sponzorski pool →
+              Sponzorski pool
+            </Link>
+            <Link href="/clanstvo" style={{ border: '1.5px solid #D4AC0D', color: '#D4AC0D' }}
+              className="px-8 py-3.5 rounded-full font-bold hover:bg-white/10 transition-all">
+              Postani član kluba
             </Link>
           </div>
         </div>
