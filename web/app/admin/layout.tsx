@@ -21,6 +21,7 @@ const navItems = [
   { href: '/admin/treneri', label: 'Treneri', icon: '📋' },
   { href: '/admin/sponzori', label: 'Sponzori', icon: '🤝' },
   { href: '/admin/prijave', label: 'Prijave', icon: '📝' },
+  { href: '/admin/clanovi', label: 'Članovi kluba', icon: '🎫' },
   { href: '/admin/dokumenti', label: 'Dokumenti', icon: '📄' },
   { href: '/admin/galerija', label: 'Galerija', icon: '🖼️' },
   { href: '/admin/podesavanja', label: 'Podešavanja', icon: '⚙️' },

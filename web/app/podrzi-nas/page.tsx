@@ -106,6 +106,18 @@ export default async function PodrziNasPage() {
         </div>
       </div>
 
+      {/* Članstvo */}
+      <div style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-2xl p-8 mb-8 text-center">
+        <h2 className="text-white font-black text-2xl mb-2">Ili — postanite član kluba</h2>
+        <p style={{ color: 'var(--text-muted)' }} className="mb-5 max-w-lg mx-auto">
+          Za pojedince koji žele da budu dio Lavica zajednice — pristupnica traje minut.
+        </p>
+        <a href="/clanstvo" style={{ border: '1.5px solid var(--primary)', color: 'var(--primary)' }}
+          className="inline-block px-8 py-3 rounded-full font-bold hover:bg-red-950 transition-colors">
+          Postani član →
+        </a>
+      </div>
+
       {/* Napomena */}
       <div style={{ border: '1px solid var(--border)', borderLeft: '3px solid var(--primary)' }} className="rounded-xl p-5">
         <p style={{ color: 'var(--text-muted)' }} className="text-sm leading-relaxed">

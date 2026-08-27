@@ -24,6 +24,7 @@ const nav: NavItem[] = [
     label: 'Klub',
     children: [
       { href: '/o-nama', label: 'O nama' },
+      { href: '/clanstvo', label: 'Postani član' },
       { href: '/dokumenti', label: 'Dokumenti' },
       { href: '/sponzori', label: 'Sponzori' },
       { href: '/kontakt', label: 'Kontakt' },

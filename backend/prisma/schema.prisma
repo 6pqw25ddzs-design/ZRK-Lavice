@@ -681,6 +681,19 @@ model InjuryRecord {
   @@map("injury_records")
 }
 
+// Pristupnica za članstvo u klubu (podržavajući članovi)
+model ClubMember {
+  id        String             @id @default(uuid())
+  fullName  String             @map("full_name")
+  email     String
+  phone     String?
+  message   String?
+  status    RegistrationStatus @default(pending)
+  createdAt DateTime           @default(now()) @map("created_at")
+
+  @@map("club_members")
+}
+
 // ===== Finansijska evidencija (blagajna; zvanično knjigovodstvo radi knjigovođa) =====
 model FinanceEntry {
   id          String      @id @default(uuid())
