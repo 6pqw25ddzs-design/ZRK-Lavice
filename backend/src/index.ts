@@ -35,6 +35,7 @@ import dashboardRoutes from './routes/dashboard';
 import membersRoutes from './routes/members';
 import cronRoutes from './routes/cron';
 import statsRoutes from './routes/stats';
+import reportsRoutes from './routes/reports';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -77,6 +78,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/members', membersRoutes);
 app.use('/api/cron', cronRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/reports', reportsRoutes);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
 

@@ -17,6 +17,7 @@ const navItems = [
   { href: '/admin/razvoj', label: 'Razvoj', icon: '📈' },
   { href: '/admin/clanarine', label: 'Članarine', icon: '💶' },
   { href: '/admin/finansije', label: 'Finansije', icon: '💰' },
+  { href: '/admin/izvjestaj', label: 'Izvještaj', icon: '📑' },
   { href: '/admin/probni', label: 'Probni treninzi', icon: '🏐' },
   { href: '/admin/treneri', label: 'Treneri', icon: '📋' },
   { href: '/admin/sponzori', label: 'Sponzori', icon: '🤝' },

@@ -73,3 +73,17 @@ body:has(#top) .global-footer { display: none; }
 /* Osigurač: ako hidracija ikad duplira globalni header/footer (Safari keš), višak se ne prikazuje */
 .global-nav ~ .global-nav,
 .global-footer ~ .global-footer { display: none; }
+
+/* Mjesečni izvještaj — bijeli list + print režim */
+.report-sheet { background: #ffffff; color: #1A1A1A; border-radius: 12px; padding: 40px; }
+.rpt-h { font-size: 15px; font-weight: 800; color: #1A1A1A; margin: 18px 0 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+.rpt-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 18px; color: #1A1A1A; }
+.rpt-table th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: #6E6862; border-bottom: 2px solid #C41230; padding: 6px 8px; }
+.rpt-table th.text-right { text-align: right; }
+.rpt-table td { border-bottom: 1px solid #E8E4DE; padding: 6px 8px; }
+@media print {
+  aside, .no-print, nav { display: none !important; }
+  main { padding: 0 !important; overflow: visible !important; }
+  body, .report-sheet { background: #fff !important; }
+  .report-sheet { border-radius: 0; padding: 0; max-width: none !important; }
+}
