@@ -695,6 +695,22 @@ model ClubMember {
   @@map("club_members")
 }
 
+// Ugovori i obaveze sa rokovima (sponzorstva, registracije, osiguranja)
+model Contract {
+  id        String    @id @default(uuid())
+  title     String
+  party     String?
+  kind      String
+  signedAt  DateTime? @map("signed_at")
+  expiresAt DateTime  @map("expires_at")
+  amountEur Float?    @map("amount_eur")
+  fileUrl   String?   @map("file_url")
+  note      String?
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@map("contracts")
+}
+
 // Evidencija opreme — zaduženje po igračici (playerId=null → klupska oprema)
 model EquipmentItem {
   id         String    @id @default(uuid())

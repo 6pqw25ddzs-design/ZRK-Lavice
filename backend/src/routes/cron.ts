@@ -73,6 +73,22 @@ router.post('/daily', requireAuth, requireRole('admin'), async (_req: AuthReques
       report.clanarine = { neplacenih: unpaid.length, pushPoslato: feePush };
     }
 
+    // 2b) Ugovori koji ističu (60, 30, 7 dana) — mejl upravi
+    const contractsSoon = await prisma.contract.findMany({
+      where: { expiresAt: { gte: now, lte: new Date(now.getTime() + 61 * 86400000) } },
+    });
+    const contractAlerts = contractsSoon
+      .map(c => ({ c, left: daysUntil(c.expiresAt, now) }))
+      .filter(x => [60, 30, 7].includes(x.left));
+    if (contractAlerts.length) {
+      await sendNotifyEmail(
+        `Podsjetnik: ${contractAlerts.length} ugovor(a) ističe uskoro`,
+        `<div style="font-family:sans-serif"><h2 style="color:#C8102E">Ugovori pri isteku 📑</h2>
+         <ul>${contractAlerts.map(x => `<li><b>${x.c.title}</b>${x.c.party ? ' (' + x.c.party + ')' : ''} — ističe za ${x.left} dana (${x.c.expiresAt.toLocaleDateString('sr-Latn-ME')})</li>`).join('')}</ul>
+         <p><a href="https://zrklavice.me/admin/ugovori" style="color:#C8102E">Otvori ugovore →</a></p></div>`);
+      report.ugovori = { istice: contractAlerts.length };
+    }
+
     // 3) Prijave na čekanju — mejl klubu ponedjeljkom
     if (weekday === 1) {
       const pending = await prisma.registration.count({ where: { status: 'pending' } });
