@@ -2,7 +2,7 @@ import Image from 'next/image';
 import PremiumHeader from '@/components/PremiumHeader';
 import UpisForm from '@/components/UpisForm';
 import Link from 'next/link';
-import { getSponsors, getSettings, getTeams, getPlayers, getSchedule, getNews, getTreneri } from '@/lib/api';
+import { getSponsors, getSettings, getTeams, getPlayers, getSchedule, getNews, getTreneri, getResults } from '@/lib/api';
 
 export const revalidate = 60;
 export const metadata = {
@@ -58,7 +58,7 @@ function GoldLine() {
 }
 
 export default async function PocetnaPage() {
-  const [sponsors, settings, teams, players, schedule, news, treneri] = await Promise.all([
+  const [sponsors, settings, teams, players, schedule, news, treneri, results] = await Promise.all([
     getSponsors().catch(() => []),
     getSettings().catch(() => ({} as Record<string, string>)),
     getTeams().catch(() => []),
@@ -66,8 +66,10 @@ export default async function PocetnaPage() {
     getSchedule().catch(() => []),
     getNews(4).catch(() => []),
     getTreneri().catch(() => []),
+    getResults().catch(() => []),
   ]);
   const upcoming = (Array.isArray(schedule) ? schedule : []).slice(0, 5);
+  const lastResults = (Array.isArray(results) ? results : []).slice(0, 3);
 
   // Statistika iz baze (2026 = godina osnivanja, fiksno)
   const brojIgracica = Array.isArray(players) ? players.length : 0;
@@ -327,6 +329,42 @@ export default async function PocetnaPage() {
                           {e.location}{e.location && e.team?.name ? ' · ' : ''}{e.team?.name}
                         </div>
                       </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* UTAKMICE — posljednji rezultati */}
+      {lastResults.length > 0 && (
+        <section id="utakmice" className="py-20 md:py-28" style={{ backgroundColor: '#FFFFFF' }}>
+          <div className="max-w-6xl mx-auto px-5">
+            <GoldLine />
+            <div className="mt-5 flex items-end justify-between flex-wrap gap-4">
+              <h2 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: '#1A1A1A' }}>Utakmice</h2>
+              <Link href="/rezultati" className="font-bold text-sm hover:underline" style={{ color: '#C41230' }}>
+                Svi rezultati i lista strijelaca →
+              </Link>
+            </div>
+            <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {lastResults.map((r: any) => {
+                const win = r.homeScore > r.awayScore;
+                const draw = r.homeScore === r.awayScore;
+                return (
+                  <div key={r.id} className="rounded-2xl p-6" style={{ backgroundColor: '#F7F7F7', border: '1px solid #ECECEC', borderTop: `3px solid ${win ? '#16a34a' : draw ? '#D4AC0D' : '#C41230'}` }}>
+                    <div className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: win ? '#16a34a' : draw ? '#A8860B' : '#C41230' }}>
+                      {win ? 'Pobjeda' : draw ? 'Nerešeno' : 'Poraz'}
+                    </div>
+                    <div className="font-bold leading-tight" style={{ color: '#1A1A1A' }}>{r.event?.title}</div>
+                    <div className="text-4xl font-black my-3" style={{ color: '#1A1A1A' }}>
+                      {r.homeScore}<span style={{ color: '#C41230' }}> : </span>{r.awayScore}
+                    </div>
+                    <div className="text-xs" style={{ color: '#9a9a9a' }}>
+                      {r.event?.startsAt && new Date(r.event.startsAt).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric', month: 'long', year: 'numeric' })}
+                      {r.event?.team?.name ? ` · ${r.event.team.name}` : ''}
                     </div>
                   </div>
                 );

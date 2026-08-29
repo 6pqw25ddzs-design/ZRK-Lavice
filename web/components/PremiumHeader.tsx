@@ -7,6 +7,7 @@ const LINKS = [
   { href: '#programi', label: 'Programi' },
   { href: '#ekipe', label: 'Ekipe' },
   { href: '#raspored', label: 'Raspored' },
+  { href: '#utakmice', label: 'Utakmice' },
   { href: '#vijesti', label: 'Vijesti' },
   { href: '#osnivaci', label: 'Osnivači' },
   { href: '#treneri', label: 'Treneri' },
