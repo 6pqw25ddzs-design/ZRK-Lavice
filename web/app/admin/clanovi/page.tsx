@@ -50,8 +50,8 @@ export default function AdminClanoviPage() {
       <div className="flex flex-col gap-3">
         {members.map(m => (
           <div key={m.id} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-xl p-4">
-            <div className="flex items-start justify-between gap-3 flex-wrap">
-              <div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
                 <div className="text-white font-semibold">{m.fullName}
                   <span className="text-xs px-2 py-0.5 rounded-full ml-2"
                     style={{ backgroundColor: m.status === 'approved' ? '#166534' : m.status === 'rejected' ? '#7f1d1d' : 'var(--border)', color: 'white' }}>
