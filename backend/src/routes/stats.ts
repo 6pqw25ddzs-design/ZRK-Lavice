@@ -17,7 +17,7 @@ router.get('/', async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Statistika je javna samo za seniorsku kategoriju' });
     }
 
-    const [results, players] = await Promise.all([
+    const [results, players, matchAttendance] = await Promise.all([
       prisma.matchResult.findMany({
         where: { event: { teamId: String(teamId) } },
         include: { event: { select: { startsAt: true, opponent: true, title: true, location: true } } },
@@ -27,10 +27,17 @@ router.get('/', async (req: Request, res: Response) => {
         where: { teamId: String(teamId) },
         select: { id: true, firstName: true, lastName: true, jerseyNumber: true, photoUrl: true, isActive: true },
       }),
+      prisma.attendance.findMany({
+        where: { status: 'present', event: { teamId: String(teamId), type: 'match' } },
+        select: { playerId: true, eventId: true },
+      }),
     ]);
 
     let wins = 0, draws = 0, losses = 0, gf = 0, ga = 0;
-    const goalsByPlayer: Record<string, { goals: number; matches: number }> = {};
+    // nastupi = prisustvo na utakmici ILI postignut gol (zapisnik)
+    const playedBy: Record<string, Set<string>> = {};
+    for (const a of matchAttendance) (playedBy[a.playerId] ||= new Set()).add(a.eventId);
+    const goalsByPlayer: Record<string, { goals: number }> = {};
     for (const r of results as any[]) {
       gf += r.homeScore; ga += r.awayScore;
       if (r.homeScore > r.awayScore) wins++;
@@ -41,8 +48,8 @@ router.get('/', async (req: Request, res: Response) => {
         for (const [pid, g] of Object.entries(s)) {
           const n = Number(g) || 0;
           if (n <= 0) continue;
-          const e = (goalsByPlayer[pid] ||= { goals: 0, matches: 0 });
-          e.goals += n; e.matches++;
+          (goalsByPlayer[pid] ||= { goals: 0 }).goals += n;
+          (playedBy[pid] ||= new Set()).add(r.eventId);
         }
       }
     }
@@ -51,11 +58,12 @@ router.get('/', async (req: Request, res: Response) => {
     const scorers = Object.entries(goalsByPlayer)
       .map(([pid, s]) => {
         const p = pMap.get(pid);
+        const matches = playedBy[pid]?.size || 1;
         return p ? {
           playerId: pid, firstName: p.firstName, lastName: p.lastName,
           jerseyNumber: p.jerseyNumber, photoUrl: p.photoUrl,
-          goals: s.goals, matches: s.matches,
-          avg: Math.round((s.goals / s.matches) * 10) / 10,
+          goals: s.goals, matches,
+          avg: Math.round((s.goals / matches) * 10) / 10,
         } : null;
       })
       .filter(Boolean)
