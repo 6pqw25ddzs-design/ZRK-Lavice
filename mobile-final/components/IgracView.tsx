@@ -19,7 +19,7 @@ export default function IgracView({ id, onBack }: { id: string; onBack: () => vo
   }, [id]);
 
   const trainings = (p?.attendance || []).filter((a: any) => a.event?.type === 'training').length;
-  const matches = (p?.attendance || []).filter((a: any) => a.event?.type === 'match').length;
+  const matches = p?.matchesPlayed ?? (p?.attendance || []).filter((a: any) => a.event?.type === 'match').length;
 
   return (
     <View style={s.container}>

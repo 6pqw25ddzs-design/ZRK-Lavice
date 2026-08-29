@@ -11,7 +11,7 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
   if (!p) notFound();
 
   const trainings = (p.attendance || []).filter((a: any) => a.event?.type === 'training').length;
-  const matches = (p.attendance || []).filter((a: any) => a.event?.type === 'match').length;
+  const matches = p.matchesPlayed ?? (p.attendance || []).filter((a: any) => a.event?.type === 'match').length;
   // Prvi tim: javna metrika su golovi, ne treninzi
   const isFirstTeam = p.team?.category === 'prva_liga';
 
