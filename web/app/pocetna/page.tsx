@@ -354,7 +354,7 @@ export default async function PocetnaPage() {
                 const win = r.homeScore > r.awayScore;
                 const draw = r.homeScore === r.awayScore;
                 return (
-                  <div key={r.id} className="rounded-2xl p-6" style={{ backgroundColor: '#F7F7F7', border: '1px solid #ECECEC', borderTop: `3px solid ${win ? '#16a34a' : draw ? '#D4AC0D' : '#C41230'}` }}>
+                  <Link key={r.id} href={`/utakmica/${r.id}`} className="rounded-2xl p-6 block hover:shadow-lg transition-shadow" style={{ backgroundColor: '#F7F7F7', border: '1px solid #ECECEC', borderTop: `3px solid ${win ? '#16a34a' : draw ? '#D4AC0D' : '#C41230'}` }}>
                     <div className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: win ? '#16a34a' : draw ? '#A8860B' : '#C41230' }}>
                       {win ? 'Pobjeda' : draw ? 'Nerešeno' : 'Poraz'}
                     </div>
@@ -366,7 +366,8 @@ export default async function PocetnaPage() {
                       {r.event?.startsAt && new Date(r.event.startsAt).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric', month: 'long', year: 'numeric' })}
                       {r.event?.team?.name ? ` · ${r.event.team.name}` : ''}
                     </div>
-                  </div>
+                    <div className="text-xs font-bold mt-3" style={{ color: '#C41230' }}>Strijelci i sastav →</div>
+                  </Link>
                 );
               })}
             </div>

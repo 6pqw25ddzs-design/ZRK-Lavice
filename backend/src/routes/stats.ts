@@ -85,4 +85,70 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+// Detalj jedne utakmice: rezultat + strijelci sa imenima i fotografijama.
+// Strijelci su javni samo za seniorsku kategoriju (mlađe kategorije se javno ne rangiraju).
+router.get('/match/:id', async (req: Request, res: Response) => {
+  try {
+    const result: any = await prisma.matchResult.findUnique({
+      where: { id: String(req.params.id) },
+      include: { event: { include: { team: { select: { id: true, name: true, category: true } } } } },
+    } as any);
+    if (!result) return res.status(404).json({ error: 'Utakmica ne postoji' });
+
+    const isSenior = result.event?.team?.category === 'prva_liga';
+    let scorers: any[] = [];
+    let roster: any[] = [];
+
+    if (isSenior) {
+      const s = (result.scorers || {}) as Record<string, unknown>;
+      const ids = Object.keys(s);
+      const attendance = await prisma.attendance.findMany({
+        where: { eventId: result.eventId, status: 'present' },
+        select: { playerId: true },
+      });
+      const allIds = Array.from(new Set([...ids, ...attendance.map(a => a.playerId)]));
+      const players = allIds.length
+        ? await prisma.player.findMany({
+            where: { id: { in: allIds } },
+            select: { id: true, firstName: true, lastName: true, jerseyNumber: true, photoUrl: true },
+          })
+        : [];
+      const pMap = new Map(players.map(p => [p.id, p]));
+      scorers = ids
+        .map(pid => {
+          const p = pMap.get(pid);
+          const goals = Number(s[pid]) || 0;
+          return p && goals > 0 ? { playerId: pid, firstName: p.firstName, lastName: p.lastName, jerseyNumber: p.jerseyNumber, photoUrl: p.photoUrl, goals } : null;
+        })
+        .filter(Boolean)
+        .sort((a: any, b: any) => b.goals - a.goals);
+      const scorerIds = new Set(ids.filter(pid => (Number(s[pid]) || 0) > 0));
+      roster = attendance
+        .map(a => pMap.get(a.playerId))
+        .filter((p): p is NonNullable<typeof p> => !!p && !scorerIds.has(p.id))
+        .map(p => ({ playerId: p.id, firstName: p.firstName, lastName: p.lastName, jerseyNumber: p.jerseyNumber, photoUrl: p.photoUrl }))
+        .sort((a, b) => (a.jerseyNumber ?? 99) - (b.jerseyNumber ?? 99));
+    }
+
+    res.json({
+      id: result.id,
+      homeScore: result.homeScore,
+      awayScore: result.awayScore,
+      notes: result.notes,
+      event: {
+        title: result.event?.title,
+        opponent: result.event?.opponent,
+        location: result.event?.location,
+        startsAt: result.event?.startsAt,
+        team: result.event?.team ? { id: result.event.team.id, name: result.event.team.name } : null,
+      },
+      scorersPublic: isSenior,
+      scorers,
+      roster,
+    });
+  } catch (e: any) {
+    res.status(500).json({ error: e?.message || 'Greška' });
+  }
+});
+
 export default router;

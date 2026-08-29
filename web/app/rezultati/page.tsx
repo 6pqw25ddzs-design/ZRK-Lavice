@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getResults, getTeams } from '@/lib/api';
 
 export const revalidate = 0;
@@ -76,8 +77,8 @@ export default async function RezultatiPage() {
       ) : (
         <div className="flex flex-col gap-3">
           {results.map((r: any) => (
-            <div key={r.id} style={card}
-              className="rounded-xl p-5 flex items-center justify-between gap-4">
+            <Link key={r.id} href={`/utakmica/${r.id}`} style={card}
+              className="rounded-xl p-5 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
               <div>
                 <div className="text-white font-semibold">{r.event?.title}</div>
                 <div style={{ color: 'var(--text-muted)' }} className="text-sm mt-1">
@@ -89,7 +90,7 @@ export default async function RezultatiPage() {
               <div className="text-3xl font-black shrink-0" style={{ color: 'var(--gold)' }}>
                 {r.homeScore} : {r.awayScore}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
