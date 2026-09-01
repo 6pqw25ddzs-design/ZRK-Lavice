@@ -6,7 +6,7 @@ type Entry = {
   id: string; kind: 'income' | 'expense'; category: string; amountEur: number;
   date: string; description?: string; receiptUrl?: string; createdBy: string;
 };
-type Summary = { income: number; expense: number; feesIncome: number; feesCount: number; totalIncome: number; balance: number };
+type Summary = { income: number; expense: number; feesIncome: number; feesCount: number; totalIncome: number; balance: number; totalBalance?: number };
 type MonthSum = { month: number; income: number; expense: number };
 
 const MONTHS = ['Januar', 'Februar', 'Mart', 'April', 'Maj', 'Jun', 'Jul', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'];
