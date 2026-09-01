@@ -19,7 +19,7 @@ router.get('/', requireAuth, requireRole('admin'), async (req: AuthRequest, res:
     if (!year || !month) return res.status(400).json({ error: 'year i month su obavezni' });
     const { from, to } = monthRange(year, month);
 
-    const [entries, paidFees] = await Promise.all([
+    const [entries, paidFees, allIncome, allExpense, allFees] = await Promise.all([
       prisma.financeEntry.findMany({
         where: { date: { gte: from, lt: to } },
         include: { createdBy: { select: { fullName: true } } },
@@ -29,6 +29,9 @@ router.get('/', requireAuth, requireRole('admin'), async (req: AuthRequest, res:
         where: { status: 'paid', paidAt: { gte: from, lt: to } },
         _sum: { amountEur: true }, _count: true,
       }),
+      prisma.financeEntry.aggregate({ where: { kind: 'income' }, _sum: { amountEur: true } }),
+      prisma.financeEntry.aggregate({ where: { kind: 'expense' }, _sum: { amountEur: true } }),
+      prisma.membershipFee.aggregate({ where: { status: 'paid' }, _sum: { amountEur: true } }),
     ]);
 
     const income = entries.filter(e => e.kind === 'income').reduce((s, e) => s + e.amountEur, 0);
@@ -41,6 +44,7 @@ router.get('/', requireAuth, requireRole('admin'), async (req: AuthRequest, res:
         income, expense, feesIncome, feesCount: paidFees._count,
         totalIncome: income + feesIncome,
         balance: income + feesIncome - expense,
+        totalBalance: (allIncome._sum.amountEur || 0) + (allFees._sum.amountEur || 0) - (allExpense._sum.amountEur || 0),
       },
     });
   } catch (e: any) {

@@ -103,12 +103,13 @@ export default function AdminFinansijePage() {
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       {sum && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
           {[
             { l: 'Prihodi ukupno', v: sum.totalIncome, c: '#16a34a' },
             { l: `— od toga članarine (${sum.feesCount})`, v: sum.feesIncome, c: '#16a34a' },
             { l: 'Rashodi', v: sum.expense, c: '#dc2626' },
             { l: 'Saldo mjeseca', v: sum.balance, c: sum.balance >= 0 ? '#16a34a' : '#dc2626' },
+            { l: '💰 Stanje računa (ukupno)', v: sum.totalBalance ?? 0, c: 'var(--gold)' },
           ].map(x => (
             <div key={x.l} style={cardStyle} className="rounded-xl p-4">
               <div className="text-2xl font-black" style={{ color: x.c }}>{x.v.toFixed(2)}€</div>
