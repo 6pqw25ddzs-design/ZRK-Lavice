@@ -64,7 +64,7 @@ router.post('/', requireAuth, requireRole('coach', 'admin'), async (req: AuthReq
     const event = await prisma.scheduleEvent.create({ data: parse.data as any });
 
     const team = await prisma.team.findUnique({ where: { id: parse.data.teamId } });
-    if (team) {
+    if (team && req.query.silent !== '1') {
       await sendTeamPushNotification(parse.data.teamId, {
         title: `Novi termin — ${team.name}`,
         body: `${parse.data.title} · ${new Date(parse.data.startsAt).toLocaleDateString('sr-ME')}`,
