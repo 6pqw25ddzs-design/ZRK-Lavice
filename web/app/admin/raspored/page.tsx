@@ -81,7 +81,7 @@ export default function AdminRasporedPage() {
       teamId: '',
       type: e.type,
       title: e.title,
-      startsAt: new Date(e.startsAt).toISOString().slice(0, 16),
+      startsAt: (d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`)(new Date(e.startsAt)),
       location: e.location || '',
       opponent: e.opponent || '',
     });
