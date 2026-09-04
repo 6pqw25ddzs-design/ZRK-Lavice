@@ -36,22 +36,22 @@ export default function PremiumHeader() {
         borderBottom: scrolled ? '1px solid rgba(212,172,13,0.18)' : '1px solid transparent',
       }}
     >
-      <div className="max-w-6xl mx-auto px-5 h-[72px] flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-5 h-[72px] flex items-center justify-between gap-6">
         <a href="#top" className="flex items-center gap-2.5 shrink-0">
           <Image src="/logo.png" alt="ŽRK Lavice Podgorica" width={40} height={40} className="object-contain" />
-          <span className="font-black text-lg tracking-tight text-white">
+          <span className="font-black text-lg tracking-tight text-white whitespace-nowrap">
             ŽRK <span style={{ color: '#C41230' }}>Lavice</span>-UDG
           </span>
         </a>
 
-        <nav className="hidden lg:flex items-center gap-6">
+        <nav className="hidden lg:flex items-center gap-[18px] flex-nowrap">
           {LINKS.map(l => (
-            <a key={l.href} href={l.href} className="text-sm font-medium text-white/70 hover:text-white transition-colors">
+            <a key={l.href} href={l.href} className="text-[13px] font-medium text-white/70 hover:text-white transition-colors whitespace-nowrap">
               {l.label}
             </a>
           ))}
           <a href="#upis" style={{ backgroundColor: '#C41230' }}
-            className="px-5 py-2.5 rounded-full text-white text-sm font-bold hover:brightness-110 transition-all">
+            className="px-4 py-2 rounded-full text-white text-[13px] font-bold hover:brightness-110 transition-all whitespace-nowrap shrink-0">
             Upiši dijete
           </a>
         </nav>
