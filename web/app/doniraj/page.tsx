@@ -23,6 +23,17 @@ function DonirajForm() {
         </p>
       </div>
 
+      {process.env.NEXT_PUBLIC_MONRI_TEST === '1' && (
+        <div className="rounded-xl p-4 mb-8 text-center" style={{ backgroundColor: 'rgba(212,172,13,0.12)', border: '1.5px solid var(--gold)' }}>
+          <p className="font-black text-sm mb-1" style={{ color: 'var(--gold)' }}>⚠️ SISTEM JE U FAZI TESTIRANJA</p>
+          <p style={{ color: 'var(--text-muted)' }} className="text-sm leading-relaxed">
+            Online plaćanje karticama trenutno se testira i stvarne uplate se ovim putem ne izvršavaju.
+            Donacije i članarine do daljnjeg uplaćujte na žiro račun kluba:
+            <span className="text-white font-semibold"> 510000000023249776 (CKB)</span> — detalji na stranici <a href="/podrzi-nas" className="underline">Podrži klub</a>.
+          </p>
+        </div>
+      )}
+
       {params.get('greska') && (
         <p className="text-red-500 text-center mb-6">Nešto nije u redu sa unosom — provjeri iznos, ime i email.</p>
       )}
@@ -73,6 +84,12 @@ function DonirajForm() {
           Klikom prihvataš <a href="/uslovi" className="underline">uslove korišćenja i politiku refundacije</a>.<br />
           ŽRK Lavice-UDG · Trg Božane Vučinić 34, Podgorica · info@zrklavice.me
         </p>
+        <div className="flex items-center justify-center gap-3 flex-wrap pt-1">
+          {['Visa', 'Mastercard', 'Maestro', 'Monri WebPay', '3-D Secure'].map(b => (
+            <span key={b} className="px-3 py-1 rounded-md text-[11px] font-bold"
+              style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}>{b}</span>
+          ))}
+        </div>
       </form>
     </div>
   );
