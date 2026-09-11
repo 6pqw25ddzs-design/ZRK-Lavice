@@ -37,14 +37,22 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     : [];
 
-  const stats = [
-    isFirstTeam
-      ? { label: 'Golova', value: goals }
-      : { label: 'Treninga', value: trainings },
-    { label: 'Utakmica', value: matches },
-    ...(isFirstTeam ? [{ label: 'Prosjek po meču', value: avg }] : []),
-    { label: 'Godište', value: p.birthDate ? new Date(p.birthDate).getFullYear() : '—' },
-  ];
+  const isKeeper = (p.saves ?? 0) + (p.conceded ?? 0) > 0;
+  const stats = isFirstTeam && isKeeper
+    ? [
+        { label: 'Odbrana', value: p.saves },
+        { label: 'Save %', value: `${p.savePct}%` },
+        { label: 'Utakmica', value: matches },
+        { label: 'Godište', value: p.birthDate ? new Date(p.birthDate).getFullYear() : '—' },
+      ]
+    : [
+        isFirstTeam
+          ? { label: 'Golova', value: goals }
+          : { label: 'Treninga', value: trainings },
+        { label: 'Utakmica', value: matches },
+        ...(isFirstTeam ? [{ label: 'Prosjek po meču', value: avg }] : []),
+        { label: 'Godište', value: p.birthDate ? new Date(p.birthDate).getFullYear() : '—' },
+      ];
 
   return (
     <div>

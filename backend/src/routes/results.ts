@@ -11,6 +11,7 @@ const resultSchema = z.object({
   homeScore: z.number().int().min(0),
   awayScore: z.number().int().min(0),
   scorers: z.any().optional(),
+  keepers: z.any().optional(),
   notes: z.string().optional(),
 });
 

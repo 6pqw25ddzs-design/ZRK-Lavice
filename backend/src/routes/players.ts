@@ -47,7 +47,7 @@ router.get('/:id', async (req, res) => {
     if (!player) return res.status(404).json({ error: 'Not found' });
 
     // Golovi iz zvaničnih rezultata + broj utakmica (prisustvo ILI gol na utakmici)
-    let goals = 0;
+    let goals = 0, saves = 0, conceded = 0;
     const playedEvents = new Set<string>(
       (player.attendance || [])
         .filter((a: any) => a.event?.type === 'match' && a.status === 'present')
@@ -56,17 +56,20 @@ router.get('/:id', async (req, res) => {
     try {
       const results = await prisma.matchResult.findMany({
         where: { event: { teamId: player.teamId } },
-        select: { eventId: true, scorers: true },
-      });
-      for (const r of results) {
+        select: { eventId: true, scorers: true, keepers: true },
+      } as any);
+      for (const r of results as any[]) {
         const s = r.scorers as Record<string, unknown> | null;
         const g = s && typeof s === 'object' ? Number(s[player.id]) || 0 : 0;
         goals += g;
         if (g > 0) playedEvents.add(r.eventId);
+        const k = (r.keepers as Record<string, any> | null)?.[player.id];
+        if (k) { saves += Number(k.saves) || 0; conceded += Number(k.conceded) || 0; playedEvents.add(r.eventId); }
       }
     } catch {}
 
-    res.json({ ...player, goals, matchesPlayed: playedEvents.size });
+    const savePct = saves + conceded > 0 ? Math.round((saves / (saves + conceded)) * 100) : null;
+    res.json({ ...player, goals, saves, conceded, savePct, matchesPlayed: playedEvents.size });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });
   }

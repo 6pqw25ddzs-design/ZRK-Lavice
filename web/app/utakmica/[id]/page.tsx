@@ -65,6 +65,35 @@ export default async function UtakmicaPage({ params }: { params: Promise<{ id: s
         </div>
       )}
 
+      {/* Golmani */}
+      {m.scorersPublic && m.keepers?.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-xl font-black text-white mb-4">🧤 Golman</h2>
+          <div style={card} className="rounded-xl overflow-hidden">
+            {m.keepers.map((k: any, i: number) => (
+              <Link key={k.playerId} href={`/igrac/${k.playerId}`}
+                className="flex items-center gap-4 px-4 py-3 hover:bg-white/5 transition-colors"
+                style={{ borderBottom: i < m.keepers.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                {k.photoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={k.photoUrl} alt="" className="w-11 h-11 rounded-full object-cover object-top" />
+                ) : (
+                  <span style={{ backgroundColor: 'var(--primary)' }} className="w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-black">{k.jerseyNumber ?? '?'}</span>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="text-white font-semibold text-sm">{k.firstName} {k.lastName}</div>
+                  <div style={{ color: 'var(--text-muted)' }} className="text-xs">{k.saves + k.conceded} šuteva na gol</div>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-2xl font-black" style={{ color: 'var(--gold)' }}>{k.saves}</span>
+                  <span style={{ color: 'var(--text-muted)' }} className="text-xs ml-1">odbrana · {k.savePct}%</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Ostatak sastava iz zapisnika */}
       {m.scorersPublic && m.roster?.length > 0 && (
         <div className="mb-8">

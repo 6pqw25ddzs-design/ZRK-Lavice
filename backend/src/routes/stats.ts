@@ -98,6 +98,7 @@ router.get('/match/:id', async (req: Request, res: Response) => {
     const isSenior = result.event?.team?.category === 'prva_liga';
     let scorers: any[] = [];
     let roster: any[] = [];
+    let keepers: any[] = [];
 
     if (isSenior) {
       const s = (result.scorers || {}) as Record<string, unknown>;
@@ -122,10 +123,26 @@ router.get('/match/:id', async (req: Request, res: Response) => {
         })
         .filter(Boolean)
         .sort((a: any, b: any) => b.goals - a.goals);
+      const kp = (result.keepers || {}) as Record<string, any>;
+      const kpIds = Object.keys(kp);
+      if (kpIds.length) {
+        const kPlayers = await prisma.player.findMany({
+          where: { id: { in: kpIds } },
+          select: { id: true, firstName: true, lastName: true, jerseyNumber: true, photoUrl: true },
+        });
+        const kMap = new Map(kPlayers.map(p => [p.id, p]));
+        keepers = kpIds.map(pid => {
+          const p = kMap.get(pid); const k = kp[pid] || {};
+          const saves = Number(k.saves) || 0, conceded = Number(k.conceded) || 0;
+          return p ? { playerId: pid, firstName: p.firstName, lastName: p.lastName, jerseyNumber: p.jerseyNumber, photoUrl: p.photoUrl,
+            saves, conceded, savePct: saves + conceded > 0 ? Math.round((saves / (saves + conceded)) * 100) : 0 } : null;
+        }).filter(Boolean);
+      }
       const scorerIds = new Set(ids.filter(pid => (Number(s[pid]) || 0) > 0));
+      const keeperIds = new Set(kpIds);
       roster = attendance
         .map(a => pMap.get(a.playerId))
-        .filter((p): p is NonNullable<typeof p> => !!p && !scorerIds.has(p.id))
+        .filter((p): p is NonNullable<typeof p> => !!p && !scorerIds.has(p.id) && !keeperIds.has(p.id))
         .map(p => ({ playerId: p.id, firstName: p.firstName, lastName: p.lastName, jerseyNumber: p.jerseyNumber, photoUrl: p.photoUrl }))
         .sort((a, b) => (a.jerseyNumber ?? 99) - (b.jerseyNumber ?? 99));
     }
@@ -144,6 +161,7 @@ router.get('/match/:id', async (req: Request, res: Response) => {
       },
       scorersPublic: isSenior,
       scorers,
+      keepers,
       roster,
     });
   } catch (e: any) {
