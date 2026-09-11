@@ -62,7 +62,11 @@ export default async function PodrziNasPage() {
 
       {/* Uplata */}
       <div style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-2xl p-8 mb-16">
-        <h2 className="text-white font-black text-2xl mb-6">Direktna donacija</h2>
+        <h2 className="text-white font-black text-2xl mb-2">Direktna donacija</h2>
+        <a href="/doniraj" style={{ backgroundColor: 'var(--gold)', color: '#1A1A1A' }}
+          className="inline-block px-6 py-2.5 rounded-full font-black text-sm mb-6 hover:brightness-110 transition-all">
+          💳 Doniraj karticom online →
+        </a>
         <div className="flex flex-col gap-4">
           {uplata.map(r => (
             <div key={r.label} style={{ borderBottom: '1px solid var(--border)' }} className="flex justify-between items-center gap-4 pb-4 last:border-0 last:pb-0 flex-wrap">
