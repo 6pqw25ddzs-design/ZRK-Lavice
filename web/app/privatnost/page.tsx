@@ -7,7 +7,7 @@ export default function PrivatnostPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12" style={{ color: 'var(--text-muted)' }}>
       <h1 className="text-3xl font-black text-white mb-2">Politika privatnosti</h1>
-      <p className="text-sm">Posljednje ažuriranje: 27. jun 2026.</p>
+      <p className="text-sm">Posljednje ažuriranje: 11. septembar 2026.</p>
 
       <p className={`${tekst} mt-6`}>
         Ženski rukometni klub Lavice („ŽRK Lavice", „mi") poštuje vašu privatnost. Ova politika
@@ -49,6 +49,16 @@ export default function PrivatnostPage() {
       <p className={tekst}>
         Podaci se čuvaju na zaštićenim serverima i dostupni su samo ovlašćenim predstavnicima
         kluba. Čuvamo ih onoliko koliko je potrebno za svrhu upisa i vođenje evidencije članstva.
+      </p>
+
+      <h2 className={sekcija}>Podaci kod online plaćanja</h2>
+      <p className={tekst}>
+        Kod online donacija i članarina prikupljamo ime, email i iznos uplate — radi evidencije
+        uplate i slanja potvrde. Plaćanje se obavlja preko Monri WebPay sistema u saradnji sa
+        Crnogorskom komercijalnom bankom: podaci o platnoj kartici unose se isključivo na
+        zaštićenoj stranici procesora plaćanja i nikada ne dolaze u dodir sa serverima kluba,
+        niti ih klub čuva. Podatke o uplati dijelimo samo sa procesorom plaćanja i bankom,
+        u mjeri neophodnoj za izvršenje i evidenciju transakcije.
       </p>
 
       <h2 className={sekcija}>Vaša prava</h2>
