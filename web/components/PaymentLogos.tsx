@@ -6,6 +6,7 @@ const LOGOS = [
   { src: '/platne/visa-secure.jpg', alt: 'Visa Secure', href: 'https://www.visa.com/pay-with-visa/featured-technologies/visa-secure.html' },
   { src: '/platne/mc-idcheck.png', alt: 'Mastercard Identity Check', href: 'https://www.mastercard.com' },
   { src: '/platne/monri.png', alt: 'Monri WebPay', href: 'https://monri.com' },
+  { src: '/platne/ckb-otp.jpg', alt: 'CKB — OTP banka', href: 'https://www.ckb.me' },
 ];
 
 export default function PaymentLogos() {
