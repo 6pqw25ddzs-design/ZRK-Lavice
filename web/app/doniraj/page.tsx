@@ -82,7 +82,7 @@ function DonirajForm() {
           Nastavi na plaćanje →
         </button>
         <p style={{ color: 'var(--text-muted)' }} className="text-xs text-center leading-relaxed">
-          Klikom prihvataš <a href="/uslovi" className="underline">uslove korišćenja i politiku refundacije</a>.<br />
+          Klikom na „Nastavi na plaćanje" prihvataš <a href="/uslovi" className="underline">uslove korišćenja i politiku refundacije</a>.<br />
           ŽRK Lavice-UDG · Trg Božane Vučinić 34, Podgorica · info@zrklavice.me
         </p>
         <div className="pt-1"><PaymentLogos /></div>
