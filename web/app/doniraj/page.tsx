@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import PaymentLogos from '@/components/PaymentLogos';
 import { Suspense } from 'react';
 
 const PRESETS = [5, 10, 20, 50];
@@ -84,12 +85,7 @@ function DonirajForm() {
           Klikom prihvataš <a href="/uslovi" className="underline">uslove korišćenja i politiku refundacije</a>.<br />
           ŽRK Lavice-UDG · Trg Božane Vučinić 34, Podgorica · info@zrklavice.me
         </p>
-        <div className="flex items-center justify-center gap-3 flex-wrap pt-1">
-          {['Visa', 'Mastercard', 'Maestro', 'Monri WebPay', '3-D Secure'].map(b => (
-            <span key={b} className="px-3 py-1 rounded-md text-[11px] font-bold"
-              style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}>{b}</span>
-          ))}
-        </div>
+        <div className="pt-1"><PaymentLogos /></div>
       </form>
     </div>
   );

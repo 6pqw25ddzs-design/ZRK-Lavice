@@ -1,4 +1,5 @@
 import { getSettings } from '@/lib/api';
+import PaymentLogos from '@/components/PaymentLogos';
 
 export const revalidate = 60;
 export const metadata = {
@@ -123,11 +124,14 @@ export default async function PodrziNasPage() {
       </div>
 
       {/* Napomena */}
-      <div style={{ border: '1px solid var(--border)', borderLeft: '3px solid var(--primary)' }} className="rounded-xl p-5">
+      <div style={{ border: '1px solid var(--border)', borderLeft: '3px solid var(--primary)' }} className="rounded-xl p-5 mb-10">
         <p style={{ color: 'var(--text-muted)' }} className="text-sm leading-relaxed">
           Sve donacije se koriste isključivo za potrebe kluba i razvoj igračica.
         </p>
       </div>
+
+      {/* Platne šeme */}
+      <PaymentLogos />
     </div>
   );
 }
