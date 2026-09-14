@@ -61,6 +61,36 @@ export default function PrivatnostPage() {
         u mjeri neophodnoj za izvršenje i evidenciju transakcije.
       </p>
 
+      <h2 className={sekcija}>Sigurnost plaćanja kreditnim karticama</h2>
+      <p className={tekst}>
+        Tajnost Vaših podataka je zaštićena i osigurana korištenjem posljednje verzije TLS enkripcije.
+        Stranice za naplatu putem interneta osigurane su korištenjem Secure Socket Layer (SSL) protokola
+        sa 128-bitnom enkripcijom podataka. SSL enkripcija je postupak šifriranja podataka radi
+        sprječavanja neovlaštenog pristupa prilikom njihovog prijenosa. Time je omogućen siguran prijenos
+        informacija te onemogućen nedozvoljen pristup podacima prilikom komunikacije između korisnikovog
+        računala i WebPay servisa, te obratno.
+      </p>
+      <p className={tekst}>
+        WebPay servis i finansijske ustanove razmjenjuju podatke upotrebom virtualne privatne mreže (VPN),
+        koja je zaštićena od neautorizovanog pristupa. Monri Payment Gateway je certificiran prema
+        PCI DSS Level 1 sigurnosnom standardu propisanom Visa i Mastercard pravilima.
+        Trgovac ne pohranjuje brojeve kreditnih kartica i brojevi nisu dostupni neovlaštenim osobama.
+      </p>
+
+      <h2 className={sekcija}>Izjava o zaštiti i prikupljanju ličnih podataka</h2>
+      <p className={tekst}>
+        Obavezujemo se pružati zaštitu ličnim podacima kupaca, na način da prikupljamo samo nužne,
+        osnovne podatke o kupcima / korisnicima koji su nužni za ispunjenje naših obaveza; informišemo
+        kupce o načinu korištenja prikupljenih podataka, redovno dajemo kupcima mogućnost izbora o
+        upotrebi njihovih podataka, uključujući mogućnost odluke žele li ili ne da se njihovo ime ukloni
+        s lista koje se koriste za marketinške kampanje.
+      </p>
+      <p className={tekst}>
+        Svi se podaci o korisnicima strogo čuvaju i dostupni su samo djelatnicima kojima su ti podaci
+        nužni za obavljanje posla. Svi naši djelatnici i poslovni partneri odgovorni su za poštovanje
+        načela zaštite privatnosti.
+      </p>
+
       <h2 className={sekcija}>Vaša prava</h2>
       <p className={tekst}>
         U svakom trenutku možete zatražiti uvid, ispravku ili brisanje podataka koje ste nam
