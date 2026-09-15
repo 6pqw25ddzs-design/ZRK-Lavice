@@ -16,7 +16,7 @@ const NAV = [
 const MEGA = [
   { href: '/o-nama', label: 'O nama' },
   { href: '/#osnivaci', label: 'Osnivači' },
-  { href: '/#treneri', label: 'Stručni tim' },
+  { href: '/treneri', label: 'Stručni tim' },
   { href: '/#programi', label: 'Programi' },
   { href: '/dokumenti', label: 'Dokumenti' },
   { href: '/galerija', label: 'Galerija' },
