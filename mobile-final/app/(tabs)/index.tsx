@@ -85,9 +85,6 @@ export default function HomeScreen() {
         </View>
       </ImageBackground>
 
-      {/* ARENA — matchday / rezultat kartica (pojavljuje se sama) */}
-      <ArenaCard />
-
       {/* STATISTIKA — premium horizontalne kartice */}
       <FadeInView delay={200}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}
@@ -103,6 +100,9 @@ export default function HomeScreen() {
           ))}
         </ScrollView>
       </FadeInView>
+
+      {/* ARENA — matchday / rezultat kartica (pojavljuje se sama) */}
+      <ArenaCard />
 
       {loading && <ActivityIndicator color={Colors.primary} style={{ marginTop: 40 }} />}
 
