@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, Dimensions, Image, ImageBackground } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, Dimensions, Image } from 'react-native';
+import { ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -49,7 +50,7 @@ export default function HomeScreen() {
   return (
     <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
       {/* HERO — emocionalni centar */}
-      <ImageBackground source={{ uri: HERO_IMG }} style={s.hero} imageStyle={s.heroImg}>
+      <ImageBackground source={{ uri: HERO_IMG }} style={s.hero} contentFit="cover" contentPosition="top" transition={200}>
         <LinearGradient
           colors={['rgba(26,26,26,0.25)', 'rgba(26,26,26,0.55)', 'rgba(26,26,26,0.94)']}
           locations={[0, 0.55, 1]}
