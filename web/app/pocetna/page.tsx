@@ -2,7 +2,6 @@ import Image from 'next/image';
 import UpisForm from '@/components/UpisForm';
 import Link from 'next/link';
 import ScheduleList from '@/components/ScheduleList';
-import CountUp from '@/components/site/CountUp';
 import TeamTabs from '@/components/club/TeamTabs';
 import ArenaHero from '@/components/ArenaHero';
 import { getSponsors, getSettings, getTeams, getPlayers, getSchedule, getNews, getTreneri, getResults } from '@/lib/api';
@@ -82,7 +81,7 @@ export default async function PocetnaPage() {
     : (Array.isArray(teams)
         ? new Set(teams.flatMap((t: any) => (t.coaches || []).map((c: any) => c.userId || c.id))).size
         : 0);
-  // --- ArenaHero: tri stanja (matchday / postmatch / manifest) ---
+  // --- ArenaHero: identitetski hero + kompaktan sportski blok ---
   const API = 'https://zrk-lavice-api.onrender.com';
   const firstTeam = (teams as any[]).find(t => t.category === 'prva_liga');
   const stats = firstTeam
@@ -91,56 +90,28 @@ export default async function PocetnaPage() {
     : null;
 
   const now = Date.now();
-  const dayPG = (d: string | Date) => new Date(d).toLocaleDateString('sv-SE', { timeZone: 'Europe/Podgorica' });
-  const today = dayPG(new Date());
+  const nextMatch = (Array.isArray(schedule) ? schedule : [])
+    .find((e: any) => e.type === 'match' && new Date(e.startsAt).getTime() > now - 2 * 3600_000) || null;
 
-  const ftMatches = (Array.isArray(schedule) ? schedule : [])
-    .filter((e: any) => e.type === 'match' && e.team?.category === 'prva_liga');
-  const matchdayEvent = ftMatches.find((e: any) =>
-    dayPG(e.startsAt) === today && now < new Date(e.startsAt).getTime() + 2 * 3600_000);
-
-  const ftResults = (Array.isArray(results) ? results : [])
-    .filter((r: any) => r.event?.team?.category === 'prva_liga');
-  const freshResult = ftResults.find((r: any) =>
-    now - new Date(r.event?.startsAt).getTime() < 48 * 3600_000 && now > new Date(r.event?.startsAt).getTime());
+  const lastR = (Array.isArray(results) ? results : [])
+    .find((r: any) => new Date(r.event?.startsAt).getTime() < now) || null;
 
   let mvp: any = null;
-  if (freshResult?.scorers && typeof freshResult.scorers === 'object') {
-    const [pid, g] = Object.entries(freshResult.scorers as Record<string, number>)
+  if (lastR?.scorers && typeof lastR.scorers === 'object') {
+    const [pid, g] = Object.entries(lastR.scorers as Record<string, number>)
       .sort((a: any, b: any) => b[1] - a[1])[0] || [];
     const pl = (players as any[]).find(p => p.id === pid);
     if (pl && g) mvp = { id: pid, name: `${pl.firstName} ${pl.lastName}`.trim(), goals: Number(g), photoUrl: pl.photoUrl, jerseyNumber: pl.jerseyNumber };
   }
 
-  const form = ftResults.slice(0, 5).reverse().map((r: any) =>
-    r.homeScore > r.awayScore ? 'W' : r.homeScore === r.awayScore ? 'D' : 'L');
-  const topS = stats?.scorers?.[0];
-
-  const nextByTeam = ['prva_liga', 'pioniri', 'mini'].map(cat => {
-    const ev = (Array.isArray(schedule) ? schedule : []).find((e: any) => e.team?.category === cat);
-    if (!ev) return null;
-    return {
-      category: cat,
-      label: ev.team?.name || '',
-      when: new Date(ev.startsAt).toLocaleString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      title: ev.title,
-    };
-  }).filter(Boolean) as any[];
-
   const heroData = {
-    state: (matchdayEvent ? 'matchday' : freshResult ? 'postmatch' : 'manifest') as any,
-    match: matchdayEvent ? {
-      title: matchdayEvent.title, opponent: matchdayEvent.opponent, location: matchdayEvent.location,
-      startsAt: matchdayEvent.startsAt, notes: matchdayEvent.notes,
-      home: !(matchdayEvent.title || '').trim().toLowerCase().startsWith((matchdayEvent.opponent || '\u0000').trim().toLowerCase()),
-    } : undefined,
-    form, topScorer: topS ? { name: `${topS.firstName} ${topS.lastName}`, goals: topS.goals } : null,
-    lastResult: freshResult ? {
-      id: freshResult.id, homeScore: freshResult.homeScore, awayScore: freshResult.awayScore,
-      title: freshResult.event?.title || '', notes: freshResult.notes, mvp,
-    } : undefined,
+    match: nextMatch ? { title: nextMatch.title, opponent: nextMatch.opponent, location: nextMatch.location, startsAt: nextMatch.startsAt, notes: nextMatch.notes } : null,
+    lastResult: lastR ? {
+      id: lastR.id, homeScore: lastR.homeScore, awayScore: lastR.awayScore,
+      title: lastR.event?.title || '', notes: lastR.notes, date: lastR.event?.startsAt, mvp,
+    } : null,
     clubStats: { igracica: brojIgracica, generacije: brojEkipa },
-    nextByTeam,
+    nextByTeam: [] as any[],
   };
 
   const email = settings.contact_email || 'info@zrklavice.me';
@@ -151,27 +122,6 @@ export default async function PocetnaPage() {
     <div id="top" style={{ backgroundColor: 'var(--lav-cream)' }}>
 
       <ArenaHero data={heroData} />
-
-      {/* BROJEVI KLUBA */}
-      <section className="py-16" style={{ backgroundColor: 'var(--lav-black)' }}>
-        <div className="max-w-[1320px] mx-auto px-6 lg:px-12">
-          <div className="gold-line mb-12" />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
-            {[
-              { v: brojIgracica, l: 'Igračica' },
-              { v: brojEkipa, l: 'Ekipe' },
-              { v: brojTrenera, l: 'Trenera' },
-              { v: 2026, l: 'Osnovano' },
-            ].map(st => (
-              <div key={st.l}>
-                <CountUp value={st.v} className="display nums" style={{ fontSize: 'clamp(3.2rem, 6vw, 5.5rem)', color: 'var(--lav-gold)', lineHeight: 1 }} />
-                <div className="eyebrow mt-3">{st.l}</div>
-              </div>
-            ))}
-          </div>
-          <div className="gold-line mt-12" style={{ transform: 'scaleX(-1)' }} />
-        </div>
-      </section>
 
       {/* OSNIVAČI */}
       <section id="osnivaci" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-maroon)' }}>
@@ -275,7 +225,7 @@ export default async function PocetnaPage() {
                   <h3 className="text-white font-bold text-xl">{p.naslov}</h3>
                   <p className="mt-1.5 text-[15px]" style={{ color: 'var(--lav-grey-400)' }}>{p.cilj} · {p.treninzi}</p>
                 </div>
-                <a href="#upis" className="font-bold text-sm whitespace-nowrap shrink-0 group-hover:translate-x-1 transition-transform" style={{ color: 'var(--lav-red)' }}>
+                <a href="#upis" className="font-bold text-sm whitespace-nowrap shrink-0 group-hover:translate-x-1 transition-transform" style={{ color: '#E8546F' }}>
                   Prijavi se na probni trening →
                 </a>
               </div>
@@ -307,7 +257,7 @@ export default async function PocetnaPage() {
                 <div className="eyebrow mb-3" style={{ color: 'var(--lav-gold)' }}>Prvi tim · sezona 2026/27</div>
                 <h2 className="display text-white" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}>Utakmice i strijelci</h2>
               </div>
-              <Link href="/rezultati" className="font-bold text-sm hover:underline" style={{ color: 'var(--lav-red)' }}>Svi rezultati →</Link>
+              <Link href="/rezultati" className="font-bold text-sm hover:underline" style={{ color: '#E8546F' }}>Svi rezultati →</Link>
             </div>
             <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12">
               <div className="flex flex-col">
@@ -353,17 +303,30 @@ export default async function PocetnaPage() {
                 </div>
               )}
             </div>
-          </div>
-        </section>
-      )}
 
-      {/* RASPORED */}
-      {upcoming.length > 0 && (
-        <section id="raspored" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-maroon)' }}>
-          <div className="max-w-4xl mx-auto px-6 lg:px-12">
-            <div className="eyebrow mb-3" style={{ color: 'var(--lav-gold)' }}>Naredni termini</div>
-            <h2 className="display text-white mb-12" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}>Raspored</h2>
-            <ScheduleList events={upcoming} />
+            {/* Naredni termini — max 3 */}
+            {upcoming.length > 0 && (
+              <div id="raspored" className="mt-12 pt-8" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className="flex items-end justify-between flex-wrap gap-3 mb-5">
+                  <div className="eyebrow">Naredni termini</div>
+                  <Link href="/raspored" className="font-bold text-sm hover:underline" style={{ color: '#E8546F' }}>Kompletan raspored →</Link>
+                </div>
+                <div className="grid sm:grid-cols-3 gap-4">
+                  {upcoming.slice(0, 3).map((e: any) => (
+                    <Link key={e.id} href="/raspored" className="flex items-center gap-3.5 rounded-xl p-4 hover:bg-white/[0.04] transition-colors"
+                      style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
+                      <span className="w-1 h-10 rounded-full shrink-0" style={{ backgroundColor: (e.team?.category === 'prva_liga' ? 'var(--gen-prva)' : e.team?.category === 'pioniri' ? 'var(--gen-pioniri)' : 'var(--gen-mini)') }} />
+                      <div className="min-w-0">
+                        <div className="text-[10.5px] font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--lav-grey-400)' }}>
+                          {new Date(e.startsAt).toLocaleString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                        <div className="text-white font-bold text-sm truncate">{e.title}</div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
       )}

@@ -34,7 +34,7 @@ export default async function LiveTicker() {
     const w = lastResult.homeScore > lastResult.awayScore, d = lastResult.homeScore === lastResult.awayScore;
     segments.push({
       href: `/utakmica/${lastResult.id}`, label: w ? 'Pobjeda' : d ? 'Neriješeno' : 'Posljednji rezultat',
-      value: `${lastResult.event?.title} ${lastResult.homeScore}:${lastResult.awayScore}`,
+      value: `Lavice ${lastResult.homeScore}:${lastResult.awayScore} ${lastResult.event?.title}`,
     });
   }
   if (nextTraining) {

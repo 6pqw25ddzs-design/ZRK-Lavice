@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import SiteHeader from "@/components/site/SiteHeader";
 import LiveTicker from "@/components/site/LiveTicker";
+import TickerGate from "@/components/site/TickerGate";
 import Footer from "@/components/Footer";
 
 const display = Bebas_Neue({
@@ -43,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-full flex flex-col" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
         <a href="#sadrzaj" className="skip-link">Preskoči na sadržaj</a>
         <SiteHeader />
-        <LiveTicker />
+        <TickerGate><LiveTicker /></TickerGate>
         <main id="sadrzaj" className="flex-1">{children}</main>
         <Footer />
       </body>
