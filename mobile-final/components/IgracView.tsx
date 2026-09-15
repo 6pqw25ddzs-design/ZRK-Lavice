@@ -4,6 +4,8 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '../constants/AppColors';
+
+const TEAM_COLORS: Record<string, string> = { prva_liga: '#C41230', pioniri: '#2563EB', mini: '#0D9488' };
 import { getPlayerProfile } from '../lib/api';
 
 export default function IgracView({ id, onBack }: { id: string; onBack: () => void }) {
@@ -35,7 +37,7 @@ export default function IgracView({ id, onBack }: { id: string; onBack: () => vo
         <View style={s.center}><Text style={s.empty}>Igračica nije pronađena.</Text></View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
-          <View style={s.top}>
+          <View style={[s.top, { borderLeftWidth: 4, borderLeftColor: TEAM_COLORS[p.team?.category] || '#8a8a8a', paddingLeft: 14, borderRadius: 4 }]}>
             {p.photoUrl ? (
               <Image source={{ uri: p.photoUrl }} style={s.heroPhoto} contentFit="cover" contentPosition="top" transition={150} />
             ) : (
@@ -55,8 +57,8 @@ export default function IgracView({ id, onBack }: { id: string; onBack: () => vo
                 : { label: 'Treninga', value: trainings },
               { label: 'Utakmica', value: matches },
             ].map(st => (
-              <View key={st.label} style={s.statCard}>
-                <Text style={s.statNum}>{String(st.value)}</Text>
+              <View key={st.label} style={[s.statCard, { borderTopWidth: 2, borderTopColor: TEAM_COLORS[p.team?.category] || '#8a8a8a' }]}>
+                <Text style={[s.statNum, { color: TEAM_COLORS[p.team?.category] || Colors.primary }]}>{String(st.value)}</Text>
                 <Text style={s.statLabel}>{st.label}</Text>
               </View>
             ))}

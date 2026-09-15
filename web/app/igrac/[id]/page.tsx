@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getPlayer, getResults } from '@/lib/api';
+import { teamMeta } from '@/lib/teamColors';
 
 export const revalidate = 0;
 
@@ -37,6 +38,7 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     : [];
 
+  const tm = teamMeta(p.team?.category);
   const isKeeper = (p.saves ?? 0) + (p.conceded ?? 0) > 0;
   const stats = isFirstTeam && isKeeper
     ? [
@@ -57,7 +59,7 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
   return (
     <div>
       {/* HERO — stil velikih klupskih sajtova */}
-      <div className="relative overflow-hidden" style={{ background: 'radial-gradient(120% 120% at 80% 0%, #4a0f1d 0%, #2a0c14 40%, #141414 100%)' }}>
+      <div className="relative overflow-hidden" style={{ background: `radial-gradient(120% 120% at 80% 0%, ${tm.color}44 0%, ${tm.color}1a 40%, #141414 100%)` }}>
         {/* ogromni broj dresa u pozadini */}
         {p.jerseyNumber != null && (
           <div aria-hidden className="absolute right-0 top-1/2 -translate-y-1/2 font-black select-none pointer-events-none leading-none"
@@ -97,17 +99,15 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
                 {p.jerseyNumber != null && (
                   <span className="text-5xl font-black leading-none" style={{ color: '#D4AC0D' }}>{p.jerseyNumber}</span>
                 )}
-                <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-white" style={{ backgroundColor: '#C41230' }}>
+                <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-white" style={{ backgroundColor: tm.color }}>
                   {p.position || 'Igračica'}
                 </span>
-                {isFirstTeam && (
-                  <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"
-                    style={{ color: '#D4AC0D', border: '1px solid rgba(212,172,13,0.4)' }}>Prvi tim</span>
-                )}
+                <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"
+                  style={{ color: tm.color, border: `1px solid ${tm.color}66` }}>{tm.label}</span>
               </div>
               <h1 className="font-black text-white uppercase leading-[0.88] tracking-tight" style={{ fontSize: 'clamp(2.6rem, 7vw, 5.2rem)' }}>
                 <span className="block" style={{ color: 'rgba(255,255,255,0.82)' }}>{p.firstName}</span>
-                <span className="block" style={{ color: '#C41230', textShadow: '0 2px 30px rgba(196,18,48,0.35)' }}>{p.lastName}</span>
+                <span className="block" style={{ color: tm.color, textShadow: `0 2px 30px ${tm.color}59` }}>{p.lastName}</span>
               </h1>
               {!isFirstTeam && p.team?.name && (
                 <div className="mt-4 text-lg font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>{p.team.name}</div>
@@ -124,8 +124,8 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
           {stats.map(s => (
             <div key={s.label} className="rounded-2xl p-6 text-center relative overflow-hidden"
               style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
-              <div className="absolute inset-x-0 top-0 h-[2px]" style={{ background: 'linear-gradient(90deg, #C41230, #D4AC0D)' }} />
-              <div className="text-5xl font-black tracking-tight" style={{ color: 'var(--primary)' }}>{s.value}</div>
+              <div className="absolute inset-x-0 top-0 h-[2px]" style={{ background: `linear-gradient(90deg, ${tm.color}, #D4AC0D)` }} />
+              <div className="text-5xl font-black tracking-tight" style={{ color: tm.color }}>{s.value}</div>
               <div style={{ color: 'var(--text-muted)' }} className="text-[11px] mt-2.5 uppercase tracking-[0.18em] font-bold">{s.label}</div>
             </div>
           ))}

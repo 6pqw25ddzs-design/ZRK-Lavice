@@ -6,6 +6,9 @@ import { Colors, Fonts } from '../../constants/AppColors';
 import { getTeams, getPlayers } from '../../lib/api';
 import IgracView from '../../components/IgracView';
 
+const TEAM_COLORS: Record<string, string> = { prva_liga: '#C41230', pioniri: '#2563EB', mini: '#0D9488' };
+const teamColor = (c?: string) => TEAM_COLORS[c || ''] || '#8a8a8a';
+
 export default function EkipeScreen() {
   const insets = useSafeAreaInsets();
   const [teams, setTeams] = useState<any[]>([]);
@@ -25,6 +28,7 @@ export default function EkipeScreen() {
   }, []);
 
   const teamPlayers = players.filter(p => p.teamId === selected);
+  const selColor = teamColor(teams.find(t => t.id === selected)?.category);
 
   if (openPlayer) {
     return <IgracView id={openPlayer} onBack={() => setOpenPlayer(null)} />;
@@ -38,7 +42,8 @@ export default function EkipeScreen() {
           <View style={s.tabs}>
             {teams.map(t => (
               <TouchableOpacity key={t.id} onPress={() => setSelected(t.id)}
-                style={[s.tab, selected === t.id && s.tabActive]}>
+                style={[s.tab, selected === t.id && { backgroundColor: teamColor(t.category) }]}>
+                <View style={[s.tabDot, { backgroundColor: selected === t.id ? '#fff' : teamColor(t.category) }]} />
                 <Text style={[s.tabText, selected === t.id && s.tabTextActive]}>{t.name}</Text>
               </TouchableOpacity>
             ))}
@@ -58,6 +63,7 @@ export default function EkipeScreen() {
                 <View style={s.jersey}><Text style={s.jerseyNum}>{p.jerseyNumber ?? '?'}</Text></View>
               </View>
             )}
+            <View style={{ height: 3, backgroundColor: selColor }} />
             <View style={s.cardBody}>
               <Text style={s.playerName}>{p.firstName} {p.lastName}</Text>
               <Text style={s.playerPos}>
@@ -79,7 +85,8 @@ const s = StyleSheet.create({
   header: { padding: 20, paddingTop: 24 },
   headerTitle: { color: Colors.text, fontSize: 24, fontFamily: Fonts.heading, marginBottom: 16 },
   tabs: { flexDirection: 'row', gap: 8 },
-  tab: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: Colors.card, borderWidth: 1, borderColor: Colors.border },
+  tabDot: { width: 7, height: 7, borderRadius: 4, marginRight: 6 },
+  tab: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: Colors.card, borderWidth: 1, borderColor: Colors.border },
   tabActive: { backgroundColor: Colors.primary },
   tabText: { color: Colors.textMuted, fontSize: 13, fontFamily: Fonts.bodyBold },
   tabTextActive: { color: '#fff' },
