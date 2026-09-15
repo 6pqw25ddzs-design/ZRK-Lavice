@@ -65,7 +65,7 @@ export default function ArenaHero({ data }: { data: HeroData }) {
                 alt="Rukometašica Lavica u skok-šutu tokom utakmice"
                 fetchPriority="high"
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{ objectPosition: '38% 22%' }} />
+                style={{ objectPosition: '42% 18%' }} />
             </picture>
             {/* blagi prelaz ka tekstualnom dijelu */}
             <div aria-hidden className="absolute inset-0 pointer-events-none hidden lg:block"

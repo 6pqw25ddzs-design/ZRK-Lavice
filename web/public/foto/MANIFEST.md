@@ -4,7 +4,7 @@ Preuzeto legitimnom download funkcijom galerije ("For social media" izvoz, 2560p
 
 | Lokalni fajl | Original | Namjena | Crop/focal | Alt |
 |---|---|---|---|---|
-| lavice-hero-akcija.webp (+ -m mobilna) | 1309 (136 of 195).jpg | Hero, prvi ekran | object-position 38% 22% (lice+lopta) | Rukometašica Lavica u skok-šutu tokom utakmice |
+| lavice-hero-akcija.webp (+ -m mobilna) | 1309 (142 of 195).jpg | Hero, prvi ekran | object-position 42% 18% (lice+lopta) | Rukometašica Lavica u skok-šutu tokom utakmice |
 | lavice-zajednistvo.webp | 1309 (7 of 195).jpg | O klubu | 4:3, center 30% | Igračice Lavica zajedno na terenu u crvenim klupskim dresovima |
 | lavice-podrska-trenera.webp | 1309 (112 of 195).jpg | Za roditelje | 4:3 | Nasmijana igračica Lavica i trener pored terena |
 
