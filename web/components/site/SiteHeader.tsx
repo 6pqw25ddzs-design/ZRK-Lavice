@@ -43,14 +43,14 @@ const MOBILE_GROUPS: { title: string; items: { href: string; label: string }[] }
   ]},
 ];
 
-function MobileMenu({ onClose }: { onClose: () => void }) {
+function MobileMenu({ onClose }: { onClose: (restoreFocus?: boolean) => void }) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') onClose(true);
       if (e.key === 'Tab' && panelRef.current) {
         const els = panelRef.current.querySelectorAll<HTMLElement>('a, button');
         if (!els.length) return;
@@ -72,13 +72,13 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
         <div className="flex items-center justify-between px-6 h-[64px] shrink-0"
           style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <span className="display text-xl text-white">ŽRK LAVICE-UDG</span>
-          <button onClick={onClose} aria-label="Zatvori meni" className="text-white p-2 -mr-2">
+          <button onClick={() => onClose(true)} aria-label="Zatvori meni" className="text-white p-2 -mr-2">
             <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
           </button>
         </div>
 
         <div className="px-6 pt-5">
-          <Link href="/#upis" onClick={onClose}
+          <Link href="/#upis" onClick={() => onClose(false)}
             className="block py-3.5 rounded-full text-white text-center font-bold text-base"
             style={{ backgroundColor: 'var(--lav-red)' }}>
             Upiši dijete
@@ -91,7 +91,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
               <div className="eyebrow mb-2.5" style={{ color: 'var(--lav-gold)' }}>{g.title}</div>
               <div className="flex flex-col">
                 {g.items.map(l => (
-                  <Link key={l.label} href={l.href} onClick={onClose}
+                  <Link key={l.label} href={l.href} onClick={() => onClose(false)}
                     className="display text-2xl text-white/85 hover:text-white py-2">
                     {l.label}
                   </Link>
@@ -109,6 +109,14 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  // Zatvaranje (Escape / dugme) vraća fokus na dugme koje je otvorilo meni;
+  // navigacioni link zatvara bez nasilnog vraćanja fokusa.
+  const close = (restoreFocus = true) => {
+    setOpen(false);
+    if (restoreFocus) requestAnimationFrame(() => triggerRef.current?.focus());
+  };
   const [mega, setMega] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -159,14 +167,14 @@ export default function SiteHeader() {
           </Link>
         </nav>
 
-        <button className="lg:hidden text-white p-2 -mr-2" onClick={() => setOpen(true)}
+        <button ref={triggerRef} className="lg:hidden text-white p-2 -mr-2" onClick={() => setOpen(true)}
           aria-label="Otvori meni" aria-expanded={open} aria-controls="mobilni-meni">
           <svg width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="4" y1="8" x2="22" y2="8" /><line x1="4" y1="13" x2="22" y2="13" /><line x1="4" y1="18" x2="22" y2="18" />
           </svg>
         </button>
       </div>
-      {open && <MobileMenu onClose={() => setOpen(false)} />}
+      {open && <MobileMenu onClose={close} />}
     </header>
   );
 }

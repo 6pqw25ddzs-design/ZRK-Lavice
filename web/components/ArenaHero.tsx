@@ -27,40 +27,51 @@ export default function ArenaHero({ data }: { data: HeroData }) {
 
   return (
     <>
-      {/* HERO — fotografija + poruka */}
+      {/* HERO — tekst lijevo, fotografija A desno */}
       <section className="relative overflow-hidden" style={{ backgroundColor: 'var(--lav-black)' }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/hero.jpg" alt="ŽRK Lavice — slavlje nakon gola" fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ objectPosition: 'center 22%' }} />
-        {/* lokalizovan gradijent za čitljivost — lica i dresovi ostaju vidljivi */}
-        <div className="absolute inset-0" style={{
-          background: 'linear-gradient(to right, rgba(11,10,12,0.88) 0%, rgba(11,10,12,0.55) 45%, rgba(11,10,12,0.15) 75%, rgba(11,10,12,0.35) 100%)',
-        }} />
-        <div className="absolute inset-x-0 bottom-0 h-40" style={{ background: 'linear-gradient(to top, rgba(11,10,12,0.9), transparent)' }} />
+        <div className="grid lg:grid-cols-[2fr_3fr] min-h-[auto] lg:min-h-[78svh]">
+          {/* Tekst */}
+          <div className="flex items-center relative z-10 px-6 lg:pl-12 lg:pr-0 pt-14 pb-10 lg:py-20">
+            <div className="max-w-xl">
+              <div className="flex items-center gap-3.5 mb-5">
+                <span className="w-11 h-[3px]" style={{ background: 'linear-gradient(90deg, var(--lav-red), var(--lav-gold))' }} />
+                <span className="eyebrow" style={{ color: 'var(--lav-gold)' }}>Podgorica, Crna Gora</span>
+              </div>
+              <h1 className="display text-white leading-[0.9]" style={{ fontSize: 'clamp(2.9rem, 6.5vw, 6rem)' }}>
+                Stvaramo nove <span style={{ color: '#E8546F' }}>Lavice.</span>
+              </h1>
+              <p className="mt-4 text-lg md:text-2xl font-medium text-white/90">
+                Rukomet. Samopouzdanje. Zajedništvo.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-4">
+                <a href="#upis" style={{ backgroundColor: 'var(--lav-red)' }}
+                  className="px-8 py-4 rounded-full text-white font-bold hover:brightness-110 transition-all shadow-xl shadow-red-900/40">
+                  Dođi na probni trening
+                </a>
+                <a href="#o-klubu" style={{ border: '1.5px solid rgba(255,255,255,0.55)', color: '#fff' }}
+                  className="px-8 py-4 rounded-full font-bold hover:bg-white/10 transition-all">
+                  Upoznaj klub
+                </a>
+              </div>
+            </div>
+          </div>
 
-        <div className="relative max-w-[1320px] mx-auto px-6 lg:px-12 min-h-[72svh] md:min-h-[78svh] flex items-center">
-          <div className="max-w-2xl py-20">
-            <div className="flex items-center gap-3.5 mb-5">
-              <span className="w-11 h-[3px]" style={{ background: 'linear-gradient(90deg, var(--lav-red), var(--lav-gold))' }} />
-              <span className="eyebrow" style={{ color: 'var(--lav-gold)' }}>Podgorica, Crna Gora</span>
-            </div>
-            <h1 className="display text-white leading-[0.9]" style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)' }}>
-              Stvaramo nove <span style={{ color: '#E8546F' }}>Lavice.</span>
-            </h1>
-            <p className="mt-5 text-lg md:text-2xl font-medium text-white/90">
-              Rukomet. Samopouzdanje. Zajedništvo.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <a href="#upis" style={{ backgroundColor: 'var(--lav-red)' }}
-                className="px-8 py-4 rounded-full text-white font-bold hover:brightness-110 transition-all shadow-xl shadow-red-900/40">
-                Dođi na probni trening
-              </a>
-              <a href="#o-klubu" style={{ border: '1.5px solid rgba(255,255,255,0.55)', color: '#fff' }}
-                className="px-8 py-4 rounded-full font-bold hover:bg-white/10 transition-all">
-                Upoznaj klub
-              </a>
-            </div>
+          {/* Fotografija — skok-šut, lice i lopta sačuvani */}
+          <div className="relative min-h-[46svh] lg:min-h-0">
+            <picture>
+              <source media="(max-width: 1023px)" srcSet="/foto/lavice-hero-akcija-m.webp" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/foto/lavice-hero-akcija.webp"
+                alt="Rukometašica Lavica u skok-šutu tokom utakmice"
+                fetchPriority="high"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ objectPosition: '38% 22%' }} />
+            </picture>
+            {/* blagi prelaz ka tekstualnom dijelu */}
+            <div aria-hidden className="absolute inset-0 pointer-events-none hidden lg:block"
+              style={{ background: 'linear-gradient(to right, var(--lav-black) 0%, rgba(11,10,12,0.35) 22%, transparent 45%)' }} />
+            <div aria-hidden className="absolute inset-x-0 top-0 h-16 pointer-events-none lg:hidden"
+              style={{ background: 'linear-gradient(to bottom, var(--lav-black), transparent)' }} />
           </div>
         </div>
       </section>

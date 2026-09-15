@@ -158,17 +158,15 @@ export default async function PocetnaPage() {
               </div>
             ))}
           </div>
-          <div className="mt-5 grid sm:grid-cols-3 gap-5">
+          <div className="mt-5 grid sm:grid-cols-3 gap-4">
             {OSNIVACI.slice(2).map(o => (
-              <div key={o.ime} className="rounded-xl overflow-hidden group" style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <div className="relative overflow-hidden" style={{ aspectRatio: '3/4' }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={o.foto} alt={o.ime} className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500" />
-                  <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(28,11,16,0.94) 0%, transparent 55%)' }} />
-                  <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <h3 className="display text-white text-2xl leading-none">{o.ime}</h3>
-                    <p className="text-xs font-bold mt-1" style={{ color: 'var(--lav-gold)' }}>{o.uloga}</p>
-                  </div>
+              <div key={o.ime} className="flex items-center gap-4 rounded-xl p-3.5" style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={o.foto} alt={o.ime} loading="lazy" decoding="async"
+                  className="w-16 h-20 rounded-lg object-cover object-top shrink-0" />
+                <div className="min-w-0">
+                  <h3 className="display text-white text-xl leading-none">{o.ime}</h3>
+                  <p className="text-[11px] font-bold mt-1" style={{ color: 'var(--lav-gold)' }}>{o.uloga}</p>
                 </div>
               </div>
             ))}
@@ -181,33 +179,42 @@ export default async function PocetnaPage() {
         <div className="max-w-6xl mx-auto px-5">
           <div className="max-w-2xl">
             <GoldLine />
-            <h2 className="mt-5 display text-4xl md:text-6xl"  style={{ color: '#1A1A1A' }}>
-              Više od kluba — zajednica koja gradi šampionke
+                        <h2 className="mt-5 display text-4xl md:text-6xl" style={{ color: '#1A1A1A' }}>
+              Više od kluba. Mjesto gdje pripadaš.
             </h2>
             <p className="mt-5 text-lg leading-relaxed" style={{ color: '#5b5b5b' }}>
-              ŽRK Lavice je razvojni ženski rukometni klub nastao iz ljubavi prema rukometu i uvjerenja da nove generacije
+              ŽRK Lavice je zajednica koja gradi šampionke — razvojni ženski rukometni klub nastao iz ljubavi prema rukometu i uvjerenja da nove generacije
               djevojčica zaslužuju kvalitetno, zdravo i podsticajno okruženje. Kroz sport gradimo ne samo igračke sposobnosti,
               već i vrijednosti koje djevojčice nose kroz cijeli život.
             </p>
           </div>
 
-          <div className="mt-12 grid sm:grid-cols-2 gap-x-14 gap-y-10 max-w-4xl">
-            {VRIJEDNOSTI.map((v, i) => (
-              <div key={v.naslov} className="flex gap-5">
-                <span className="display shrink-0" style={{ fontSize: '54px', lineHeight: 0.9, color: 'var(--lav-red)' }}>{String(i + 1).padStart(2, '0')}</span>
-                <div>
-                  <h3 className="text-lg font-bold mb-1.5" style={{ color: '#1A1A1A' }}>{v.naslov}</h3>
-                  <p className="text-[15px] leading-relaxed" style={{ color: '#5b5b5b' }}>{v.tekst}</p>
-                </div>
+          <div className="mt-12 grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="grid sm:grid-cols-2 gap-x-10 gap-y-8">
+                {VRIJEDNOSTI.map((v, i) => (
+                  <div key={v.naslov} className="flex gap-4">
+                    <span className="display shrink-0" style={{ fontSize: '44px', lineHeight: 0.9, color: 'var(--lav-red)' }}>{String(i + 1).padStart(2, '0')}</span>
+                    <div>
+                      <h3 className="text-base font-bold mb-1" style={{ color: '#1A1A1A' }}>{v.naslov}</h3>
+                      <p className="text-sm leading-relaxed" style={{ color: '#5b5b5b' }}>{v.tekst}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+              <blockquote className="mt-10 pl-5" style={{ borderLeft: '3px solid var(--lav-gold)' }}>
+                <p className="text-lg md:text-xl font-bold leading-snug" style={{ color: '#1A1A1A' }}>
+                  „Ne stvaramo samo rukometašice — stvaramo <span style={{ color: 'var(--lav-red)' }}>snažne, samouvjerene djevojke</span> koje znaju svoju vrijednost."
+                </p>
+              </blockquote>
+            </div>
+            <div className="rounded-xl overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/foto/lavice-zajednistvo.webp" loading="lazy" decoding="async"
+                alt="Igračice Lavica zajedno na terenu u crvenim klupskim dresovima"
+                className="w-full h-full object-cover" style={{ aspectRatio: '4/3', objectPosition: 'center 30%' }} />
+            </div>
           </div>
-
-          <blockquote className="mt-16 max-w-3xl pl-6" style={{ borderLeft: '3px solid var(--lav-gold)' }}>
-            <p className="text-xl md:text-2xl font-bold leading-snug" style={{ color: '#1A1A1A' }}>
-              „Ne stvaramo samo rukometašice — stvaramo <span style={{ color: 'var(--lav-red)' }}>snažne, samouvjerene djevojke</span> koje znaju svoju vrijednost."
-            </p>
-          </blockquote>
         </div>
       </section>
 
@@ -218,9 +225,9 @@ export default async function PocetnaPage() {
           <h2 className="display text-white" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}>Programi kluba</h2>
           <div className="mt-12 flex flex-col gap-4">
             {PROGRAMI.map(p => (
-              <div key={p.naslov} className="rounded-xl p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-5 md:gap-10 group hover:bg-white/[0.04] transition-colors"
+              <div key={p.naslov} className="rounded-xl p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-4 md:gap-8 group hover:bg-white/[0.04] transition-colors"
                 style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
-                <span className="display nums shrink-0 md:w-[210px]" style={{ color: 'var(--lav-gold)', fontSize: 'clamp(2.6rem, 5vw, 4.2rem)', lineHeight: 0.9 }}>{p.kratko}</span>
+                <span className="display nums shrink-0 md:w-[210px]" style={{ color: 'var(--lav-gold)', fontSize: 'clamp(2.2rem, 4vw, 3.2rem)', lineHeight: 0.9 }}>{p.kratko}</span>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-white font-bold text-xl">{p.naslov}</h3>
                   <p className="mt-1.5 text-[15px]" style={{ color: 'var(--lav-grey-400)' }}>{p.cilj} · {p.treninzi}</p>
@@ -396,27 +403,33 @@ export default async function PocetnaPage() {
         </section>
       )}
 
-      {/* ZA RODITELJE */}
+      {/* ZA RODITELJE — fotografija C + završni poziv u jednom toku */}
       <section id="roditelji" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-cream)' }}>
-        <div className="max-w-6xl mx-auto px-5 grid lg:grid-cols-[0.9fr_1.1fr] gap-14 items-start">
-          <div className="lg:sticky lg:top-28">
+        <div className="max-w-6xl mx-auto px-5 grid lg:grid-cols-2 gap-12 items-center">
+          <div className="rounded-xl overflow-hidden order-last lg:order-first">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/foto/lavice-podrska-trenera.webp" loading="lazy" decoding="async"
+              alt="Nasmijana igračica Lavica i trener pored terena"
+              className="w-full h-full object-cover" style={{ aspectRatio: '4/3' }} />
+          </div>
+          <div>
             <GoldLine />
-            <h2 className="mt-5 display text-4xl md:text-6xl"  style={{ color: '#1A1A1A' }}>Za roditelje</h2>
-            <p className="mt-5 text-lg leading-relaxed" style={{ color: '#5b5b5b' }}>
+            <h2 className="mt-5 display text-4xl md:text-6xl" style={{ color: '#1A1A1A' }}>Veliki koraci počinju podrškom.</h2>
+            <p className="mt-4 text-lg leading-relaxed" style={{ color: '#5b5b5b' }}>
               Kada upišete dijete u ŽRK Lavice, postajete dio zajednice koja brine. Evo šta možete očekivati.
             </p>
-            <a href="#upis" style={{ backgroundColor: '#C41230' }}
-              className="inline-block mt-8 px-8 py-4 rounded-full text-white font-bold hover:brightness-110 transition-all shadow-lg shadow-red-900/20">
+            <div className="mt-8 grid sm:grid-cols-2 gap-x-8 gap-y-5">
+              {RODITELJI.map(r => (
+                <div key={r.t} className="pl-4" style={{ borderLeft: '2px solid var(--lav-gold)' }}>
+                  <h3 className="font-bold text-[15px] mb-1" style={{ color: '#1A1A1A' }}>{r.t}</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: '#5b5b5b' }}>{r.d}</p>
+                </div>
+              ))}
+            </div>
+            <a href="#upis" style={{ backgroundColor: 'var(--lav-red)' }}
+              className="inline-block mt-9 px-8 py-4 rounded-full text-white font-bold hover:brightness-110 transition-all shadow-lg shadow-red-900/20">
               Zakaži probni trening
             </a>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            {RODITELJI.map(r => (
-              <div key={r.t} className="pl-5 py-1" style={{ borderLeft: '2px solid var(--lav-gold)' }}>
-                <h3 className="font-bold mb-1.5" style={{ color: '#1A1A1A' }}>{r.t}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#6a6a6a' }}>{r.d}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -443,13 +456,9 @@ export default async function PocetnaPage() {
               Postani član kluba
             </Link>
           </div>
-        </div>
-      </section>
 
-      {/* PARTNERI */}
-      {sponsors.length > 0 && (
-        <section className="py-16" style={{ backgroundColor: 'var(--lav-black)' }}>
-          <div className="max-w-6xl mx-auto px-5 text-center">
+          <div className="mt-14 pt-10" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+
             {/* Zlatni = generalni sponzor: izdvojen, krupan prikaz */}
             {sponsors.filter((s: any) => s.level === 'gold').length > 0 && (
               <div className="mb-4">
@@ -482,9 +491,10 @@ export default async function PocetnaPage() {
                 </div>
               </div>
             )}
+          
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* UPIS / KONTAKT */}
       <section id="upis" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-maroon)' }}>
@@ -526,28 +536,6 @@ export default async function PocetnaPage() {
               </p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ZAVRŠNI CTA */}
-      <section className="relative overflow-hidden" style={{ background: 'radial-gradient(120% 120% at 50% 0%, #9F0F28 0%, #C41230 40%, #1A1A1A 100%)' }}>
-        <div aria-hidden className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1.2px, transparent 1.2px)',
-          backgroundSize: '28px 28px', opacity: 0.6,
-        }} />
-        <div className="relative max-w-3xl mx-auto px-5 py-24 md:py-28 text-center">
-          <span className="text-xs font-bold tracking-[0.3em] uppercase" style={{ color: '#F5D67A' }}>Pridruži se</span>
-          <h2 className="mt-5 text-4xl md:text-6xl font-black text-white leading-[1.05] tracking-tight">
-            Prvi trening može biti<br />početak velike priče.
-          </h2>
-          <p className="mt-6 text-lg md:text-xl font-light max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.85)' }}>
-            Dovedite svoju djevojčicu na besplatan probni trening. Bez obaveza — samo lopta, osmijeh i prvi korak.
-          </p>
-          <a href="#upis"
-            className="inline-block mt-9 px-10 py-4 rounded-full font-bold text-lg transition-all hover:-translate-y-0.5"
-            style={{ backgroundColor: '#FFFFFF', color: '#C41230', boxShadow: '0 18px 40px rgba(0,0,0,0.35)' }}>
-            Prijavi dijete
-          </a>
         </div>
       </section>
 
