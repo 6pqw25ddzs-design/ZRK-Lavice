@@ -1,5 +1,8 @@
 import { getSponsors } from '@/lib/api';
 
+export const metadata = { title: 'Sponzori | ŽRK Lavice-UDG', description: 'Partneri i sponzori kluba.' };
+
+
 export const revalidate = 0;
 
 const LEVELS = [

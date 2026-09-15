@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import { getResults, getTeams } from '@/lib/api';
 
+export const metadata = { title: 'Rezultati i strijelci | ŽRK Lavice-UDG', description: 'Rezultati utakmica, bilans sezone i lista strijelaca.' };
+
+
 export const revalidate = 0;
 
 const API = 'https://zrk-lavice-api.onrender.com';

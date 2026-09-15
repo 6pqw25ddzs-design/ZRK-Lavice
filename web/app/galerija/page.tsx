@@ -1,5 +1,8 @@
 import { getGallery } from '@/lib/api';
 
+export const metadata = { title: 'Galerija | ŽRK Lavice-UDG', description: 'Fotografije sa treninga, utakmica i klupskih događaja.' };
+
+
 export const revalidate = 0;
 
 export default async function GalerijaPage() {

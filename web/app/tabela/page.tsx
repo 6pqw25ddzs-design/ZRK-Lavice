@@ -1,9 +1,18 @@
-import { getStandings } from '@/lib/api';
+import Link from 'next/link';
+import { getStandings, getResults, getSchedule } from '@/lib/api';
+
+export const metadata = { title: 'Tabela | ŽRK Lavice-UDG', description: 'Plasman na ligaškim tabelama.' };
+
 
 export const revalidate = 0;
 
 export default async function TabelaPage() {
-  const rows = await getStandings().catch(() => []);
+  const [rows, results, schedule] = await Promise.all([
+    getStandings().catch(() => []),
+    getResults().catch(() => []),
+    getSchedule().catch(() => []),
+  ]);
+  const nextMatch = (Array.isArray(schedule) ? schedule : []).find((e: any) => e.type === 'match' && new Date(e.startsAt).getTime() > Date.now());
 
   // group by league (already sorted by API: league asc, points desc)
   const groups: Record<string, any[]> = {};
@@ -17,7 +26,39 @@ export default async function TabelaPage() {
       <p style={{ color: 'var(--text-muted)' }} className="mb-10">Trenutni plasman na ligaškim tabelama.</p>
 
       {rows.length === 0 ? (
-        <p style={{ color: 'var(--text-muted)' }}>Tabela još nije objavljena.</p>
+        <div>
+          <div className="rounded-2xl p-8 mb-10 text-center" style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
+            <div className="eyebrow mb-2" style={{ color: 'var(--lav-gold)' }}>Prva ženska liga 2026/27</div>
+            <p className="text-white text-lg font-bold">Tabela će biti objavljena nakon prvog kola.</p>
+            <p style={{ color: 'var(--text-muted)' }} className="text-sm mt-2">Sezona počinje 26. septembra — RK Nikšić vs ŽRK Lavice.</p>
+          </div>
+          {nextMatch && (
+            <div className="mb-10">
+              <h2 className="text-lg font-black text-white mb-3">Sljedeća utakmica</h2>
+              <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
+                <div className="text-white font-bold">{nextMatch.title}</div>
+                <div style={{ color: 'var(--text-muted)' }} className="text-sm mt-1">
+                  {new Date(nextMatch.startsAt).toLocaleString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
+                  {nextMatch.location ? ` · ${nextMatch.location}` : ''}
+                </div>
+              </div>
+            </div>
+          )}
+          {(results as any[]).length > 0 && (
+            <div>
+              <h2 className="text-lg font-black text-white mb-3">Posljednji rezultati</h2>
+              <div className="flex flex-col gap-3">
+                {(results as any[]).slice(0, 3).map((r: any) => (
+                  <Link key={r.id} href={`/utakmica/${r.id}`} className="rounded-xl p-5 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                    style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
+                    <div className="text-white font-semibold">{r.event?.title}</div>
+                    <div className="display text-2xl nums" style={{ color: 'var(--lav-gold)' }}>{r.homeScore} : {r.awayScore}</div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       ) : (
         Object.entries(groups).map(([league, items]) => (
           <div key={league} className="mb-12">

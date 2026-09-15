@@ -1,32 +1,49 @@
 import type { Metadata } from "next";
-import { Montserrat, Inter } from "next/font/google";
+import { Bebas_Neue } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import SiteHeader from "@/components/site/SiteHeader";
+import LiveTicker from "@/components/site/LiveTicker";
 import Footer from "@/components/Footer";
 
-const montserrat = Montserrat({
+const display = Bebas_Neue({
+  weight: "400",
   subsets: ["latin", "latin-ext"],
-  variable: "--font-montserrat",
+  variable: "--font-display",
   display: "swap",
 });
 
-const inter = Inter({
-  subsets: ["latin", "latin-ext"],
-  variable: "--font-inter",
+const satoshi = localFont({
+  src: [
+    { path: "./fonts/Satoshi-400.woff2", weight: "400" },
+    { path: "./fonts/Satoshi-500.woff2", weight: "500" },
+    { path: "./fonts/Satoshi-700.woff2", weight: "700" },
+  ],
+  variable: "--font-body",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "ŽRK Lavice-UDG",
-  description: "Ženski rukometni klub Lavice – Podgorica, Crna Gora",
+  title: "ŽRK Lavice-UDG Podgorica",
+  description: "Ženski rukometni klub Lavice-UDG — razvojni klub za djevojčice, Podgorica, Crna Gora",
+  openGraph: {
+    title: "ŽRK Lavice-UDG Podgorica",
+    description: "Stvaramo nove Lavice — razvojni rukometni klub za djevojčice.",
+    url: "https://zrklavice.me",
+    siteName: "ŽRK Lavice-UDG",
+    locale: "sr_ME",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sr" className={`h-full ${montserrat.variable} ${inter.variable}`}>
+    <html lang="sr" className={`h-full ${display.variable} ${satoshi.variable}`}>
       <body className="min-h-full flex flex-col" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
-        <Navbar />
-        <main className="flex-1">{children}</main>
+        <a href="#sadrzaj" className="skip-link">Preskoči na sadržaj</a>
+        <SiteHeader />
+        <LiveTicker />
+        <main id="sadrzaj" className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>

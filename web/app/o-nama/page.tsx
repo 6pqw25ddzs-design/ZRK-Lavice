@@ -1,5 +1,8 @@
 import Image from 'next/image';
 
+export const metadata = { title: 'O klubu | ŽRK Lavice-UDG', description: 'Ko smo, kako radimo i zašto postojimo.' };
+
+
 const osnivaci = [
   {
     ime: 'Milena Raičević',

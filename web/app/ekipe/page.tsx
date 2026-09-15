@@ -2,6 +2,9 @@ import Link from 'next/link';
 import { getTeams, getPlayers } from '@/lib/api';
 import { teamMeta } from '@/lib/teamColors';
 
+export const metadata = { title: 'Ekipe | ŽRK Lavice-UDG', description: 'Prvi tim, Pionirke i Mini rukomet — sve naše igračice.' };
+
+
 export default async function EkipePage() {
   const [teams, players] = await Promise.all([
     getTeams().catch(() => []),

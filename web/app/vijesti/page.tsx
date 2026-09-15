@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import { getNews } from '@/lib/api';
 
+export const metadata = { title: 'Vijesti | ŽRK Lavice-UDG', description: 'Novosti iz kluba — utakmice, turniri i priče naših Lavica.' };
+
+
 export const revalidate = 0;
 
 export default async function VijestiPage() {

@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import PremiumHeader from '@/components/PremiumHeader';
 import UpisForm from '@/components/UpisForm';
 import Link from 'next/link';
 import ScheduleList from '@/components/ScheduleList';
@@ -147,8 +146,7 @@ export default async function PocetnaPage() {
   const address = settings.contact_address || 'SC Morača, Podgorica, Crna Gora';
 
   return (
-    <div id="top" style={{ backgroundColor: '#FFFFFF' }}>
-      <PremiumHeader />
+    <div id="top" style={{ backgroundColor: 'var(--lav-cream)' }}>
 
       <ArenaHero data={heroData} />
 
@@ -176,7 +174,7 @@ export default async function PocetnaPage() {
       </div>
 
       {/* O KLUBU + VRIJEDNOSTI */}
-      <section id="o-klubu" className="py-20 md:py-28" style={{ backgroundColor: '#FFFFFF' }}>
+      <section id="o-klubu" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-cream)' }}>
         <div className="max-w-6xl mx-auto px-5">
           <div className="max-w-2xl">
             <GoldLine />
@@ -209,7 +207,7 @@ export default async function PocetnaPage() {
       </section>
 
       {/* PROGRAMI */}
-      <section id="programi" className="py-20 md:py-28" style={{ backgroundColor: '#F2F2F2' }}>
+      <section id="programi" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-grey-100)' }}>
         <div className="max-w-6xl mx-auto px-5">
           <div className="max-w-2xl">
             <GoldLine />
@@ -244,7 +242,7 @@ export default async function PocetnaPage() {
       </section>
 
       {/* QUOTE / TRANSITION */}
-      <section style={{ backgroundColor: '#FFFFFF' }} className="py-16 md:py-20">
+      <section style={{ backgroundColor: 'var(--lav-cream)' }} className="py-16 md:py-20">
         <div className="max-w-3xl mx-auto px-5 text-center">
           <div className="text-5xl leading-none mb-4" style={{ color: '#D4AC0D', fontFamily: 'Georgia, serif' }}>“</div>
           <p className="text-2xl md:text-3xl font-black leading-snug tracking-tight" style={{ color: '#1A1A1A' }}>
@@ -256,7 +254,7 @@ export default async function PocetnaPage() {
 
       {/* EKIPE */}
       {teams.length > 0 && (
-        <section id="ekipe" className="py-20 md:py-28" style={{ backgroundColor: '#FFFFFF' }}>
+        <section id="ekipe" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-cream)' }}>
           <div className="max-w-6xl mx-auto px-5">
             <div className="max-w-2xl">
               <GoldLine />
@@ -315,7 +313,7 @@ export default async function PocetnaPage() {
 
       {/* RASPORED */}
       {upcoming.length > 0 && (
-        <section id="raspored" className="py-20 md:py-28" style={{ backgroundColor: '#F2F2F2' }}>
+        <section id="raspored" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-grey-100)' }}>
           <div className="max-w-4xl mx-auto px-5">
             <div className="max-w-2xl">
               <GoldLine />
@@ -331,7 +329,7 @@ export default async function PocetnaPage() {
 
       {/* UTAKMICE — posljednji rezultati */}
       {lastResults.length > 0 && (
-        <section id="utakmice" className="py-20 md:py-28" style={{ backgroundColor: '#FFFFFF' }}>
+        <section id="utakmice" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-cream)' }}>
           <div className="max-w-6xl mx-auto px-5">
             <GoldLine />
             <div className="mt-5 flex items-end justify-between flex-wrap gap-4">
@@ -368,7 +366,7 @@ export default async function PocetnaPage() {
 
       {/* VIJESTI */}
       {news.length > 0 && (
-        <section id="vijesti" className="py-20 md:py-28" style={{ backgroundColor: '#FFFFFF' }}>
+        <section id="vijesti" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-cream)' }}>
           <div className="max-w-6xl mx-auto px-5">
             <div className="flex items-end justify-between gap-4 mb-12">
               <div className="max-w-2xl">
@@ -413,7 +411,7 @@ export default async function PocetnaPage() {
                           <h3 className="font-black leading-snug group-hover:underline" style={{ color: '#1A1A1A' }}>{a.title}</h3>
                           <div className="text-xs mt-2" style={{ color: '#9a9a9a' }}>{new Date(a.publishedAt).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric', month: 'long' })}</div>
                         </div>
-                        <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0" style={{ backgroundColor: '#F2F2F2' }}>
+                        <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0" style={{ backgroundColor: 'var(--lav-grey-100)' }}>
                           {a.coverUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={a.coverUrl} alt={a.title} className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-500" />
@@ -475,7 +473,7 @@ export default async function PocetnaPage() {
 
       {/* STRUČNI TIM — treneri po kategorijama */}
       {treneri.length > 0 && (
-        <section id="treneri" className="py-20 md:py-28" style={{ backgroundColor: '#F2F2F2' }}>
+        <section id="treneri" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-grey-100)' }}>
           <div className="max-w-6xl mx-auto px-5">
             <div className="max-w-2xl">
               <GoldLine />
@@ -524,7 +522,7 @@ export default async function PocetnaPage() {
       )}
 
       {/* ZA RODITELJE */}
-      <section id="roditelji" className="py-20 md:py-28" style={{ backgroundColor: '#FFFFFF' }}>
+      <section id="roditelji" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-cream)' }}>
         <div className="max-w-6xl mx-auto px-5 grid lg:grid-cols-[0.9fr_1.1fr] gap-14 items-start">
           <div className="lg:sticky lg:top-28">
             <GoldLine />
@@ -578,7 +576,7 @@ export default async function PocetnaPage() {
 
       {/* PARTNERI */}
       {sponsors.length > 0 && (
-        <section className="py-16" style={{ backgroundColor: '#F2F2F2' }}>
+        <section className="py-16" style={{ backgroundColor: 'var(--lav-grey-100)' }}>
           <div className="max-w-6xl mx-auto px-5 text-center">
             {/* Zlatni = generalni sponzor: izdvojen, krupan prikaz */}
             {sponsors.filter((s: any) => s.level === 'gold').length > 0 && (
@@ -617,7 +615,7 @@ export default async function PocetnaPage() {
       )}
 
       {/* UPIS / KONTAKT */}
-      <section id="upis" className="py-20 md:py-28" style={{ backgroundColor: '#FFFFFF' }}>
+      <section id="upis" className="py-20 md:py-28" style={{ backgroundColor: 'var(--lav-cream)' }}>
         <div className="max-w-6xl mx-auto px-5 grid lg:grid-cols-[1fr_0.85fr] gap-12 items-start">
           <div>
             <GoldLine />

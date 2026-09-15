@@ -1,5 +1,8 @@
 import { getPublicDocuments } from '@/lib/api';
 
+export const metadata = { title: 'Dokumenti | ŽRK Lavice-UDG', description: 'Zvanični dokumenti kluba.' };
+
+
 export const revalidate = 0;
 
 export default async function DokumentiPage() {

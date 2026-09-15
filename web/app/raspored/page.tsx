@@ -1,6 +1,9 @@
 import { getSchedule } from '@/lib/api';
 import ScheduleList from '@/components/ScheduleList';
 
+export const metadata = { title: 'Raspored | ŽRK Lavice-UDG', description: 'Termini treninga i utakmica svih generacija ŽRK Lavice-UDG.' };
+
+
 export const revalidate = 60;
 
 export default async function RasporedPage() {

@@ -1,15 +1,34 @@
 @import "tailwindcss";
 
 :root {
-  --primary: #C41230;
-  --gold: #D4AC0D;
-  --dark: #1A1A1A;
-  --card: #2A2A2A;
-  --border: #333333;
-  --text: #FFFFFF;
-  --text-muted: #9CA3AF;
-  --background: #1A1A1A;
-  --foreground: #FFFFFF;
+  /* Lavice dizajn sistem — „Arena, ne brošura" */
+  --lav-black: #0B0A0C;
+  --lav-maroon: #1C0B10;
+  --lav-maroon-2: #3A0F1A;
+  --lav-red: #C41230;
+  --lav-red-hover: #A50E28;
+  --lav-gold: #D4AC0D;
+  --lav-cream: #F5F1EA;
+  --lav-white: #FFFFFF;
+  --lav-grey-100: #E9E5DE;
+  --lav-grey-400: #9A948B;
+  --lav-grey-700: #3D3A37;
+
+  /* mapiranje na postojeće tokene (komponente ih već koriste) */
+  --primary: var(--lav-red);
+  --gold: var(--lav-gold);
+  --dark: var(--lav-black);
+  --card: #171317;
+  --border: rgba(255,255,255,0.08);
+  --text: var(--lav-white);
+  --text-muted: var(--lav-grey-400);
+  --background: var(--lav-black);
+  --foreground: var(--lav-white);
+
+  /* boje generacija — SAMO raspored i filteri (amandman) */
+  --gen-prva: #C41230;
+  --gen-pioniri: #2563EB;
+  --gen-mini: #0D9488;
 }
 
 @theme inline {
@@ -25,7 +44,33 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+/* Display tipografija: naslovi i veliki brojevi */
+h1, h2, .display {
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.nums { font-family: var(--font-display), sans-serif; font-variant-numeric: tabular-nums; }
+
+.eyebrow {
+  font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.18em;
+  font-weight: 700; color: var(--lav-grey-400);
+}
+.gold-line { height: 1px; background: linear-gradient(90deg, var(--lav-gold), transparent); }
+
+.skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 100;
+  background: var(--lav-red); color: #fff; padding: 10px 18px; border-radius: 0 0 8px 0; font-weight: 700;
+}
+.skip-link:focus { left: 0; }
+
+:focus-visible { outline: 2px solid var(--lav-gold); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
 h1, h2, h3, h4, h5, h6 {
