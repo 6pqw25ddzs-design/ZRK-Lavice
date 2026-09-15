@@ -5,11 +5,20 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '../../constants/AppColors';
 import { getSchedule } from '../../lib/api';
 
+// Kolor-sistem generacija — ista boja prati ekipu na sajtu i u aplikaciji
+const TEAM_META: Record<string, { color: string; soft: string; label: string }> = {
+  prva_liga: { color: '#C41230', soft: 'rgba(196,18,48,0.09)', label: 'Prvi tim' },
+  pioniri: { color: '#2563EB', soft: 'rgba(37,99,235,0.10)', label: 'Pionirke' },
+  mini: { color: '#0D9488', soft: 'rgba(13,148,136,0.10)', label: 'Mini rukomet' },
+};
+const teamMeta = (c?: string) => TEAM_META[c || ''] || { color: '#8a8a8a', soft: 'rgba(138,138,138,0.10)', label: 'Klub' };
+
 export default function RasporedScreen() {
   const insets = useSafeAreaInsets();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [teamFilter, setTeamFilter] = useState('all');
 
   useEffect(() => {
     getSchedule().then((r: any) => {
@@ -23,7 +32,9 @@ export default function RasporedScreen() {
     { val: 'match', label: 'Utakmice' },
   ];
 
-  const filtered = events.filter(e => filter === 'all' || e.type === filter);
+  const filtered = events.filter(e =>
+    (filter === 'all' || e.type === filter) &&
+    (teamFilter === 'all' || e.team?.category === teamFilter));
 
   return (
     <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
@@ -38,6 +49,19 @@ export default function RasporedScreen() {
             </TouchableOpacity>
           ))}
         </View>
+        <View style={[s.filterRow, { marginTop: 8, flexWrap: 'wrap' }]}>
+          <TouchableOpacity onPress={() => setTeamFilter('all')}
+            style={[s.filterBtn, teamFilter === 'all' && { backgroundColor: '#1A1A1A' }]}>
+            <Text style={[s.filterText, teamFilter === 'all' && s.filterTextActive]}>Sve ekipe</Text>
+          </TouchableOpacity>
+          {Object.entries(TEAM_META).map(([cat, m]) => (
+            <TouchableOpacity key={cat} onPress={() => setTeamFilter(teamFilter === cat ? 'all' : cat)}
+              style={[s.filterBtn, s.teamBtn, teamFilter === cat && { backgroundColor: m.color }]}>
+              <View style={[s.teamDot, { backgroundColor: teamFilter === cat ? '#fff' : m.color }]} />
+              <Text style={[s.filterText, teamFilter === cat && s.filterTextActive]}>{m.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
 
       {loading && <ActivityIndicator color={Colors.primary} style={{ marginTop: 40 }} />}
@@ -47,7 +71,8 @@ export default function RasporedScreen() {
         {filtered.map((event: any, i: number) => {
           const d = new Date(event.startsAt);
           const isMatch = event.type === 'match';
-          const accent = isMatch ? Colors.primary : Colors.gold;
+          const tm = teamMeta(event.team?.category);
+          const accent = tm.color;
           return (
             <View key={event.id} style={s.tlRow}>
               {/* Lijeva kolona: datum + linija */}
@@ -64,8 +89,8 @@ export default function RasporedScreen() {
                 <View style={{ flex: 1, padding: 15 }}>
                   <View style={s.cardTop}>
                     <Text style={s.time}>{d.toLocaleTimeString('sr-ME', { hour: '2-digit', minute: '2-digit' })}</Text>
-                    <View style={[s.badge, { backgroundColor: isMatch ? 'rgba(196,18,48,0.09)' : 'rgba(212,172,13,0.13)' }]}>
-                      <Text style={[s.badgeText, { color: isMatch ? Colors.primary : '#A8860B' }]}>
+                    <View style={[s.badge, { backgroundColor: isMatch ? tm.color : tm.soft }]}>
+                      <Text style={[s.badgeText, { color: isMatch ? '#fff' : tm.color }]}>
                         {isMatch ? 'Utakmica' : 'Trening'}
                       </Text>
                     </View>
@@ -79,8 +104,8 @@ export default function RasporedScreen() {
                   )}
                   {event.team?.name && (
                     <View style={s.metaRow}>
-                      <Ionicons name="people-outline" size={13} color="#9a9a9a" />
-                      <Text style={s.eventMeta}>{event.team.name}</Text>
+                      <View style={[s.teamDot, { backgroundColor: tm.color }]} />
+                      <Text style={[s.eventMeta, { color: tm.color, fontFamily: Fonts.bodyBold }]}>{event.team.name}</Text>
                     </View>
                   )}
                   {event.isCancelled && <Text style={s.cancelledText}>OTKAZANO</Text>}
@@ -107,6 +132,8 @@ const s = StyleSheet.create({
   filterActive: { backgroundColor: Colors.primary },
   filterText: { color: '#7a7a7a', fontSize: 13.5, fontFamily: Fonts.bodyBold },
   filterTextActive: { color: '#fff' },
+  teamBtn: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  teamDot: { width: 7, height: 7, borderRadius: 4 },
 
   timeline: { paddingHorizontal: 20 },
   tlRow: { flexDirection: 'row', gap: 14 },

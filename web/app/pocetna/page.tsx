@@ -2,6 +2,7 @@ import Image from 'next/image';
 import PremiumHeader from '@/components/PremiumHeader';
 import UpisForm from '@/components/UpisForm';
 import Link from 'next/link';
+import ScheduleList from '@/components/ScheduleList';
 import { getSponsors, getSettings, getTeams, getPlayers, getSchedule, getNews, getTreneri, getResults } from '@/lib/api';
 
 export const revalidate = 60;
@@ -296,43 +297,7 @@ export default async function PocetnaPage() {
               <p className="mt-5 text-lg leading-relaxed" style={{ color: '#5b5b5b' }}>Naredni termini kluba.</p>
             </div>
             <div className="mt-12">
-              {upcoming.map((e: any, i: number) => {
-                const d = new Date(e.startsAt);
-                const isMatch = e.type === 'match';
-                const accent = isMatch ? '#C41230' : '#D4AC0D';
-                return (
-                  <div key={e.id} className="flex gap-4 md:gap-6">
-                    {/* Timeline kolona */}
-                    <div className="flex flex-col items-center w-12 shrink-0">
-                      <div className="text-2xl font-black leading-none" style={{ color: '#1A1A1A' }}>{Number(d.toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric' }).replace(/\D/g, ''))}</div>
-                      <div className="text-[10px] font-bold uppercase tracking-widest mt-0.5" style={{ color: '#a0a0a0' }}>
-                        {d.toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', month: 'short' }).replace('.', '')}
-                      </div>
-                      <span className="w-2.5 h-2.5 rounded-full mt-2" style={{ backgroundColor: accent }} />
-                      {i < upcoming.length - 1 && <span className="flex-1 w-px my-1" style={{ backgroundColor: '#E5E5E5' }} />}
-                    </div>
-                    {/* Kartica */}
-                    <div className="flex-1 mb-4 rounded-2xl bg-white overflow-hidden flex" style={{ border: '1px solid #EEEEEE', boxShadow: '0 6px 18px rgba(0,0,0,0.04)' }}>
-                      <span className="w-1 shrink-0" style={{ backgroundColor: accent }} />
-                      <div className="p-4 md:p-5 flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="font-black" style={{ color: '#1A1A1A' }}>
-                            {d.toLocaleTimeString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                          <span className="text-[10.5px] font-bold px-2.5 py-1 rounded-full"
-                            style={{ backgroundColor: isMatch ? 'rgba(196,18,48,0.09)' : 'rgba(212,172,13,0.13)', color: isMatch ? '#C41230' : '#A8860B' }}>
-                            {isMatch ? 'Utakmica' : 'Trening'}
-                          </span>
-                        </div>
-                        <div className="font-bold mt-1.5" style={{ color: '#1A1A1A' }}>{e.title}</div>
-                        <div className="text-sm mt-1" style={{ color: '#9a9a9a' }}>
-                          {e.location}{e.location && e.team?.name ? ' · ' : ''}{e.team?.name}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              <ScheduleList events={upcoming} light />
             </div>
           </div>
         </section>
