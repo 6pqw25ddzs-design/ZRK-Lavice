@@ -1,5 +1,9 @@
+import LiveTicker from "./LiveTicker";
+
 export default function PageHero({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string }) {
   return (
+    <>
+    <LiveTicker />
     <div className="relative overflow-hidden" style={{ background: 'linear-gradient(160deg, var(--lav-maroon-2), var(--lav-maroon) 45%, var(--lav-black))' }}>
       <div className="max-w-[1320px] mx-auto px-6 lg:px-12 pt-16 pb-12">
         <div className="eyebrow mb-3" style={{ color: 'var(--lav-gold)' }}>{eyebrow}</div>
@@ -8,5 +12,6 @@ export default function PageHero({ eyebrow, title, sub }: { eyebrow: string; tit
       </div>
       <div className="gold-line" />
     </div>
+    </>
   );
 }
