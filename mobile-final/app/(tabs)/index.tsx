@@ -7,6 +7,7 @@ import { Colors, Fonts } from '../../constants/AppColors';
 import { getNews, getResults } from '../../lib/api';
 import VijestDetailView from '../../components/VijestDetailView';
 import FadeInView from '../../components/FadeInView';
+import ArenaCard from '../../components/ArenaCard';
 
 const { width: W, height: H } = Dimensions.get('window');
 const SLIDE_W = W - 40;
@@ -83,6 +84,9 @@ export default function HomeScreen() {
           </FadeInView>
         </View>
       </ImageBackground>
+
+      {/* ARENA — matchday / rezultat kartica (pojavljuje se sama) */}
+      <ArenaCard />
 
       {/* STATISTIKA — premium horizontalne kartice */}
       <FadeInView delay={200}>
