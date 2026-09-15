@@ -20,20 +20,29 @@ export default async function VijestiPage() {
         ) : (
           <>
             {/* Velika vijest */}
-            <Link href={`/vijesti/${featured.slug}`}
-              className="relative rounded-xl overflow-hidden group flex items-end mb-10"
-              style={{ backgroundColor: 'var(--card)', aspectRatio: '16/7', minHeight: 320 }}>
-              {featured.coverUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={featured.coverUrl} alt={featured.title}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700" />
-              ) : (
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, var(--lav-maroon-2), var(--lav-black))' }} />
-              )}
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(8,7,9,0.95) 0%, rgba(8,7,9,0.3) 55%, transparent)' }} />
-              <div className="relative p-7 md:p-10 max-w-3xl">
-                <div className="eyebrow mb-3" style={{ color: 'var(--lav-gold)' }}>{datum(featured.publishedAt)}</div>
-                <h2 className="display text-white leading-[0.95]" style={{ fontSize: 'clamp(1.8rem, 4vw, 3.4rem)' }}>{featured.title}</h2>
+            <Link href={`/vijesti/${featured.slug}`} className="group block mb-10 rounded-xl overflow-hidden"
+              style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
+              <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16/9' }}>
+                {featured.coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={featured.coverUrl} alt={featured.title}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700" />
+                ) : (
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, var(--lav-maroon-2), var(--lav-black))' }} />
+                )}
+                {/* overlay naslov — samo desktop */}
+                <div className="absolute inset-0 hidden md:flex items-end"
+                  style={{ background: 'linear-gradient(to top, rgba(8,7,9,0.95) 0%, rgba(8,7,9,0.3) 55%, transparent)' }}>
+                  <div className="p-7 md:p-10 max-w-3xl">
+                    <div className="eyebrow mb-3" style={{ color: 'var(--lav-gold)' }}>{datum(featured.publishedAt)}</div>
+                    <h2 className="display text-white leading-[0.95]" style={{ fontSize: 'clamp(1.8rem, 4vw, 3.4rem)' }}>{featured.title}</h2>
+                  </div>
+                </div>
+              </div>
+              {/* naslov ispod fotografije — mobilni */}
+              <div className="p-5 md:hidden">
+                <div className="eyebrow mb-2" style={{ color: 'var(--lav-gold)' }}>{datum(featured.publishedAt)}</div>
+                <h2 className="display text-white text-3xl leading-[1.02]">{featured.title}</h2>
               </div>
             </Link>
 
