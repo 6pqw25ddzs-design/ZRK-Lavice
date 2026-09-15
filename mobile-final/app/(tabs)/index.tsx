@@ -13,7 +13,7 @@ const { width: W, height: H } = Dimensions.get('window');
 const SLIDE_W = W - 40;
 
 // Hero fotografija — slavlje nakon gola
-const HERO_IMG = 'https://zrklavice.me/hero.jpg';
+const HERO_IMG = 'https://zrklavice.me/foto/lavice-hero-app.webp';
 
 const STATS = [
   { num: '47', label: 'Igračica', icon: 'people' as const },
@@ -64,21 +64,21 @@ export default function HomeScreen() {
           </FadeInView>
           <FadeInView delay={180}>
             <Text style={s.heroTitle}>
-              Stvaramo nove{'\n'}<Text style={{ color: '#E8546F' }}>lavice.</Text>
+              Stvaramo nove{'\n'}<Text style={{ color: '#E8546F' }}>Lavice.</Text>
             </Text>
           </FadeInView>
           <FadeInView delay={280}>
             <Text style={s.heroText}>
-              Razvojni rukometni klub za djevojčice koji vode evropske šampionke i osvajačice jedine olimpijske medalje za Crnu Goru.
+              Rukomet. Samopouzdanje. Zajedništvo.
             </Text>
           </FadeInView>
           <FadeInView delay={380}>
             <View style={s.heroBtns}>
               <TouchableOpacity style={s.btnPrimary} activeOpacity={0.85} onPress={goUpis}>
-                <Text style={s.btnPrimaryText}>Upiši dijete</Text>
+                <Text style={s.btnPrimaryText}>Dođi na probni trening</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={s.btnGhost} activeOpacity={0.85} onPress={goUpis}>
-                <Text style={s.btnGhostText}>Probni trening</Text>
+              <TouchableOpacity style={s.btnGhost} activeOpacity={0.85} onPress={() => router.push('/vise' as any)}>
+                <Text style={s.btnGhostText}>Upoznaj klub</Text>
               </TouchableOpacity>
             </View>
           </FadeInView>
