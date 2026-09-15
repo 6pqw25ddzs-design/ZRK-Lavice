@@ -3,14 +3,18 @@ import { useState } from 'react';
 import Link from 'next/link';
 import PlayerCard from './PlayerCard';
 
+const ORDER = ['prva_liga', 'pioniri', 'mini'];
+
 export default function TeamTabs({ teams, players }: { teams: any[]; players: any[] }) {
-  const [sel, setSel] = useState(teams[0]?.id);
+  const sorted = [...teams].sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category));
+  const first = sorted.find(t => players.some(p => p.teamId === t.id)) || sorted[0];
+  const [sel, setSel] = useState(first?.id);
   const tp = players.filter(p => p.teamId === sel).slice(0, 6);
 
   return (
     <div>
       <div className="flex gap-7 mb-8 overflow-x-auto" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-        {teams.map(t => (
+        {sorted.map(t => (
           <button key={t.id} onClick={() => setSel(t.id)}
             className="pb-3 text-[15px] font-bold whitespace-nowrap transition-colors"
             style={{

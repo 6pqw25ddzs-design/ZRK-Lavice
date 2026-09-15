@@ -288,7 +288,8 @@ export default async function PocetnaPage() {
       {teams.length > 0 && (
         <section id="ekipe" className="py-20 md:py-28 relative overflow-hidden" style={{ backgroundColor: 'var(--lav-maroon)' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/tim/ekipa-2026.jpg" alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover opacity-[0.08]" />
+          <img src="/tim/ekipa-2026.jpg" alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover opacity-[0.35]" />
+          <div aria-hidden className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(28,11,16,0.93), rgba(28,11,16,0.97))' }} />
           <div className="relative max-w-[1320px] mx-auto px-6 lg:px-12">
             <div className="eyebrow mb-3" style={{ color: 'var(--lav-gold)' }}>Tri generacije, jedan klub</div>
             <h2 className="display text-white mb-12" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}>Naše ekipe</h2>
