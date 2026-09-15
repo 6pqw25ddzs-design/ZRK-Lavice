@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Montserrat_700Bold, Montserrat_800ExtraBold } from '@expo-google-fonts/montserrat';
+import { BebasNeue_400Regular } from '@expo-google-fonts/bebas-neue';
 import { Inter_400Regular, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -32,6 +33,10 @@ export default function RootLayout() {
     Montserrat_800ExtraBold,
     Inter_400Regular,
     Inter_600SemiBold,
+    BebasNeue_400Regular,
+    'Satoshi-Regular': require('../assets/fonts/Satoshi-Regular.ttf'),
+    'Satoshi-Medium': require('../assets/fonts/Satoshi-Medium.ttf'),
+    'Satoshi-Bold': require('../assets/fonts/Satoshi-Bold.ttf'),
     ...FontAwesome.font,
   });
 

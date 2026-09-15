@@ -11,10 +11,10 @@ export const Colors = {
   bg: '#F7F7F7',
 };
 
-// Montserrat for headings, Inter for body — usklađeno sa webom
+// Bebas za display naslove, Satoshi za tekst — usklađeno sa web redizajnom „Arena"
 export const Fonts = {
-  heading: 'Montserrat_800ExtraBold',
-  headingBold: 'Montserrat_700Bold',
-  body: 'Inter_400Regular',
-  bodyBold: 'Inter_600SemiBold',
+  heading: 'BebasNeue_400Regular',
+  headingBold: 'Satoshi-Bold',
+  body: 'Satoshi-Regular',
+  bodyBold: 'Satoshi-Bold',
 };
