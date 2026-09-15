@@ -11,13 +11,13 @@ export default async function VijestPage({ params }: { params: Promise<{ slug: s
   if (!article) notFound();
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12">
+    <div className="mx-auto px-6 py-12" style={{ maxWidth: 760 }}>
       <Link href="/vijesti" style={{ color: 'var(--primary)' }} className="text-sm font-medium hover:underline">← Sve vijesti</Link>
 
       <div style={{ color: 'var(--text-muted)' }} className="text-sm mt-6 mb-2">
         {new Date(article.publishedAt).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', day: 'numeric', month: 'long', year: 'numeric' })}
       </div>
-      <h1 className="text-3xl md:text-4xl font-black text-white mb-6 leading-tight">{article.title}</h1>
+      <h1 className="display text-white mb-6 leading-[0.95]" style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)' }}>{article.title}</h1>
 
       {article.coverUrl && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -28,13 +28,13 @@ export default async function VijestPage({ params }: { params: Promise<{ slug: s
         /<[a-z][\s\S]*>/i.test(article.body) ? (
           // HTML sadržaj iz editora (backend ga sanitizuje pri upisu)
           <div
-            style={{ color: 'var(--text-muted)' }}
-            className="news-body leading-relaxed text-lg"
+            style={{ color: 'rgba(255,255,255,0.78)', fontSize: '18px', lineHeight: 1.7 }}
+            className="news-body"
             dangerouslySetInnerHTML={{ __html: article.body }}
           />
         ) : (
           // Stare vijesti pisane kao čist tekst
-          <div style={{ color: 'var(--text-muted)' }} className="leading-relaxed whitespace-pre-wrap text-lg">
+          <div style={{ color: 'rgba(255,255,255,0.78)', fontSize: '18px', lineHeight: 1.7 }} className="whitespace-pre-wrap">
             {article.body}
           </div>
         )

@@ -32,6 +32,7 @@ export const metadata: Metadata = {
     url: "https://zrklavice.me",
     siteName: "ŽRK Lavice-UDG",
     locale: "sr_ME",
+    images: [{ url: "https://zrklavice.me/og.jpg", width: 1200, height: 630 }],
     type: "website",
   },
 };

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getResults, getTeams } from '@/lib/api';
+import PageHero from '@/components/site/PageHero';
 
 export const metadata = { title: 'Rezultati i strijelci | ŽRK Lavice-UDG', description: 'Rezultati utakmica, bilans sezone i lista strijelaca.' };
 
@@ -24,8 +25,9 @@ export default async function RezultatiPage() {
   const card = { backgroundColor: 'var(--card)', border: '1px solid var(--border)' } as const;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-black text-white mb-8">Rezultati</h1>
+    <div>
+      <PageHero eyebrow="Prvi tim · sezona 2026/27" title="Rezultati i strijelci" sub="Bilans sezone, utakmice i lista strijelaca — direktno iz zapisnika." />
+      <div className="max-w-4xl mx-auto px-6 lg:px-12 py-14">
 
       {/* Bilans sezone */}
       {stats && stats.record.played > 0 && (
@@ -40,7 +42,7 @@ export default async function RezultatiPage() {
               { l: 'Gol razlika', v: (stats.record.diff > 0 ? '+' : '') + stats.record.diff },
             ].map((x: any) => (
               <div key={x.l} style={card} className="rounded-xl p-3 text-center">
-                <div className="text-2xl font-black" style={{ color: x.c || 'white' }}>{x.v}</div>
+                <div className="display nums text-4xl" style={{ color: x.c || 'var(--lav-gold)' }}>{x.v}</div>
                 <div style={{ color: 'var(--text-muted)' }} className="text-xs mt-1">{x.l}</div>
               </div>
             ))}
@@ -53,9 +55,10 @@ export default async function RezultatiPage() {
               <div style={card} className="rounded-xl overflow-hidden">
                 {stats.scorers.map((s: any, i: number) => (
                   <div key={s.playerId}
-                    className="flex items-center gap-4 px-4 py-3"
+                    className="relative flex items-center gap-4 px-4 py-3 overflow-hidden"
                     style={{ borderBottom: i < stats.scorers.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                    <span className="w-6 text-center font-black" style={{ color: i < 3 ? 'var(--gold)' : 'var(--text-muted)' }}>{i + 1}</span>
+                    <span aria-hidden className="display absolute right-16 top-1/2 -translate-y-1/2 select-none pointer-events-none leading-none" style={{ fontSize: '72px', color: 'rgba(212,172,13,0.07)' }}>{s.jerseyNumber ?? ''}</span>
+                    <span className="display w-6 text-center text-lg" style={{ color: i < 3 ? 'var(--lav-gold)' : 'var(--text-muted)' }}>{i + 1}</span>
                     {s.photoUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={s.photoUrl} alt="" className="w-10 h-10 rounded-full object-cover object-top" />
@@ -66,7 +69,7 @@ export default async function RezultatiPage() {
                       <div className="text-white font-semibold text-sm">{s.firstName} {s.lastName}</div>
                       <div style={{ color: 'var(--text-muted)' }} className="text-xs">{s.matches} utakmica · prosjek {s.avg}</div>
                     </div>
-                    <div className="text-2xl font-black shrink-0" style={{ color: 'var(--primary)' }}>{s.goals}</div>
+                    <div className="display nums text-3xl shrink-0 relative" style={{ color: 'var(--lav-gold)' }}>{s.goals}</div>
                   </div>
                 ))}
               </div>
@@ -90,13 +93,14 @@ export default async function RezultatiPage() {
                 </div>
                 {r.notes && <div style={{ color: 'var(--text-muted)' }} className="text-sm mt-1">{r.notes}</div>}
               </div>
-              <div className="text-3xl font-black shrink-0" style={{ color: 'var(--gold)' }}>
+              <div className="display nums text-4xl shrink-0" style={{ color: 'var(--lav-gold)' }}>
                 {r.homeScore} : {r.awayScore}
               </div>
             </Link>
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

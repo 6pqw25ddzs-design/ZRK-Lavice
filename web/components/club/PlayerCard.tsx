@@ -12,7 +12,7 @@ export default function PlayerCard({ p }: { p: any }) {
       )}
       {p.photoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={p.photoUrl} alt={`${p.firstName} ${p.lastName}`}
+        <img src={p.photoUrl} alt={`${p.firstName} ${p.lastName}`} loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]" />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center">
