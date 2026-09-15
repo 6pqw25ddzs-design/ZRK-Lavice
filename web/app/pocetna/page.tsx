@@ -3,6 +3,7 @@ import PremiumHeader from '@/components/PremiumHeader';
 import UpisForm from '@/components/UpisForm';
 import Link from 'next/link';
 import ScheduleList from '@/components/ScheduleList';
+import ArenaHero from '@/components/ArenaHero';
 import { getSponsors, getSettings, getTeams, getPlayers, getSchedule, getNews, getTreneri, getResults } from '@/lib/api';
 
 export const revalidate = 60;
@@ -80,6 +81,67 @@ export default async function PocetnaPage() {
     : (Array.isArray(teams)
         ? new Set(teams.flatMap((t: any) => (t.coaches || []).map((c: any) => c.userId || c.id))).size
         : 0);
+  // --- ArenaHero: tri stanja (matchday / postmatch / manifest) ---
+  const API = 'https://zrk-lavice-api.onrender.com';
+  const firstTeam = (teams as any[]).find(t => t.category === 'prva_liga');
+  const stats = firstTeam
+    ? await fetch(`${API}/api/stats?teamId=${firstTeam.id}`, { next: { revalidate: 120 } })
+        .then(r => (r.ok ? r.json() : null)).catch(() => null)
+    : null;
+
+  const now = Date.now();
+  const dayPG = (d: string | Date) => new Date(d).toLocaleDateString('sv-SE', { timeZone: 'Europe/Podgorica' });
+  const today = dayPG(new Date());
+
+  const ftMatches = (Array.isArray(schedule) ? schedule : [])
+    .filter((e: any) => e.type === 'match' && e.team?.category === 'prva_liga');
+  const matchdayEvent = ftMatches.find((e: any) =>
+    dayPG(e.startsAt) === today && now < new Date(e.startsAt).getTime() + 2 * 3600_000);
+
+  const ftResults = (Array.isArray(results) ? results : [])
+    .filter((r: any) => r.event?.team?.category === 'prva_liga');
+  const freshResult = ftResults.find((r: any) =>
+    now - new Date(r.event?.startsAt).getTime() < 48 * 3600_000 && now > new Date(r.event?.startsAt).getTime());
+
+  let mvp: any = null;
+  if (freshResult?.scorers && typeof freshResult.scorers === 'object') {
+    const [pid, g] = Object.entries(freshResult.scorers as Record<string, number>)
+      .sort((a: any, b: any) => b[1] - a[1])[0] || [];
+    const pl = (players as any[]).find(p => p.id === pid);
+    if (pl && g) mvp = { id: pid, name: `${pl.firstName} ${pl.lastName}`.trim(), goals: Number(g), photoUrl: pl.photoUrl, jerseyNumber: pl.jerseyNumber };
+  }
+
+  const form = ftResults.slice(0, 5).reverse().map((r: any) =>
+    r.homeScore > r.awayScore ? 'W' : r.homeScore === r.awayScore ? 'D' : 'L');
+  const topS = stats?.scorers?.[0];
+
+  const nextByTeam = ['prva_liga', 'pioniri', 'mini'].map(cat => {
+    const ev = (Array.isArray(schedule) ? schedule : []).find((e: any) => e.team?.category === cat);
+    if (!ev) return null;
+    return {
+      category: cat,
+      label: ev.team?.name || '',
+      when: new Date(ev.startsAt).toLocaleString('sr-Latn-ME', { timeZone: 'Europe/Podgorica', weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      title: ev.title,
+    };
+  }).filter(Boolean) as any[];
+
+  const heroData = {
+    state: (matchdayEvent ? 'matchday' : freshResult ? 'postmatch' : 'manifest') as any,
+    match: matchdayEvent ? {
+      title: matchdayEvent.title, opponent: matchdayEvent.opponent, location: matchdayEvent.location,
+      startsAt: matchdayEvent.startsAt, notes: matchdayEvent.notes,
+      home: !(matchdayEvent.title || '').trim().toLowerCase().startsWith((matchdayEvent.opponent || '\u0000').trim().toLowerCase()),
+    } : undefined,
+    form, topScorer: topS ? { name: `${topS.firstName} ${topS.lastName}`, goals: topS.goals } : null,
+    lastResult: freshResult ? {
+      id: freshResult.id, homeScore: freshResult.homeScore, awayScore: freshResult.awayScore,
+      title: freshResult.event?.title || '', notes: freshResult.notes, mvp,
+    } : undefined,
+    clubStats: { igracica: brojIgracica, generacije: brojEkipa },
+    nextByTeam,
+  };
+
   const email = settings.contact_email || 'info@zrklavice.me';
   const phone = settings.contact_phone || '+382 67 000 000';
   const address = settings.contact_address || 'SC Morača, Podgorica, Crna Gora';
@@ -88,46 +150,10 @@ export default async function PocetnaPage() {
     <div id="top" style={{ backgroundColor: '#FFFFFF' }}>
       <PremiumHeader />
 
-      {/* HERO — emocionalni centar (full-width fotografija) */}
-      <section className="relative overflow-hidden" style={{ backgroundColor: '#141414' }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/hero.jpg"
-          alt="ŽRK Lavice — slavlje nakon gola"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ objectPosition: 'center 18%' }}
-        />
-        <div className="absolute inset-0" style={{
-          background: 'linear-gradient(to top, rgba(13,13,13,0.97) 0%, rgba(18,18,18,0.62) 42%, rgba(26,26,26,0.30) 75%, rgba(26,26,26,0.45) 100%)',
-        }} />
-        <div className="relative max-w-6xl mx-auto px-5 min-h-[86vh] flex items-end">
-          <div className="pb-32 md:pb-36 pt-40 max-w-2xl">
-            <div className="inline-flex items-center gap-2 mb-6">
-              <span className="w-6 h-px" style={{ backgroundColor: '#D4AC0D' }} />
-              <span className="text-xs font-bold tracking-[0.28em] uppercase" style={{ color: '#D4AC0D' }}>Podgorica, Crna Gora</span>
-            </div>
-            <h1 className="text-6xl md:text-[5.5rem] font-black text-white leading-[0.92] tracking-tight">
-              Stvaramo<br />nove <span style={{ color: '#E8546F' }}>lavice.</span>
-            </h1>
-            <p className="mt-7 text-xl md:text-2xl leading-snug max-w-lg font-light" style={{ color: 'rgba(255,255,255,0.85)' }}>
-              Razvojni rukometni klub za djevojčice koji vode evropske šampionke i osvajačice jedine olimpijske medalje za Crnu Goru.
-            </p>
-            <div className="mt-9 flex flex-wrap gap-4">
-              <a href="#upis" style={{ backgroundColor: '#C41230' }}
-                className="px-8 py-4 rounded-full text-white font-bold hover:brightness-110 transition-all shadow-xl shadow-red-900/40">
-                Upiši dijete
-              </a>
-              <a href="#upis" style={{ border: '1.5px solid rgba(255,255,255,0.55)', color: '#fff' }}
-                className="px-8 py-4 rounded-full font-bold hover:bg-white/10 transition-all">
-                Probni trening
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ArenaHero data={heroData} />
 
       {/* STATISTIKA — lebdeće premium kartice */}
-      <div className="relative z-10 max-w-6xl mx-auto px-5 -mt-16 md:-mt-20">
+      <div className="relative z-10 max-w-6xl mx-auto px-5 mt-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { num: String(brojIgracica || '—'), label: 'Igračica', ikona: 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H2v-2a4 4 0 013-3.87m6-1a4 4 0 100-8 4 4 0 000 8z' },
