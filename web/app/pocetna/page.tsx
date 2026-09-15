@@ -231,7 +231,7 @@ export default async function PocetnaPage() {
         <div className="max-w-6xl mx-auto px-5">
           <div className="max-w-2xl">
             <GoldLine />
-            <h2 className="mt-5 display"  style={{ color: '#1A1A1A' }}>
+            <h2 className="mt-5 display text-4xl md:text-6xl"  style={{ color: '#1A1A1A' }}>
               Više od kluba — zajednica koja gradi šampionke
             </h2>
             <p className="mt-5 text-lg leading-relaxed" style={{ color: '#5b5b5b' }}>
@@ -437,7 +437,7 @@ export default async function PocetnaPage() {
         <div className="max-w-6xl mx-auto px-5 grid lg:grid-cols-[0.9fr_1.1fr] gap-14 items-start">
           <div className="lg:sticky lg:top-28">
             <GoldLine />
-            <h2 className="mt-5 display"  style={{ color: '#1A1A1A' }}>Za roditelje</h2>
+            <h2 className="mt-5 display text-4xl md:text-6xl"  style={{ color: '#1A1A1A' }}>Za roditelje</h2>
             <p className="mt-5 text-lg leading-relaxed" style={{ color: '#5b5b5b' }}>
               Kada upišete dijete u ŽRK Lavice, postajete dio zajednice koja brine. Evo šta možete očekivati.
             </p>
@@ -527,7 +527,7 @@ export default async function PocetnaPage() {
         <div className="max-w-6xl mx-auto px-5 grid lg:grid-cols-[1fr_0.85fr] gap-12 items-start">
           <div>
             <GoldLine />
-            <h2 className="mt-5 display"  style={{ color: '#FFFFFF' }}>Upiši dijete</h2>
+            <h2 className="mt-5 display text-4xl md:text-6xl"  style={{ color: '#FFFFFF' }}>Upiši dijete</h2>
             <p className="mt-5 text-lg leading-relaxed mb-8" style={{ color: 'var(--lav-grey-400)' }}>
               Popunite formu i naš tim će vas kontaktirati sa detaljima o probnom treningu i terminima. Prijem je otvoren za sve uzraste.
             </p>
