@@ -47,7 +47,7 @@ export default function Footer() {
         </div>
         <div>
           <div className="eyebrow mb-4">Pratite nas</div>
-          <a href="https://www.instagram.com/zrklavice" target="_blank" rel="noopener noreferrer"
+          <a href="https://www.instagram.com/zrk.lavice" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" /></svg>
             Instagram
