@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
   if (req.headers.get('authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const API = 'https://zrk-lavice-api.onrender.com';
+  const API = 'https://api.zrklavice.me';
   try {
     const login = await fetch(`${API}/api/auth/login`, {
       method: 'POST',

@@ -82,7 +82,7 @@ export default async function PocetnaPage() {
         ? new Set(teams.flatMap((t: any) => (t.coaches || []).map((c: any) => c.userId || c.id))).size
         : 0);
   // --- ArenaHero: identitetski hero + kompaktan sportski blok ---
-  const API = 'https://zrk-lavice-api.onrender.com';
+  const API = 'https://api.zrklavice.me';
   const firstTeam = (teams as any[]).find(t => t.category === 'prva_liga');
   const stats = firstTeam
     ? await fetch(`${API}/api/stats?teamId=${firstTeam.id}`, { next: { revalidate: 120 } })

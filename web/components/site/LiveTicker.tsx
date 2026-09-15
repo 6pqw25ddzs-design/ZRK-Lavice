@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const API = 'https://zrk-lavice-api.onrender.com';
+const API = 'https://api.zrklavice.me';
 
 export const revalidate = 120;
 

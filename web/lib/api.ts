@@ -1,4 +1,4 @@
-const API_URL = 'https://zrk-lavice-api.onrender.com';
+const API_URL = 'https://api.zrklavice.me';
 
 async function request(path: string, options: RequestInit = {}) {
   const res = await fetch(`${API_URL}${path}`, {

@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 
-const API = 'https://zrk-lavice-api.onrender.com';
+const API = 'https://api.zrklavice.me';
 
 export default function ClanstvoPage() {
   const [form, setForm] = useState({ fullName: '', email: '', phone: '', message: '' });

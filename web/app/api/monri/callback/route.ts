@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
-const API = 'https://zrk-lavice-api.onrender.com';
+const API = 'https://api.zrklavice.me';
 
 // Monri callback: POST JSON o odobrenoj transakciji.
 // Verifikacija: authorization header "WP3-callback <digest>", digest = SHA512(merchant_key + raw_body)

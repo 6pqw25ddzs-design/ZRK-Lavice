@@ -1,4 +1,4 @@
-const API_URL = 'https://zrk-lavice-api.onrender.com';
+const API_URL = 'https://api.zrklavice.me';
 
 export async function adminLogin(email: string, password: string) {
   const res = await fetch(`${API_URL}/api/auth/login`, {

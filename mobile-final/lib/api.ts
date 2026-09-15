@@ -1,4 +1,4 @@
-const API_URL = 'https://zrk-lavice-api.onrender.com';
+const API_URL = 'https://api.zrklavice.me';
 
 let authToken: string | null = null;
 export function setAuthToken(token: string | null) { authToken = token; }

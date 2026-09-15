@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 
-const API = 'https://zrk-lavice-api.onrender.com';
+const API = 'https://api.zrklavice.me';
 const W = 1080, H = 1350;
 const RED = '#C41230', GOLD = '#D4AC0D';
 

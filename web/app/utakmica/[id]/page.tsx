@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 
 export const revalidate = 60;
 
-const API = 'https://zrk-lavice-api.onrender.com';
+const API = 'https://api.zrklavice.me';
 
 export default async function UtakmicaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

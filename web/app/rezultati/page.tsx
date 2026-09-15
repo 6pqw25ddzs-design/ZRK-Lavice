@@ -7,7 +7,7 @@ export const metadata = { title: 'Rezultati i strijelci | ŽRK Lavice-UDG', desc
 
 export const revalidate = 0;
 
-const API = 'https://zrk-lavice-api.onrender.com';
+const API = 'https://api.zrklavice.me';
 
 export default async function RezultatiPage() {
   const [results, teams] = await Promise.all([
