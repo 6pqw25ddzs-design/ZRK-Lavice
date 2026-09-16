@@ -1,10 +1,9 @@
 import { Router, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { canManageTeam } from '../util/scope';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Presjek dostupnosti za termin: potvrđene / odbile / bez odgovora
 router.get('/', requireAuth, requireRole('admin', 'coach'), async (req: AuthRequest, res: Response) => {

@@ -1,10 +1,9 @@
 import { Router, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { canManageTeam } from '../util/scope';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 async function canManagePlayer(user: { id: string; role: string }, playerId: string) {
   const player = await prisma.player.findUnique({ where: { id: playerId }, select: { teamId: true } });

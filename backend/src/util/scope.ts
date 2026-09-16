@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 
-const prisma = new PrismaClient();
 
 // Admin smije sve; trener samo svoju ekipu (Coach.teamId)
 export async function canManageTeam(user: { id: string; role: string }, teamId: string): Promise<boolean> {

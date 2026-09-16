@@ -1,11 +1,10 @@
 import { Router, Response } from 'express';
 import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { sendTeamPushNotification } from '../services/notifications';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 const eventSchema = z.object({
   teamId: z.string().uuid(),

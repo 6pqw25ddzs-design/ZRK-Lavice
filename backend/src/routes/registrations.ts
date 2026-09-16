@@ -1,11 +1,10 @@
 import { Router, Response } from 'express';
 import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { sendNotifyEmail, registrationEmailHtml } from '../services/email';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 const registrationSchema = z.object({
   childName: z.string().min(2),

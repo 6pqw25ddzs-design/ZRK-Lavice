@@ -1,9 +1,8 @@
 import { Router, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Jedan agregatni poziv za admin dashboard — "kako smo?" na jednom ekranu
 router.get('/', requireAuth, requireRole('admin'), async (_req: AuthRequest, res: Response) => {

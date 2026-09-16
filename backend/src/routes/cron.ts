@@ -1,10 +1,9 @@
 import { Router, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { sendNotifyEmail } from '../services/email';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Push određenim roditeljima (preko parent_links → push_tokens)
 async function pushToPlayersParents(playerIds: string[], title: string, body: string) {

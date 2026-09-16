@@ -1,9 +1,8 @@
 import { Router, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Presjek članarina za ekipu i mjesec (i igračice bez zaduženja)
 router.get('/', requireAuth, requireRole('admin'), async (req: AuthRequest, res: Response) => {

@@ -1,8 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Statistika ekipe iz zvaničnih rezultata: bilans + lista strijelaca.
 // Javno dostupno samo za seniorsku kategoriju (prva_liga) — mlađe kategorije se javno ne rangiraju.

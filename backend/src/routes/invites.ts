@@ -1,10 +1,9 @@
 import { Router, Response } from 'express';
 import crypto from 'crypto';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Kod bez dvosmislenih znakova (bez 0/O, 1/I/L)
 const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

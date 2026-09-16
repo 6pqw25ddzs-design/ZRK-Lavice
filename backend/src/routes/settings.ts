@@ -1,9 +1,8 @@
 import { Router, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Public: get all settings as { key: value } — tajne (secret_*) se NIKAD ne vraćaju javno
 router.get('/', async (_req, res) => {

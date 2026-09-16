@@ -1,7 +1,7 @@
-import { PrismaClient, TeamCategory, UserRole } from '@prisma/client';
+import { prisma } from '../db';
+import { TeamCategory, UserRole } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding ZRK Lavice database...');

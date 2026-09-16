@@ -1,7 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import admin from 'firebase-admin';
 
-const prisma = new PrismaClient();
 
 if (!admin.apps.length && process.env.FIREBASE_SERVICE_ACCOUNT) {
   admin.initializeApp({

@@ -1,11 +1,10 @@
 import { Router, Response } from 'express';
 import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import sanitizeHtml from 'sanitize-html';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // HTML tijela vijesti: dozvoljeni samo bezbjedni tagovi (protiv XSS-a)
 function cleanBody(html: string): string {

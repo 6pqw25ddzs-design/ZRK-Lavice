@@ -2,9 +2,8 @@
 // Ako RESEND_API_KEY/NOTIFY_EMAIL nisu podešeni ili slanje padne, greška se samo loguje —
 // email nikad ne smije oboriti registraciju.
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 
-const prisma = new PrismaClient();
 const DEFAULT_FROM = 'ŽRK Lavice <onboarding@resend.dev>';
 
 // Ključ i adrese se čitaju iz baze (admin Podešavanja), uz env kao fallback; keš 5 min.

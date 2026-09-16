@@ -1,9 +1,8 @@
 import { Router, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 function monthRange(year: number, month: number) {
   // granice mjeseca u lokalnoj zoni (CEST ~ UTC+2); dovoljno precizno za evidenciju

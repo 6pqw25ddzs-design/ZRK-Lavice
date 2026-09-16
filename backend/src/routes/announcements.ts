@@ -1,11 +1,10 @@
 import { Router, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { canManageTeam } from '../util/scope';
 import { sendTeamPushNotification } from '../services/notifications';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Objava ekipi (admin ili trener svoje ekipe)
 router.post('/', requireAuth, requireRole('admin', 'coach'), async (req: AuthRequest, res: Response) => {
