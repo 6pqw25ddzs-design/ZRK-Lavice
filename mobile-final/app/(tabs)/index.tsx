@@ -14,7 +14,13 @@ const { width: W, height: H } = Dimensions.get('window');
 const SLIDE_W = W - 40;
 
 // Hero fotografija — slavlje nakon gola
-const HERO_IMG = 'https://zrklavice.me/foto/lavice-hero-app.webp';
+// Dnevna rotacija kuriranih hero fotografija — isti izbor kao na sajtu
+const HERO_IMGS = [
+  'https://zrklavice.me/foto/lavice-hero-app.webp',
+  'https://zrklavice.me/foto/lavice-hero-app-skok-bor.webp',
+  'https://zrklavice.me/foto/lavice-hero-app-slavlje.webp',
+];
+const HERO_IMG = HERO_IMGS[Math.floor(Date.now() / 86_400_000) % HERO_IMGS.length];
 
 const STATS = [
   { num: '47', label: 'Igračica', icon: 'people' as const },
