@@ -19,9 +19,28 @@ type HeroData = {
   nextByTeam: { category: string; when: string; title: string }[];
 };
 
+/* Kurirane hero fotografije — rotacija po danu (server-side, bez treperenja).
+   Svaka je ručno kadrirana; objectPosition čuva lice i loptu na svim širinama. */
+const HERO_PHOTOS = [
+  {
+    src: '/foto/lavice-hero-akcija.webp', srcM: '/foto/lavice-hero-akcija-m.webp',
+    pos: '42% 18%', alt: 'Rukometašica Lavica u skok-šutu tokom utakmice',
+  },
+  {
+    src: '/foto/lavice-hero-skok-bor.webp', srcM: '/foto/lavice-hero-skok-bor-m.webp',
+    pos: '58% 22%', alt: 'Lavica u skok-šutu na gostovanju u Boru',
+  },
+  {
+    src: '/foto/lavice-hero-slavlje.webp', srcM: '/foto/lavice-hero-slavlje-m.webp',
+    pos: '40% 28%', alt: 'Slavlje Lavica i stručnog štaba poslije gola',
+  },
+];
+
 export default function ArenaHero({ data }: { data: HeroData }) {
   const r = data.lastResult;
   const m = data.match;
+  // deterministički izbor po danu — isti za sve posjetioce, mijenja se u ponoć
+  const hero = HERO_PHOTOS[Math.floor(Date.now() / 86_400_000) % HERO_PHOTOS.length];
   const win = r ? r.homeScore > r.awayScore : false;
   const draw = r ? r.homeScore === r.awayScore : false;
 
@@ -56,16 +75,16 @@ export default function ArenaHero({ data }: { data: HeroData }) {
             </div>
           </div>
 
-          {/* Fotografija — skok-šut, lice i lopta sačuvani */}
+          {/* Fotografija — dnevna rotacija kuriranih kadrova */}
           <div className="relative min-h-[46svh] lg:min-h-0">
             <picture>
-              <source media="(max-width: 1023px)" srcSet="/foto/lavice-hero-akcija-m.webp" />
+              <source media="(max-width: 1023px)" srcSet={hero.srcM} />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/foto/lavice-hero-akcija.webp"
-                alt="Rukometašica Lavica u skok-šutu tokom utakmice"
+              <img src={hero.src}
+                alt={hero.alt}
                 fetchPriority="high"
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{ objectPosition: '42% 18%' }} />
+                style={{ objectPosition: hero.pos }} />
             </picture>
             {/* blagi prelaz ka tekstualnom dijelu */}
             <div aria-hidden className="absolute inset-0 pointer-events-none hidden lg:block"
