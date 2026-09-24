@@ -71,6 +71,62 @@ router.post('/', requireAuth, requireRole('admin'), async (req: AuthRequest, res
   }
 });
 
+
+// ---------------------------------------------------------------- OBAVEZE
+// Pristigle fakture prema trećim licima. Označavanje "plaćeno" NE pravi
+// rashod — rashodi ulaze iz izvoda banke, da se ne duplira evidencija.
+
+router.get('/payables', requireAuth, requireRole('admin'), async (_req: AuthRequest, res: Response) => {
+  try {
+    const items = await prisma.payable.findMany({
+      orderBy: [{ status: 'asc' }, { dueDate: 'asc' }, { invoiceDate: 'desc' }],
+      include: { createdBy: { select: { fullName: true } } },
+    });
+    const unpaidTotal = items.filter(i => i.status === 'unpaid').reduce((a, i) => a + i.amountEur, 0);
+    res.json({ items, unpaidTotal });
+  } catch { res.status(500).json({ error: 'Greška pri učitavanju obaveza' }); }
+});
+
+router.post('/payables', requireAuth, requireRole('admin'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { vendor, description, amountEur, invoiceNo, invoiceDate, dueDate } = req.body;
+    if (!vendor || !amountEur || !invoiceDate) return res.status(400).json({ error: 'vendor, amountEur i invoiceDate su obavezni' });
+    const item = await prisma.payable.create({
+      data: {
+        vendor: String(vendor), description: description ? String(description) : null,
+        amountEur: Number(amountEur), invoiceNo: invoiceNo ? String(invoiceNo) : null,
+        invoiceDate: new Date(invoiceDate), dueDate: dueDate ? new Date(dueDate) : null,
+        createdById: req.user!.id,
+      },
+    });
+    res.status(201).json(item);
+  } catch { res.status(500).json({ error: 'Greška pri unosu obaveze' }); }
+});
+
+router.patch('/payables/:id', requireAuth, requireRole('admin'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { vendor, description, amountEur, invoiceNo, invoiceDate, dueDate, status } = req.body;
+    const data: Record<string, unknown> = {};
+    if (vendor !== undefined) data.vendor = String(vendor);
+    if (description !== undefined) data.description = description ? String(description) : null;
+    if (amountEur !== undefined) data.amountEur = Number(amountEur);
+    if (invoiceNo !== undefined) data.invoiceNo = invoiceNo ? String(invoiceNo) : null;
+    if (invoiceDate !== undefined) data.invoiceDate = new Date(invoiceDate);
+    if (dueDate !== undefined) data.dueDate = dueDate ? new Date(dueDate) : null;
+    if (status === 'paid') { data.status = 'paid'; data.paidAt = new Date(); }
+    if (status === 'unpaid') { data.status = 'unpaid'; data.paidAt = null; }
+    const item = await prisma.payable.update({ where: { id: req.params.id }, data });
+    res.json(item);
+  } catch { res.status(500).json({ error: 'Greška pri izmjeni obaveze' }); }
+});
+
+router.delete('/payables/:id', requireAuth, requireRole('admin'), async (req: AuthRequest, res: Response) => {
+  try {
+    await prisma.payable.delete({ where: { id: req.params.id } });
+    res.status(204).end();
+  } catch { res.status(500).json({ error: 'Greška pri brisanju obaveze' }); }
+});
+
 router.delete('/:id', requireAuth, requireRole('admin'), async (req: AuthRequest, res: Response) => {
   try {
     await prisma.financeEntry.delete({ where: { id: req.params.id } });

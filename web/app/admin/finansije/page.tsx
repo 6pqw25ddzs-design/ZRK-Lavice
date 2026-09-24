@@ -8,6 +8,10 @@ type Entry = {
 };
 type Summary = { income: number; expense: number; feesIncome: number; feesCount: number; totalIncome: number; balance: number; totalBalance?: number };
 type MonthSum = { month: number; income: number; expense: number };
+type Payable = {
+  id: string; vendor: string; description?: string; amountEur: number; invoiceNo?: string;
+  invoiceDate: string; dueDate?: string; status: 'unpaid' | 'paid'; paidAt?: string;
+};
 
 const MONTHS = ['Januar', 'Februar', 'Mart', 'April', 'Maj', 'Jun', 'Jul', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'];
 const CATS: Record<string, string[]> = {
@@ -25,6 +29,10 @@ export default function AdminFinansijePage() {
   const [form, setForm] = useState({ kind: 'expense', category: 'Dvorana', amountEur: '', date: '', description: '', receiptUrl: '' });
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [payables, setPayables] = useState<Payable[]>([]);
+  const [unpaidTotal, setUnpaidTotal] = useState(0);
+  const [showPaid, setShowPaid] = useState(false);
+  const [pForm, setPForm] = useState({ vendor: '', invoiceNo: '', amountEur: '', invoiceDate: '', dueDate: '', description: '' });
 
   function getToken() { return localStorage.getItem('admin_token') || ''; }
 
@@ -35,6 +43,8 @@ export default function AdminFinansijePage() {
         adminRequest(`/api/finance/summary?year=${year}`, getToken()),
       ]);
       setEntries(d.entries); setSum(d.summary); setYearly(y); setError('');
+      const pb = await adminRequest('/api/finance/payables', getToken());
+      setPayables(pb.items); setUnpaidTotal(pb.unpaidTotal);
     } catch (e: any) { setError('Greška: ' + (e?.message || '')); }
   }
   useEffect(() => { load(); }, [year, month]);
@@ -56,6 +66,36 @@ export default function AdminFinansijePage() {
   async function del(id: string) {
     if (!confirm('Obrisati stavku?')) return;
     try { await adminRequest(`/api/finance/${id}`, getToken(), { method: 'DELETE' }); await load(); }
+    catch (e: any) { setError('Greška: ' + (e?.message || '')); }
+  }
+
+  async function savePayable() {
+    if (!pForm.vendor || !pForm.amountEur || !pForm.invoiceDate) { setError('Unesite dobavljača, iznos i datum fakture'); return; }
+    setSaving(true); setError('');
+    try {
+      await adminRequest('/api/finance/payables', getToken(), {
+        method: 'POST',
+        body: JSON.stringify({
+          vendor: pForm.vendor, invoiceNo: pForm.invoiceNo || undefined, amountEur: Number(pForm.amountEur),
+          invoiceDate: new Date(pForm.invoiceDate).toISOString(),
+          dueDate: pForm.dueDate ? new Date(pForm.dueDate).toISOString() : undefined,
+          description: pForm.description || undefined,
+        }),
+      });
+      setPForm({ vendor: '', invoiceNo: '', amountEur: '', invoiceDate: '', dueDate: '', description: '' });
+      await load();
+    } catch (e: any) { setError('Greška: ' + (e?.message || '')); }
+    finally { setSaving(false); }
+  }
+
+  async function setPayableStatus(id: string, status: 'paid' | 'unpaid') {
+    try { await adminRequest(`/api/finance/payables/${id}`, getToken(), { method: 'PATCH', body: JSON.stringify({ status }) }); await load(); }
+    catch (e: any) { setError('Greška: ' + (e?.message || '')); }
+  }
+
+  async function delPayable(id: string) {
+    if (!confirm('Obrisati obavezu?')) return;
+    try { await adminRequest(`/api/finance/payables/${id}`, getToken(), { method: 'DELETE' }); await load(); }
     catch (e: any) { setError('Greška: ' + (e?.message || '')); }
   }
 
@@ -103,13 +143,14 @@ export default function AdminFinansijePage() {
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       {sum && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-8">
           {[
             { l: 'Prihodi ukupno', v: sum.totalIncome, c: '#16a34a' },
             { l: `— od toga članarine (${sum.feesCount})`, v: sum.feesIncome, c: '#16a34a' },
             { l: 'Rashodi', v: sum.expense, c: '#dc2626' },
             { l: 'Saldo mjeseca', v: sum.balance, c: sum.balance >= 0 ? '#16a34a' : '#dc2626' },
             { l: '💰 Stanje računa (ukupno)', v: sum.totalBalance ?? 0, c: 'var(--gold)' },
+            { l: '📄 Neplaćene obaveze', v: -unpaidTotal, c: unpaidTotal > 0 ? '#f59e0b' : 'var(--text-muted)' },
           ].map(x => (
             <div key={x.l} style={cardStyle} className="rounded-xl p-4">
               <div className="text-2xl font-black" style={{ color: x.c }}>{x.v.toFixed(2)}€</div>
@@ -166,6 +207,92 @@ export default function AdminFinansijePage() {
             {saving ? 'Čuvam...' : 'Dodaj'}
           </button>
         </div>
+      </div>
+
+
+      {/* OBAVEZE — pristigle fakture prema trećim licima */}
+      <div style={{ ...cardStyle, borderTop: '3px solid #f59e0b' }} className="rounded-xl p-5 mb-8">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <h2 className="text-white font-bold">Obaveze — pristigle fakture</h2>
+          {unpaidTotal > 0 && <span className="font-black" style={{ color: '#f59e0b' }}>neplaćeno: {unpaidTotal.toFixed(2)}€</span>}
+        </div>
+
+        <div className="flex flex-wrap gap-3 mb-5">
+          <input placeholder="Dobavljač *" value={pForm.vendor}
+            onChange={e => setPForm(f => ({ ...f, vendor: e.target.value }))}
+            style={inputStyle} className="px-3 py-2 rounded-lg text-sm flex-1 min-w-40 outline-none" />
+          <input placeholder="Br. fakture" value={pForm.invoiceNo}
+            onChange={e => setPForm(f => ({ ...f, invoiceNo: e.target.value }))}
+            style={inputStyle} className="px-3 py-2 rounded-lg text-sm w-28 outline-none" />
+          <input type="number" min="0" step="0.01" placeholder="Iznos € *" value={pForm.amountEur}
+            onChange={e => setPForm(f => ({ ...f, amountEur: e.target.value }))}
+            style={inputStyle} className="px-3 py-2 rounded-lg text-sm w-28 outline-none" />
+          <label className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>faktura
+            <input type="date" value={pForm.invoiceDate} onChange={e => setPForm(f => ({ ...f, invoiceDate: e.target.value }))}
+              style={inputStyle} className="px-3 py-2 rounded-lg text-sm outline-none" /></label>
+          <label className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>valuta
+            <input type="date" value={pForm.dueDate} onChange={e => setPForm(f => ({ ...f, dueDate: e.target.value }))}
+              style={inputStyle} className="px-3 py-2 rounded-lg text-sm outline-none" /></label>
+          <input placeholder="Opis (opciono)" value={pForm.description}
+            onChange={e => setPForm(f => ({ ...f, description: e.target.value }))}
+            style={inputStyle} className="px-3 py-2 rounded-lg text-sm flex-1 min-w-40 outline-none" />
+          <button onClick={savePayable} disabled={saving} style={{ backgroundColor: '#f59e0b' }}
+            className="px-5 py-2 rounded-lg text-black text-sm font-bold disabled:opacity-50">Dodaj fakturu</button>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          {payables.filter(pb => pb.status === 'unpaid').map(pb => {
+            const overdue = pb.dueDate && new Date(pb.dueDate) < new Date();
+            return (
+              <div key={pb.id} style={{ ...cardStyle, borderLeft: `3px solid ${overdue ? '#dc2626' : '#f59e0b'}` }}
+                className="rounded-xl p-3 flex items-center justify-between gap-3 flex-wrap">
+                <div className="min-w-0">
+                  <span className="text-white text-sm font-semibold">{pb.vendor}</span>
+                  {pb.invoiceNo && <span style={{ color: 'var(--text-muted)' }} className="text-xs ml-2">fak. {pb.invoiceNo}</span>}
+                  {pb.description && <span style={{ color: 'var(--text-muted)' }} className="text-sm"> — {pb.description}</span>}
+                  <div style={{ color: 'var(--text-muted)' }} className="text-xs mt-0.5">
+                    faktura: {new Date(pb.invoiceDate).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica' })}
+                    {pb.dueDate && <> · valuta: <span style={{ color: overdue ? '#dc2626' : undefined }} className={overdue ? 'font-bold' : ''}>
+                      {new Date(pb.dueDate).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica' })}{overdue ? ' (PROBIJENA)' : ''}</span></>}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="font-black" style={{ color: '#f59e0b' }}>{pb.amountEur.toFixed(2)}€</span>
+                  <button onClick={() => setPayableStatus(pb.id, 'paid')} className="text-xs px-2.5 py-1 rounded-full font-bold"
+                    style={{ backgroundColor: 'rgba(22,163,74,0.15)', color: '#16a34a' }}>✓ plaćeno</button>
+                  <button onClick={() => delPayable(pb.id)} className="text-xs text-red-500 hover:text-red-400">obriši</button>
+                </div>
+              </div>
+            );
+          })}
+          {payables.filter(pb => pb.status === 'unpaid').length === 0 && (
+            <p style={{ color: 'var(--text-muted)' }} className="text-sm">Nema neplaćenih faktura. 🎉</p>
+          )}
+        </div>
+
+        {payables.some(pb => pb.status === 'paid') && (
+          <div className="mt-4">
+            <button onClick={() => setShowPaid(v => !v)} className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              {showPaid ? '▾ sakrij plaćene' : `▸ prikaži plaćene (${payables.filter(pb => pb.status === 'paid').length})`}
+            </button>
+            {showPaid && payables.filter(pb => pb.status === 'paid').map(pb => (
+              <div key={pb.id} style={{ ...cardStyle, borderLeft: '3px solid #16a34a', opacity: 0.7 }}
+                className="rounded-xl p-3 flex items-center justify-between gap-3 mt-2 flex-wrap">
+                <div className="min-w-0">
+                  <span className="text-white text-sm font-semibold">{pb.vendor}</span>
+                  {pb.invoiceNo && <span style={{ color: 'var(--text-muted)' }} className="text-xs ml-2">fak. {pb.invoiceNo}</span>}
+                  <div style={{ color: 'var(--text-muted)' }} className="text-xs mt-0.5">
+                    plaćeno {pb.paidAt && new Date(pb.paidAt).toLocaleDateString('sr-Latn-ME', { timeZone: 'Europe/Podgorica' })}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="font-black" style={{ color: '#16a34a' }}>{pb.amountEur.toFixed(2)}€</span>
+                  <button onClick={() => setPayableStatus(pb.id, 'unpaid')} className="text-xs" style={{ color: 'var(--text-muted)' }}>vrati u neplaćeno</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Stavke mjeseca */}

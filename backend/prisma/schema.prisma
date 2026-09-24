@@ -116,6 +116,7 @@ model User {
   evaluationsGiven Evaluation[]
   goalsGiven       DevelopmentGoal[]
   financeEntries   FinanceEntry[]
+  payables         Payable[]      @relation("PayableCreatedBy")
 
   @@map("users")
 }
@@ -771,4 +772,27 @@ model Trener {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("treneri")
+}
+
+enum PayableStatus {
+  unpaid
+  paid
+}
+
+model Payable {
+  id          String        @id @default(uuid())
+  vendor      String
+  description String?
+  amountEur   Float         @map("amount_eur")
+  invoiceNo   String?       @map("invoice_no")
+  invoiceDate DateTime      @map("invoice_date")
+  dueDate     DateTime?     @map("due_date")
+  status      PayableStatus @default(unpaid)
+  paidAt      DateTime?     @map("paid_at")
+  createdById String        @map("created_by_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  createdBy User @relation("PayableCreatedBy", fields: [createdById], references: [id])
+
+  @@map("payables")
 }
