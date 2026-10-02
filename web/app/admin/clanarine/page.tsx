@@ -22,7 +22,10 @@ export default function AdminClanarinePage() {
   function getToken() { return localStorage.getItem('admin_token') || ''; }
 
   useEffect(() => {
-    adminRequest('/api/teams', getToken()).then(setTeams).catch(() => setError('Greška pri učitavanju ekipa'));
+    adminRequest('/api/teams', getToken()).then((t: Team[]) => {
+      setTeams(t);
+      if (t.length > 0) setTeamId(prev => prev || t[0].id);
+    }).catch(() => setError('Greška pri učitavanju ekipa'));
   }, []);
 
   async function load() {
@@ -96,9 +99,26 @@ export default function AdminClanarinePage() {
             </div>
           )}
 
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            {[
+              { l: 'Platilo', v: `${paid}/${charged}`, c: '#16a34a' },
+              { l: 'Naplaćeno', v: `${totalPaid}€`, c: 'var(--gold)' },
+              { l: 'Nedostaje', v: `${rows.filter(r => r.fee?.status === 'unpaid').reduce((s2, r) => s2 + (r.fee?.amountEur || 0), 0)}€`, c: '#dc2626' },
+            ].map(x => (
+              <div key={x.l} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} className="rounded-xl p-4">
+                <div className="text-2xl font-black" style={{ color: x.c }}>{x.v}</div>
+                <div style={{ color: 'var(--text-muted)' }} className="text-xs mt-1">{x.l}</div>
+              </div>
+            ))}
+          </div>
+
           <div className="flex flex-col gap-2 mb-4">
-            {rows.map(r => (
-              <div key={r.playerId} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
+            {[...rows].sort((a, b) => {
+              const rank = (r: Row) => r.fee?.status === 'unpaid' ? 0 : r.fee ? 1 : 2;
+              return rank(a) - rank(b) || a.lastName.localeCompare(b.lastName, 'sr');
+            }).map(r => (
+              <div key={r.playerId} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)',
+                borderLeft: `3px solid ${r.fee?.status === 'paid' ? '#16a34a' : r.fee?.status === 'waived' ? '#d4ac0d' : r.fee ? '#dc2626' : 'var(--border)'}` }}
                 className="rounded-xl p-3 flex items-center justify-between gap-3 flex-wrap">
                 <span className="text-white font-medium">{r.lastName} {r.firstName}</span>
                 {r.fee ? (
