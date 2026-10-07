@@ -56,6 +56,32 @@ export default function AdminClanarinePage() {
     } catch (e: any) { setError('Greška: ' + (e?.message || '')); }
   }
 
+  function exportExcel() {
+    const sorted = [...rows].sort((a, b) => {
+      const rank = (r: Row) => r.fee?.status === 'unpaid' ? 0 : r.fee ? 1 : 2;
+      return rank(a) - rank(b) || a.lastName.localeCompare(b.lastName, 'sr');
+    });
+    const statusLabel = (r: Row) => !r.fee ? 'Nije zadužena' : r.fee.status === 'paid' ? 'Plaćeno' : r.fee.status === 'waived' ? 'Oslobođena' : 'Neplaćeno';
+    let nUnpaid = 0, nPaid = 0;
+    const data = [
+      ['R.br.', 'Prezime i ime', 'Iznos (EUR)', 'Status'],
+      ...sorted.map(r => {
+        const st = statusLabel(r);
+        const n = st === 'Neplaćeno' ? ++nUnpaid : st === 'Plaćeno' ? ++nPaid : '';
+        return [String(n), `${r.lastName} ${r.firstName}`, r.fee ? String(r.fee.amountEur) : '', st];
+      }),
+      [],
+      ['', 'Plaćeno ' + paid + '/' + charged, 'naplaćeno ' + totalPaid + '€', ''],
+    ];
+    const csv = data.map(row => row.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const team = teams.find(t => t.id === teamId)?.name || 'ekipa';
+    a.download = `clanarine-${team.toLowerCase().replace(/\s+/g, '-')}-${year}-${String(month).padStart(2, '0')}.csv`;
+    a.click(); URL.revokeObjectURL(a.href);
+  }
+
   const inputStyle = { backgroundColor: 'var(--background)', border: '1px solid var(--border)', color: 'white' };
   const paid = rows.filter(r => r.fee?.status === 'paid').length;
   const charged = rows.filter(r => r.fee).length;
@@ -63,7 +89,15 @@ export default function AdminClanarinePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black text-white mb-6">Članarine</h1>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <h1 className="text-2xl font-black text-white">Članarine</h1>
+        {teamId && rows.length > 0 && (
+          <button onClick={exportExcel} style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+            className="px-4 py-2 rounded-lg text-sm hover:text-white transition-colors">
+            ⬇️ Izvezi u Excel
+          </button>
+        )}
+      </div>
 
       <div className="flex flex-wrap gap-3 mb-6">
         <select value={teamId} onChange={e => setTeamId(e.target.value)} style={inputStyle} className="px-4 py-2 rounded-lg outline-none">
@@ -113,14 +147,21 @@ export default function AdminClanarinePage() {
           </div>
 
           <div className="flex flex-col gap-2 mb-4">
-            {[...rows].sort((a, b) => {
-              const rank = (r: Row) => r.fee?.status === 'unpaid' ? 0 : r.fee ? 1 : 2;
-              return rank(a) - rank(b) || a.lastName.localeCompare(b.lastName, 'sr');
-            }).map(r => (
+            {(() => {
+              const sorted = [...rows].sort((a, b) => {
+                const rank = (r: Row) => r.fee?.status === 'unpaid' ? 0 : r.fee ? 1 : 2;
+                return rank(a) - rank(b) || a.lastName.localeCompare(b.lastName, 'sr');
+              });
+              let nU = 0, nP = 0;
+              return sorted.map(r => ({ r, n: r.fee?.status === 'unpaid' ? ++nU : r.fee?.status === 'paid' ? ++nP : 0 }));
+            })().map(({ r, n }) => (
               <div key={r.playerId} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)',
                 borderLeft: `3px solid ${r.fee?.status === 'paid' ? '#16a34a' : r.fee?.status === 'waived' ? '#d4ac0d' : r.fee ? '#dc2626' : 'var(--border)'}` }}
                 className="rounded-xl p-3 flex items-center justify-between gap-3 flex-wrap">
-                <span className="text-white font-medium">{r.lastName} {r.firstName}</span>
+                <span className="text-white font-medium">
+                  {n > 0 && <span style={{ color: 'var(--text-muted)' }} className="inline-block w-7 text-sm tabular-nums">{n}.</span>}
+                  {r.lastName} {r.firstName}
+                </span>
                 {r.fee ? (
                   <div className="flex items-center gap-2">
                     <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{r.fee.amountEur}€</span>
