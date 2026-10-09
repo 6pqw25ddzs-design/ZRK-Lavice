@@ -1,7 +1,4 @@
-// Tabele liga u kojima nastupaju Lavice.
-// Prva ženska liga CG: zvanični podaci RSCG (sportinfocentar feed koji i rscg.me prikazuje).
-// RRL (WRHL, Grupa B): naš LiveStats sistem.
-
+// Tabele liga — isti izvori kao sajt (zrklavice.me/tabela).
 export type TabelaRed = {
   rank: number; name: string; played: number; won: number; drawn: number; lost: number;
   gf: number; ga: number; points: number; nasa: boolean;
@@ -10,14 +7,13 @@ export type TabelaRed = {
 const RSCG_URL = 'https://www.sportinfocentar2.com/coman/natjecanje2123.js';
 const RRL_URL =
   'https://supabase.rr-liga.com/rest/v1/v_public_standings?group_id=eq.33333333-0000-0000-0000-0000000000a2&select=*&order=rank';
-const RRL_ANON = process.env.NEXT_PUBLIC_RRL_SUPABASE_ANON || '';
+const RRL_ANON = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTc4OTU2MzYwMCwiZXhwIjo0OTQ1MjM3MjAwLCJyb2xlIjoiYW5vbiJ9.s9NcQtH8WnX3RdY_b_5qUmDytlgY3bgoSiHj1EuHgQ0';
 
 export async function getPrvaLigaTabela(): Promise<TabelaRed[] | null> {
   try {
-    const res = await fetch(RSCG_URL, { next: { revalidate: 1800 } });
+    const res = await fetch(RSCG_URL + '?t=' + Date.now());
     if (!res.ok) return null;
     const txt = await res.text();
-    // izvuci "tablica": [ ... ] (prvi balansirani niz)
     const key = txt.indexOf('"tablica"');
     if (key === -1) return null;
     const start = txt.indexOf('[', key);
@@ -35,11 +31,9 @@ export async function getPrvaLigaTabela(): Promise<TabelaRed[] | null> {
 }
 
 export async function getRrlTabela(): Promise<TabelaRed[] | null> {
-  if (!RRL_ANON) return null;
   try {
     const res = await fetch(RRL_URL, {
-      headers: { apikey: RRL_ANON, Authorization: `Bearer ${RRL_ANON}` },
-      next: { revalidate: 300 },
+      headers: { apikey: RRL_ANON, Authorization: 'Bearer ' + RRL_ANON },
     });
     if (!res.ok) return null;
     const rows = (await res.json()) as any[];
