@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '../../constants/AppColors';
 import { getSchedule } from '../../lib/api';
+import { getPrvaLigaTabela, getRrlTabela, type TabelaRed } from '../../lib/tabele';
 
 // Kolor-sistem generacija — ista boja prati ekipu na sajtu i u aplikaciji
 const TEAM_META: Record<string, { color: string; soft: string; label: string }> = {
@@ -19,6 +20,18 @@ export default function RasporedScreen() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [teamFilter, setTeamFilter] = useState('all');
+  const [mode, setMode] = useState<'raspored' | 'tabela'>('raspored');
+  const [prva, setPrva] = useState<TabelaRed[] | null>(null);
+  const [rrl, setRrl] = useState<TabelaRed[] | null>(null);
+  const [tabLoading, setTabLoading] = useState(false);
+
+  useEffect(() => {
+    if (mode !== 'tabela' || prva || rrl) return;
+    setTabLoading(true);
+    Promise.all([getPrvaLigaTabela(), getRrlTabela()])
+      .then(([a, b]) => { setPrva(a); setRrl(b); })
+      .finally(() => setTabLoading(false));
+  }, [mode]);
 
   useEffect(() => {
     getSchedule().then((r: any) => {
@@ -40,8 +53,18 @@ export default function RasporedScreen() {
     <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
       <View style={[s.header, { paddingTop: insets.top + 14 }]}>
         <Text style={s.headerTitle}>Raspored</Text>
-        <Text style={s.headerSub}>Treninzi i utakmice svih ekipa</Text>
-        <View style={s.filterRow}>
+        <Text style={s.headerSub}>Treninzi, utakmice i tabele</Text>
+        <View style={[s.filterRow, { marginBottom: 10 }]}>
+          {(['raspored', 'tabela'] as const).map(m => (
+            <TouchableOpacity key={m} onPress={() => setMode(m)}
+              style={[s.filterBtn, mode === m && s.filterActive]}>
+              <Text style={[s.filterText, mode === m && s.filterTextActive]}>
+                {m === 'raspored' ? 'Raspored' : 'Tabela'}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        {mode === 'raspored' && <><View style={s.filterRow}>
           {filters.map(f => (
             <TouchableOpacity key={f.val} onPress={() => setFilter(f.val)}
               style={[s.filterBtn, filter === f.val && s.filterActive]}>
@@ -61,9 +84,16 @@ export default function RasporedScreen() {
               <Text style={[s.filterText, teamFilter === cat && s.filterTextActive]}>{m.label}</Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </View></>}
       </View>
 
+      {mode === 'tabela' ? (
+        <View style={{ paddingHorizontal: 16, paddingTop: 6 }}>
+          {tabLoading && <ActivityIndicator color={Colors.primary} style={{ marginTop: 40 }} />}
+          {!tabLoading && <LigaTabela title="Prva ženska liga Crne Gore" source="Izvor: RSCG" rows={prva} />}
+          {!tabLoading && <LigaTabela title="Regionalna liga (WRHL) · Grupa B" source="Izvor: rr-liga.com" rows={rrl} />}
+        </View>
+      ) : (<>
       {loading && <ActivityIndicator color={Colors.primary} style={{ marginTop: 40 }} />}
 
       {/* Timeline */}
@@ -118,9 +148,58 @@ export default function RasporedScreen() {
           <Text style={s.empty}>Nema zakazanih događaja.</Text>
         )}
       </View>
+      </>)}
     </ScrollView>
   );
 }
+
+function LigaTabela({ title, source, rows }: { title: string; source: string; rows: TabelaRed[] | null }) {
+  return (
+    <View style={{ marginBottom: 28 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+        <Text style={{ color: Colors.text, fontSize: 17, fontFamily: Fonts.heading }}>{title}</Text>
+        <Text style={{ color: Colors.textMuted, fontSize: 10, fontFamily: Fonts.body }}>{source}</Text>
+      </View>
+      {!rows ? (
+        <Text style={{ color: Colors.textMuted, fontSize: 13, fontFamily: Fonts.body }}>Tabela trenutno nije dostupna.</Text>
+      ) : (
+        <View style={{ backgroundColor: Colors.card, borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: Colors.border }}>
+          <View style={{ flexDirection: 'row', paddingVertical: 8, paddingHorizontal: 12, borderBottomWidth: 1, borderBottomColor: Colors.border }}>
+            <Text style={[tb.h, { width: 24 }]}>#</Text>
+            <Text style={[tb.h, { flex: 1 }]}>Klub</Text>
+            <Text style={[tb.h, tb.num]}>U</Text>
+            <Text style={[tb.h, tb.num]}>P</Text>
+            <Text style={[tb.h, tb.num]}>I</Text>
+            <Text style={[tb.h, { width: 52, textAlign: 'center' }]}>G-raz.</Text>
+            <Text style={[tb.h, { width: 34, textAlign: 'center' }]}>Bod</Text>
+          </View>
+          {rows.map(r => (
+            <View key={r.rank + r.name} style={{
+              flexDirection: 'row', alignItems: 'center', paddingVertical: 9, paddingHorizontal: 12,
+              borderBottomWidth: 1, borderBottomColor: Colors.border,
+              backgroundColor: r.nasa ? 'rgba(196,18,48,0.14)' : 'transparent',
+              borderLeftWidth: 3, borderLeftColor: r.nasa ? '#C41230' : 'transparent',
+            }}>
+              <Text style={[tb.c, { width: 24, color: Colors.textMuted }]}>{r.rank}.</Text>
+              <Text style={[tb.c, { flex: 1, fontFamily: r.nasa ? Fonts.bodyBold : Fonts.body, color: Colors.text }]} numberOfLines={1}>{r.name}</Text>
+              <Text style={[tb.c, tb.num]}>{r.played}</Text>
+              <Text style={[tb.c, tb.num]}>{r.won}</Text>
+              <Text style={[tb.c, tb.num]}>{r.lost}</Text>
+              <Text style={[tb.c, { width: 52, textAlign: 'center', color: Colors.textMuted }]}>{r.gf}:{r.ga}</Text>
+              <Text style={[tb.c, { width: 34, textAlign: 'center', fontFamily: Fonts.bodyBold, color: '#D4AC0D' }]}>{r.points}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
+const tb = StyleSheet.create({
+  h: { color: Colors.textMuted, fontSize: 10, fontFamily: Fonts.bodyBold, textTransform: 'uppercase', letterSpacing: 0.4 },
+  c: { fontSize: 13, fontFamily: Fonts.body, color: 'rgba(255,255,255,0.85)' },
+  num: { width: 22, textAlign: 'center' },
+});
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
