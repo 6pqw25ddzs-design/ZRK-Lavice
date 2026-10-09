@@ -9,6 +9,7 @@ const NAV = [
   { href: '/ekipe', label: 'Ekipe' },
   { href: '/rezultati', label: 'Utakmice' },
   { href: '/raspored', label: 'Raspored' },
+  { href: '/tabela', label: 'Tabela' },
   { href: '/vijesti', label: 'Vijesti' },
   { href: '/podrzi-nas', label: 'Podrži klub' },
   { href: '/kontakt', label: 'Kontakt' },
@@ -29,7 +30,8 @@ const MEGA = [
 const MOBILE_GROUPS: { title: string; items: { href: string; label: string }[] }[] = [
   { title: 'Takmičenje', items: [
     { href: '/ekipe', label: 'Ekipe' }, { href: '/rezultati', label: 'Utakmice' },
-    { href: '/raspored', label: 'Raspored' }, { href: '/vijesti', label: 'Vijesti' },
+    { href: '/raspored', label: 'Raspored' }, { href: '/tabela', label: 'Tabela' },
+    { href: '/vijesti', label: 'Vijesti' },
   ]},
   { title: 'Klub', items: [
     { href: '/o-nama', label: 'O nama' }, { href: '/#osnivaci', label: 'Osnivači' },
