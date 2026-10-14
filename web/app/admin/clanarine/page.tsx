@@ -62,19 +62,15 @@ export default function AdminClanarinePage() {
   }
 
   function exportExcel() {
-    const sorted = [...rows].sort((a, b) => {
-      const rank = (r: Row) => r.fee?.status === 'unpaid' ? 0 : r.fee ? 1 : 2;
-      return rank(a) - rank(b) || a.lastName.localeCompare(b.lastName, 'sr');
-    });
+    // sortirano po godištu (najstarije prvo), pa po prezimenu
+    const sorted = [...rows].sort((a, b) =>
+      (births[a.playerId] || '9999').localeCompare(births[b.playerId] || '9999') ||
+      a.lastName.localeCompare(b.lastName, 'sr'));
     const statusLabel = (r: Row) => !r.fee ? 'Nije zadužena' : r.fee.status === 'paid' ? 'Plaćeno' : r.fee.status === 'waived' ? 'Oslobođena' : 'Neplaćeno';
-    let nUnpaid = 0, nPaid = 0;
     const data = [
       ['R.br.', 'Prezime i ime', 'Godište', 'Iznos (EUR)', 'Status'],
-      ...sorted.map(r => {
-        const st = statusLabel(r);
-        const n = st === 'Neplaćeno' ? ++nUnpaid : st === 'Plaćeno' ? ++nPaid : '';
-        return [String(n), `${r.lastName} ${r.firstName}`, births[r.playerId] || '', r.fee ? String(r.fee.amountEur) : '', st];
-      }),
+      ...sorted.map((r, i) =>
+        [String(i + 1), `${r.lastName} ${r.firstName}`, births[r.playerId] || '', r.fee ? String(r.fee.amountEur) : '', statusLabel(r)]),
       [],
       ['', 'Plaćeno ' + paid + '/' + charged, '', 'naplaćeno ' + totalPaid + '€', ''],
     ];
