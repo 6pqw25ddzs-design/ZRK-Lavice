@@ -15,6 +15,7 @@ export default function AdminClanarinePage() {
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [rows, setRows] = useState<Row[]>([]);
+  const [births, setBirths] = useState<Record<string, string>>({});
   const [amount, setAmount] = useState('20');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -32,6 +33,10 @@ export default function AdminClanarinePage() {
     if (!teamId) { setRows([]); return; }
     try {
       setRows(await adminRequest(`/api/fees?teamId=${teamId}&year=${year}&month=${month}`, getToken()));
+      try {
+        const ps = await fetch(`https://api.zrklavice.me/api/players?teamId=${teamId}`).then(r => r.json());
+        setBirths(Object.fromEntries((ps as any[]).map(pl => [pl.id, String(pl.birthDate || '').slice(0, 4)])));
+      } catch { /* godišta su opciona */ }
       setError('');
     } catch (e: any) { setError('Greška: ' + (e?.message || '')); }
   }
@@ -64,14 +69,14 @@ export default function AdminClanarinePage() {
     const statusLabel = (r: Row) => !r.fee ? 'Nije zadužena' : r.fee.status === 'paid' ? 'Plaćeno' : r.fee.status === 'waived' ? 'Oslobođena' : 'Neplaćeno';
     let nUnpaid = 0, nPaid = 0;
     const data = [
-      ['R.br.', 'Prezime i ime', 'Iznos (EUR)', 'Status'],
+      ['R.br.', 'Prezime i ime', 'Godište', 'Iznos (EUR)', 'Status'],
       ...sorted.map(r => {
         const st = statusLabel(r);
         const n = st === 'Neplaćeno' ? ++nUnpaid : st === 'Plaćeno' ? ++nPaid : '';
-        return [String(n), `${r.lastName} ${r.firstName}`, r.fee ? String(r.fee.amountEur) : '', st];
+        return [String(n), `${r.lastName} ${r.firstName}`, births[r.playerId] || '', r.fee ? String(r.fee.amountEur) : '', st];
       }),
       [],
-      ['', 'Plaćeno ' + paid + '/' + charged, 'naplaćeno ' + totalPaid + '€', ''],
+      ['', 'Plaćeno ' + paid + '/' + charged, '', 'naplaćeno ' + totalPaid + '€', ''],
     ];
     const csv = data.map(row => row.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
