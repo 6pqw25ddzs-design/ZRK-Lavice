@@ -1,67 +1,81 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { Colors, Fonts } from '../../constants/AppColors';
-import { getStandings } from '../../lib/api';
+import { getPrvaLigaTabela, getRrlTabela, type TabelaRed } from '../../lib/tabele';
 
+// Žive tabele — isti izvori kao zrklavice.me/tabela (RSCG feed + rr-liga.com)
 export default function TabelaScreen() {
-  const [rows, setRows] = useState<any[]>([]);
+  const [prva, setPrva] = useState<TabelaRed[] | null>(null);
+  const [rrl, setRrl] = useState<TabelaRed[] | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getStandings().then(r => setRows(Array.isArray(r) ? r : [])).catch(() => {}).finally(() => setLoading(false));
+    Promise.all([getPrvaLigaTabela(), getRrlTabela()])
+      .then(([a, b]) => { setPrva(a); setRrl(b); })
+      .finally(() => setLoading(false));
   }, []);
-
-  const groups: Record<string, any[]> = {};
-  for (const r of rows) (groups[r.league] ||= []).push(r);
 
   return (
     <ScrollView style={s.container} contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
       {loading && <ActivityIndicator color={Colors.primary} style={{ marginTop: 40 }} />}
-      {!loading && rows.length === 0 && <Text style={s.empty}>Tabela još nije objavljena.</Text>}
-      {Object.entries(groups).map(([league, items]) => (
-        <View key={league} style={{ marginBottom: 24 }}>
-          <Text style={s.league}>{league}</Text>
-          <View style={s.table}>
-            <View style={[s.tr, s.head]}>
-              <Text style={[s.cellRank, s.th]}>#</Text>
-              <Text style={[s.cellTeam, s.th]}>Ekipa</Text>
-              <Text style={[s.cell, s.th]}>Od</Text>
-              <Text style={[s.cell, s.th]}>P</Text>
-              <Text style={[s.cell, s.th]}>N</Text>
-              <Text style={[s.cell, s.th]}>I</Text>
-              <Text style={[s.cell, s.th]}>Bod</Text>
-            </View>
-            {items.map((r, i) => (
-              <View key={r.id} style={[s.tr, r.isOwnTeam && s.ownRow]}>
-                <Text style={[s.cellRank, s.td]}>{i + 1}</Text>
-                <Text style={[s.cellTeam, s.td, r.isOwnTeam && s.ownTeam]} numberOfLines={1}>{r.teamName}</Text>
-                <Text style={[s.cell, s.td]}>{r.played}</Text>
-                <Text style={[s.cell, s.td]}>{r.wins}</Text>
-                <Text style={[s.cell, s.td]}>{r.draws}</Text>
-                <Text style={[s.cell, s.td]}>{r.losses}</Text>
-                <Text style={[s.cell, s.points]}>{r.points}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-      ))}
+      {!loading && <Liga title="Prva ženska liga Crne Gore" source="Izvor: RSCG" rows={prva} />}
+      {!loading && <Liga title="Regionalna liga (WRHL) · Grupa B" source="Izvor: rr-liga.com" rows={rrl} />}
     </ScrollView>
+  );
+}
+
+function Liga({ title, source, rows }: { title: string; source: string; rows: TabelaRed[] | null }) {
+  return (
+    <View style={{ marginBottom: 26 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+        <Text style={s.league}>{title}</Text>
+        <Text style={s.source}>{source}</Text>
+      </View>
+      {!rows ? (
+        <Text style={s.empty}>Tabela trenutno nije dostupna.</Text>
+      ) : (
+        <View style={s.table}>
+          <View style={[s.tr, s.head]}>
+            <Text style={[s.cellRank, s.th]}>#</Text>
+            <Text style={[s.cellTeam, s.th]}>Klub</Text>
+            <Text style={[s.cell, s.th]}>U</Text>
+            <Text style={[s.cell, s.th]}>P</Text>
+            <Text style={[s.cell, s.th]}>I</Text>
+            <Text style={[s.cellGd, s.th]}>G-raz.</Text>
+            <Text style={[s.cell, s.th]}>Bod</Text>
+          </View>
+          {rows.map(r => (
+            <View key={r.rank + r.name} style={[s.tr, r.nasa && s.ownRow]}>
+              <Text style={[s.cellRank, s.td]}>{r.rank}.</Text>
+              <Text style={[s.cellTeam, s.td, r.nasa && s.ownTeam]} numberOfLines={1}>{r.name}</Text>
+              <Text style={[s.cell, s.td]}>{r.played}</Text>
+              <Text style={[s.cell, s.td]}>{r.won}</Text>
+              <Text style={[s.cell, s.td]}>{r.lost}</Text>
+              <Text style={[s.cellGd, s.td]}>{r.gf}:{r.ga}</Text>
+              <Text style={[s.cell, s.td, s.points]}>{r.points}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
   );
 }
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  empty: { color: Colors.textMuted, textAlign: 'center', marginTop: 60, fontSize: 15, fontFamily: Fonts.body },
-  league: { color: Colors.text, fontSize: 16, fontFamily: Fonts.headingBold, marginBottom: 10 },
-  table: { backgroundColor: Colors.card, borderWidth: 1, borderColor: Colors.border, borderRadius: 12, overflow: 'hidden' },
-  tr: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: Colors.border },
-  head: { borderBottomColor: Colors.border },
-  ownRow: { backgroundColor: Colors.primary + '1F' },
-  th: { color: Colors.textMuted, fontSize: 11, fontFamily: Fonts.bodyBold },
-  td: { color: Colors.text, fontSize: 13, fontFamily: Fonts.body },
-  cellRank: { width: 24, textAlign: 'center' },
-  cellTeam: { flex: 1, paddingLeft: 4 },
-  ownTeam: { color: Colors.primary, fontFamily: Fonts.bodyBold },
-  cell: { width: 30, textAlign: 'center' },
-  points: { width: 36, textAlign: 'center', color: Colors.primary, fontFamily: Fonts.heading, fontSize: 14 },
+  league: { color: Colors.text, fontSize: 17, fontFamily: Fonts.heading },
+  source: { color: Colors.textMuted, fontSize: 10, fontFamily: Fonts.body },
+  empty: { color: Colors.textMuted, fontSize: 13, fontFamily: Fonts.body },
+  table: { backgroundColor: Colors.card, borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: Colors.border },
+  tr: { flexDirection: 'row', alignItems: 'center', paddingVertical: 9, paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: Colors.border },
+  head: { paddingVertical: 8 },
+  th: { color: Colors.textMuted, fontSize: 10, fontFamily: Fonts.bodyBold, textTransform: 'uppercase', letterSpacing: 0.4 },
+  td: { color: 'rgba(0,0,0,0.75)', fontSize: 13, fontFamily: Fonts.body },
+  cellRank: { width: 26 },
+  cellTeam: { flex: 1 },
+  cell: { width: 24, textAlign: 'center' },
+  cellGd: { width: 50, textAlign: 'center' },
+  ownRow: { backgroundColor: 'rgba(196,18,48,0.10)', borderLeftWidth: 3, borderLeftColor: '#C41230' },
+  ownTeam: { fontFamily: Fonts.bodyBold },
+  points: { fontFamily: Fonts.bodyBold, color: '#C41230' },
 });
