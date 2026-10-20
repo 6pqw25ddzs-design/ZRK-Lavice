@@ -26,6 +26,7 @@ const articleSchema = z.object({
   slug: z.string().min(3).regex(/^[a-z0-9-]+$/),
   body: z.string().min(10),
   coverUrl: z.string().url().optional(),
+  coverCredit: z.string().optional(),
   tags: z.array(z.string()).default([]),
   isPublished: z.boolean().default(false),
 });
@@ -38,7 +39,7 @@ router.get('/', async (req, res) => {
         isPublished: true,
         ...(tag ? { tags: { has: String(tag) } } : {}),
       },
-      select: { id: true, title: true, slug: true, coverUrl: true, publishedAt: true, tags: true },
+      select: { id: true, title: true, slug: true, coverUrl: true, coverCredit: true, publishedAt: true, tags: true },
       orderBy: { publishedAt: 'desc' },
       take: limit ? parseInt(String(limit)) : 20,
     });

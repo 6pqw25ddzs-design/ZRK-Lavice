@@ -248,6 +248,7 @@ model NewsArticle {
   slug        String    @unique
   body        String
   coverUrl    String?   @map("cover_url")
+  coverCredit String?   @map("cover_credit")
   publishedAt DateTime? @map("published_at")
   isPublished Boolean   @default(false) @map("is_published")
   tags        String[]
