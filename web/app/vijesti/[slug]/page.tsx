@@ -21,7 +21,15 @@ export default async function VijestPage({ params }: { params: Promise<{ slug: s
 
       {article.coverUrl && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={article.coverUrl} alt={article.title} className="w-full rounded-xl mb-8" />
+        <figure className="mb-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={article.coverUrl} alt={article.title} className="w-full rounded-xl" />
+          {article.coverCredit && (
+            <figcaption style={{ color: 'var(--text-muted)' }} className="text-xs mt-2 text-right">
+              Foto: {article.coverCredit}
+            </figcaption>
+          )}
+        </figure>
       )}
 
       {article.body && (
