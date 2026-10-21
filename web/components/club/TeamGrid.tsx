@@ -11,6 +11,27 @@ export default function TeamGrid({ teams, players }: { teams: any[]; players: an
   const team = sorted.find(t => t.id === sel);
   const tp = players.filter(p => p.teamId === sel);
 
+  function exportExcel() {
+    // sortirano po godištu (najstarije prvo), pa po prezimenu
+    const rows = [...tp].sort((a, b) =>
+      String(a.birthDate || '9999').localeCompare(String(b.birthDate || '9999')) ||
+      String(a.lastName).localeCompare(String(b.lastName), 'sr'));
+    const isMini = team?.category === 'mini';
+    const data = [
+      ['R.br.', 'Prezime i ime', 'Godište', ...(isMini ? ['Grupa'] : [])],
+      ...rows.map((p, i) => [
+        String(i + 1), `${p.lastName} ${p.firstName}`, String(p.birthDate || '').slice(0, 4),
+        ...(isMini ? [p.position || ''] : []),
+      ]),
+    ];
+    const csv = data.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${(team?.name || 'ekipa').toLowerCase().replace(/\s+/g, '-')}-spisak.csv`;
+    a.click(); URL.revokeObjectURL(a.href);
+  }
+
   return (
     <div>
       <div className="flex gap-7 mb-10 overflow-x-auto" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
@@ -25,6 +46,13 @@ export default function TeamGrid({ teams, players }: { teams: any[]; players: an
             {t.name}
           </button>
         ))}
+        {tp.length > 0 && (
+          <button onClick={exportExcel}
+            className="pb-3 text-[13px] whitespace-nowrap ml-auto transition-colors hover:text-white"
+            style={{ color: 'var(--lav-grey-400)' }}>
+            ⬇️ Izvezi u Excel
+          </button>
+        )}
       </div>
 
       {team?.category === 'prva_liga' && (
