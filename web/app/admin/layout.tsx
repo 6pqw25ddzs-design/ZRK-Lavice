@@ -12,6 +12,7 @@ const navItems = [
   { href: '/admin/ekipe', label: 'Ekipe', icon: '🛡️' },
   { href: '/admin/igraci', label: 'Igrači', icon: '👥' },
   { href: '/admin/prisustvo', label: 'Prisustvo', icon: '✅' },
+  { href: '/admin/rodjendani', label: 'Rođendani', icon: '🎂' },
   { href: '/admin/objave', label: 'Objave', icon: '📣' },
   { href: '/admin/dosijei', label: 'Dosijei', icon: '🗂️' },
   { href: '/admin/oprema', label: 'Oprema', icon: '🎽' },
