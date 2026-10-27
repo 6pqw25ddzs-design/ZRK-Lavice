@@ -37,7 +37,8 @@ export async function sendNotifyEmail(subject: string, html: string): Promise<vo
         'Authorization': `Bearer ${RESEND_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ from: FROM, to: [NOTIFY_EMAIL], subject, html }),
+      // NOTIFY_EMAIL može biti više adresa odvojenih zarezom
+      body: JSON.stringify({ from: FROM, to: NOTIFY_EMAIL.split(',').map(a => a.trim()).filter(Boolean), subject, html }),
     });
     if (!res.ok) console.error('Email notify failed:', res.status, await res.text());
   } catch (e) {
