@@ -88,6 +88,25 @@ router.post('/daily', requireAuth, requireRole('admin'), async (_req: AuthReques
       report.ugovori = { istice: contractAlerts.length };
     }
 
+    // 2c) Rođendani danas — mejl klubu da stigne čestitka
+    const allPlayers = await prisma.player.findMany({
+      select: { firstName: true, lastName: true, birthDate: true, team: { select: { name: true } } },
+    });
+    const slavljenice = allPlayers.filter(p => {
+      if (!p.birthDate) return false;
+      const b = new Date(p.birthDate);
+      return b.getDate() === now.getDate() && b.getMonth() === now.getMonth();
+    });
+    if (slavljenice.length) {
+      await sendNotifyEmail(
+        `🎂 Danas rođendan slavi: ${slavljenice.map(p => `${p.firstName} ${p.lastName}`).join(', ')}`,
+        `<div style="font-family:sans-serif"><h2 style="color:#C8102E">Rođendani danas 🎂🦁</h2>
+         <ul>${slavljenice.map(p => `<li><b>${p.firstName} ${p.lastName}</b> (${p.team?.name || ''}) — puni ${now.getFullYear() - new Date(p.birthDate!).getFullYear()} g.</li>`).join('')}</ul>
+         <p>Ne zaboravite čestitku!</p>
+         <p><a href="https://zrklavice.me/admin/rodjendani" style="color:#C8102E">Otvori rođendane →</a></p></div>`);
+      report.rodjendani = { danas: slavljenice.length };
+    }
+
     // 3) Prijave na čekanju — mejl klubu ponedjeljkom
     if (weekday === 1) {
       const pending = await prisma.registration.count({ where: { status: 'pending' } });
