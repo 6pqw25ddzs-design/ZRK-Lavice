@@ -9,7 +9,7 @@ router.get('/', async (_req, res) => {
     const teams = await prisma.team.findMany({
       include: {
         coaches: { include: { user: { select: { fullName: true } } } },
-        _count: { select: { players: true } },
+        _count: { select: { players: { where: { isActive: true } } } },
       },
     });
     res.json(teams);
