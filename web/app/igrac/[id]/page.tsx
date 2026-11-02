@@ -17,13 +17,15 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
   const trainings = (p.attendance || []).filter((a: any) => a.event?.type === 'training').length;
   const matches = p.matchesPlayed ?? (p.attendance || []).filter((a: any) => a.event?.type === 'match').length;
   const isFirstTeam = p.team?.category === 'prva_liga';
+  // Golovi su javni za ekipe koje igraju zvanična takmičenja (Prvi tim + Pionirke)
+  const showGoals = isFirstTeam || p.team?.category === 'pioniri';
   const goals = p.goals ?? 0;
   const avg = matches > 0 ? Math.round((goals / matches) * 10) / 10 : 0;
 
-  // Učinak po utakmicama (javno samo za Prvi tim): golovi iz zapisnika po meču
-  const perMatch = isFirstTeam
+  // Učinak po utakmicama: golovi iz zapisnika po meču (mečevi ekipe igračice)
+  const perMatch = showGoals
     ? (results as any[])
-        .filter(r => r.event?.team?.category === 'prva_liga')
+        .filter(r => r.event?.team?.category === p.team?.category)
         .map(r => ({
           id: r.id,
           title: r.event?.title,
@@ -40,7 +42,7 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
 
   const tm = teamMeta(p.team?.category);
   const isKeeper = (p.saves ?? 0) + (p.conceded ?? 0) > 0;
-  const stats = isFirstTeam && isKeeper
+  const stats = showGoals && isKeeper
     ? [
         { label: 'Odbrana', value: p.saves },
         { label: 'Save %', value: `${p.savePct}%` },
@@ -48,11 +50,11 @@ export default async function IgracPage({ params }: { params: Promise<{ id: stri
         { label: 'Godište', value: p.birthDate ? new Date(p.birthDate).getFullYear() : '—' },
       ]
     : [
-        isFirstTeam
+        showGoals
           ? { label: 'Golova', value: goals }
           : { label: 'Treninga', value: trainings },
         { label: 'Utakmica', value: matches },
-        ...(isFirstTeam ? [{ label: 'Prosjek po meču', value: avg }] : []),
+        ...(showGoals ? [{ label: 'Prosjek po meču', value: avg }] : []),
         { label: 'Godište', value: p.birthDate ? new Date(p.birthDate).getFullYear() : '—' },
       ];
 
