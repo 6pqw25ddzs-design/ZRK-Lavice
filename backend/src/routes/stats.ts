@@ -4,7 +4,7 @@ import { prisma } from '../db';
 const router = Router();
 
 // Statistika ekipe iz zvaničnih rezultata: bilans + lista strijelaca.
-// Javno dostupno samo za seniorsku kategoriju (prva_liga) — mlađe kategorije se javno ne rangiraju.
+// Javno dostupno za ekipe koje igraju zvanična takmičenja (prva_liga + pioniri).
 router.get('/', async (req: Request, res: Response) => {
   try {
     const { teamId } = req.query;
@@ -12,8 +12,8 @@ router.get('/', async (req: Request, res: Response) => {
 
     const team = await prisma.team.findUnique({ where: { id: String(teamId) } });
     if (!team) return res.status(404).json({ error: 'Ekipa ne postoji' });
-    if (team.category !== 'prva_liga') {
-      return res.status(403).json({ error: 'Statistika je javna samo za seniorsku kategoriju' });
+    if (!['prva_liga', 'pioniri'].includes(team.category)) {
+      return res.status(403).json({ error: 'Statistika je javna samo za takmičarske kategorije' });
     }
 
     const [results, players, matchAttendance] = await Promise.all([
