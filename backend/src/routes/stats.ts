@@ -30,18 +30,26 @@ router.get('/', async (req: Request, res: Response) => {
       }),
       prisma.attendance.findMany({
         where: { status: 'present', event: { teamId: String(teamId), type: 'match' } },
-        select: { playerId: true, eventId: true },
+        select: { playerId: true, eventId: true, event: { select: { notes: true } } },
       }),
     ]);
 
     let wins = 0, draws = 0, losses = 0, gf = 0, ga = 0;
+    // Statistika strijelaca se vodi ODVOJENO po takmičenju (liga vs WRHL),
+    // da prosjek po meču odgovara zvaničnim tabelama svakog takmičenja.
     // nastupi = prisustvo na utakmici ILI postignut gol (zapisnik)
+    const isRRLNote = (n?: string | null) => (n || '').startsWith('WRHL');
     const playedBy: Record<string, Set<string>> = {};
-    for (const a of matchAttendance) (playedBy[a.playerId] ||= new Set()).add(a.eventId);
+    const playedByRRL: Record<string, Set<string>> = {};
+    for (const a of matchAttendance as any[]) {
+      const bucket = isRRLNote(a.event?.notes) ? playedByRRL : playedBy;
+      (bucket[a.playerId] ||= new Set()).add(a.eventId);
+    }
     const goalsByPlayer: Record<string, { goals: number }> = {};
+    const goalsByPlayerRRL: Record<string, { goals: number }> = {};
     let leaguePlayed = 0;
     for (const r of results as any[]) {
-      const isRRL = (r.event?.notes || '').startsWith('WRHL');
+      const isRRL = isRRLNote(r.event?.notes);
       if (!isRRL) {
         leaguePlayed++;
         gf += r.homeScore; ga += r.awayScore;
@@ -54,31 +62,37 @@ router.get('/', async (req: Request, res: Response) => {
         for (const [pid, g] of Object.entries(s)) {
           const n = Number(g) || 0;
           if (n <= 0) continue;
-          (goalsByPlayer[pid] ||= { goals: 0 }).goals += n;
-          (playedBy[pid] ||= new Set()).add(r.eventId);
+          const goalsBucket = isRRL ? goalsByPlayerRRL : goalsByPlayer;
+          const playedBucket = isRRL ? playedByRRL : playedBy;
+          (goalsBucket[pid] ||= { goals: 0 }).goals += n;
+          (playedBucket[pid] ||= new Set()).add(r.eventId);
         }
       }
     }
 
     const pMap = new Map(players.map(p => [p.id, p]));
-    const scorers = Object.entries(goalsByPlayer)
-      .map(([pid, s]) => {
-        const p = pMap.get(pid);
-        const matches = playedBy[pid]?.size || 1;
-        return p ? {
-          playerId: pid, firstName: p.firstName, lastName: p.lastName,
-          jerseyNumber: p.jerseyNumber, photoUrl: p.photoUrl,
-          goals: s.goals, matches,
-          avg: Math.round((s.goals / matches) * 10) / 10,
-        } : null;
-      })
-      .filter(Boolean)
-      .sort((a: any, b: any) => b.goals - a.goals);
+    const toScorers = (goals: Record<string, { goals: number }>, played: Record<string, Set<string>>) =>
+      Object.entries(goals)
+        .map(([pid, s]) => {
+          const p = pMap.get(pid);
+          const matches = played[pid]?.size || 1;
+          return p ? {
+            playerId: pid, firstName: p.firstName, lastName: p.lastName,
+            jerseyNumber: p.jerseyNumber, photoUrl: p.photoUrl,
+            goals: s.goals, matches,
+            avg: Math.round((s.goals / matches) * 10) / 10,
+          } : null;
+        })
+        .filter(Boolean)
+        .sort((a: any, b: any) => b.goals - a.goals);
+    const scorers = toScorers(goalsByPlayer, playedBy);
+    const scorersRRL = toScorers(goalsByPlayerRRL, playedByRRL);
 
     res.json({
       team: { id: team.id, name: team.name },
       record: { played: leaguePlayed, wins, draws, losses, goalsFor: gf, goalsAgainst: ga, diff: gf - ga },
       scorers,
+      scorersRRL,
       results: (results as any[]).map(r => ({
         date: r.event.startsAt, opponent: r.event.opponent || r.event.title,
         location: r.event.location,

@@ -155,6 +155,32 @@ export default async function RezultatiPage() {
               </div>
             ))}
           </div>
+          {stats?.scorersRRL?.length > 0 && (
+            <div className="mb-12">
+              <h2 className="text-xl font-black text-white mb-4">🥇 Lista strijelaca — Regionalna liga</h2>
+              <div style={card} className="rounded-xl overflow-hidden">
+                {stats.scorersRRL.map((s: any, i: number) => (
+                  <div key={s.playerId}
+                    className="relative flex items-center gap-4 px-4 py-3 overflow-hidden"
+                    style={{ borderBottom: i < stats.scorersRRL.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                    <span className="display w-6 text-center text-lg" style={{ color: i < 3 ? 'var(--lav-gold)' : 'var(--text-muted)' }}>{i + 1}</span>
+                    {s.photoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={s.photoUrl} alt="" className="w-10 h-10 rounded-full object-cover object-top" />
+                    ) : (
+                      <span style={{ backgroundColor: 'var(--primary)' }} className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-black">{s.jerseyNumber ?? '?'}</span>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-white font-semibold text-sm">{s.firstName} {s.lastName}</div>
+                      <div style={{ color: 'var(--text-muted)' }} className="text-xs">{s.matches} utakmica · prosjek {s.avg}</div>
+                    </div>
+                    <div className="display nums text-3xl shrink-0 relative" style={{ color: 'var(--lav-gold)' }}>{s.goals}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col gap-3">
             {resultsRRL.map((r: any) => <MatchCard key={r.id} r={r} />)}
           </div>
