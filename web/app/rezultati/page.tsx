@@ -29,7 +29,19 @@ export default async function RezultatiPage() {
       : null,
   ]);
 
-  const resultsPrvi = (results as any[]).filter(r => r.event?.team?.category === 'prva_liga');
+  const isRRL = (r: any) => (r.event?.notes || '').startsWith('WRHL');
+  const resultsPrvi = (results as any[]).filter(r => r.event?.team?.category === 'prva_liga' && !isRRL(r));
+  const resultsRRL = (results as any[]).filter(r => r.event?.team?.category === 'prva_liga' && isRRL(r));
+  const rrlRecord = resultsRRL.reduce(
+    (a, r) => ({
+      p: a.p + 1,
+      w: a.w + (r.homeScore > r.awayScore ? 1 : 0),
+      d: a.d + (r.homeScore === r.awayScore ? 1 : 0),
+      l: a.l + (r.homeScore < r.awayScore ? 1 : 0),
+      gf: a.gf + r.homeScore, ga: a.ga + r.awayScore,
+    }),
+    { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0 },
+  );
   const resultsPio = (results as any[]).filter(r => r.event?.team?.category === 'pioniri');
   const resultsOstalo = (results as any[]).filter(r => !['prva_liga', 'pioniri'].includes(r.event?.team?.category));
 
@@ -45,6 +57,7 @@ export default async function RezultatiPage() {
           {r.event?.team?.name && ` · ${r.event.team.name}`}
         </div>
         {r.notes && <div style={{ color: 'var(--text-muted)' }} className="text-sm mt-1">{r.notes}</div>}
+        {r.event?.notes && <div style={{ color: 'var(--text-muted)' }} className="text-sm mt-1">{r.event.notes}</div>}
       </div>
       <div className="display nums text-4xl shrink-0" style={{ color: 'var(--lav-gold)' }}>
         {r.homeScore} : {r.awayScore}
@@ -120,6 +133,31 @@ export default async function RezultatiPage() {
       ) : (
         <div className="flex flex-col gap-3">
           {resultsPrvi.map((r: any) => <MatchCard key={r.id} r={r} />)}
+        </div>
+      )}
+
+      {/* REGIONALNA LIGA (WRHL) — Stars-Lavice-UDG */}
+      {resultsRRL.length > 0 && (
+        <div className="mt-16">
+          <SectionTitle>Regionalna liga — Stars-Lavice-UDG</SectionTitle>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-8">
+            {[
+              { l: 'Utakmica', v: rrlRecord.p },
+              { l: 'Pobjede', v: rrlRecord.w, c: '#16a34a' },
+              { l: 'Nerešene', v: rrlRecord.d, c: 'var(--gold)' },
+              { l: 'Porazi', v: rrlRecord.l, c: '#dc2626' },
+              { l: 'Dati golovi', v: rrlRecord.gf },
+              { l: 'Gol razlika', v: (rrlRecord.gf - rrlRecord.ga > 0 ? '+' : '') + (rrlRecord.gf - rrlRecord.ga) },
+            ].map((x: any) => (
+              <div key={x.l} style={card} className="rounded-xl p-3 text-center">
+                <div className="display nums text-4xl" style={{ color: x.c || 'var(--lav-gold)' }}>{x.v}</div>
+                <div style={{ color: 'var(--text-muted)' }} className="text-xs mt-1">{x.l}</div>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col gap-3">
+            {resultsRRL.map((r: any) => <MatchCard key={r.id} r={r} />)}
+          </div>
         </div>
       )}
 

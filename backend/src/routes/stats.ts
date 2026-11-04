@@ -17,8 +17,10 @@ router.get('/', async (req: Request, res: Response) => {
     }
 
     const [results, players, matchAttendance] = await Promise.all([
+      // WRHL (Regionalna liga) mečevi se vode pod istom ekipom, ali se ne miješaju
+      // u bilans i listu strijelaca domaćeg prvenstva — označeni su notes prefiksom "WRHL".
       prisma.matchResult.findMany({
-        where: { event: { teamId: String(teamId) } },
+        where: { event: { teamId: String(teamId), NOT: { notes: { startsWith: 'WRHL' } } } },
         include: { event: { select: { startsAt: true, opponent: true, title: true, location: true } } },
         orderBy: { event: { startsAt: 'desc' } },
       } as any),
