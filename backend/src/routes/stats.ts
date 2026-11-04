@@ -42,6 +42,7 @@ router.get('/', async (req: Request, res: Response) => {
     const playedBy: Record<string, Set<string>> = {};
     const playedByRRL: Record<string, Set<string>> = {};
     for (const a of matchAttendance as any[]) {
+      if ((a.event?.notes || '').includes('rijateljsk')) continue;
       const bucket = isRRLNote(a.event?.notes) ? playedByRRL : playedBy;
       (bucket[a.playerId] ||= new Set()).add(a.eventId);
     }
