@@ -17,11 +17,11 @@ router.get('/', async (req: Request, res: Response) => {
     }
 
     const [results, players, matchAttendance] = await Promise.all([
-      // WRHL (Regionalna liga) mečevi se vode pod istom ekipom, ali se ne miješaju
-      // u bilans i listu strijelaca domaćeg prvenstva — označeni su notes prefiksom "WRHL".
+      // WRHL (Regionalna liga) mečevi se vode pod istom ekipom (notes prefiks "WRHL"):
+      // bilans ih izostavlja (samo domaće prvenstvo), a lista strijelaca broji SVA takmičenja.
       prisma.matchResult.findMany({
-        where: { event: { teamId: String(teamId), NOT: { notes: { startsWith: 'WRHL' } } } },
-        include: { event: { select: { startsAt: true, opponent: true, title: true, location: true } } },
+        where: { event: { teamId: String(teamId) } },
+        include: { event: { select: { startsAt: true, opponent: true, title: true, location: true, notes: true } } },
         orderBy: { event: { startsAt: 'desc' } },
       } as any),
       prisma.player.findMany({
@@ -39,11 +39,16 @@ router.get('/', async (req: Request, res: Response) => {
     const playedBy: Record<string, Set<string>> = {};
     for (const a of matchAttendance) (playedBy[a.playerId] ||= new Set()).add(a.eventId);
     const goalsByPlayer: Record<string, { goals: number }> = {};
+    let leaguePlayed = 0;
     for (const r of results as any[]) {
-      gf += r.homeScore; ga += r.awayScore;
-      if (r.homeScore > r.awayScore) wins++;
-      else if (r.homeScore === r.awayScore) draws++;
-      else losses++;
+      const isRRL = (r.event?.notes || '').startsWith('WRHL');
+      if (!isRRL) {
+        leaguePlayed++;
+        gf += r.homeScore; ga += r.awayScore;
+        if (r.homeScore > r.awayScore) wins++;
+        else if (r.homeScore === r.awayScore) draws++;
+        else losses++;
+      }
       const s = r.scorers as Record<string, unknown> | null;
       if (s && typeof s === 'object') {
         for (const [pid, g] of Object.entries(s)) {
@@ -72,7 +77,7 @@ router.get('/', async (req: Request, res: Response) => {
 
     res.json({
       team: { id: team.id, name: team.name },
-      record: { played: results.length, wins, draws, losses, goalsFor: gf, goalsAgainst: ga, diff: gf - ga },
+      record: { played: leaguePlayed, wins, draws, losses, goalsFor: gf, goalsAgainst: ga, diff: gf - ga },
       scorers,
       results: (results as any[]).map(r => ({
         date: r.event.startsAt, opponent: r.event.opponent || r.event.title,
