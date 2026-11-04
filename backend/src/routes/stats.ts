@@ -49,6 +49,8 @@ router.get('/', async (req: Request, res: Response) => {
     const goalsByPlayerRRL: Record<string, { goals: number }> = {};
     let leaguePlayed = 0;
     for (const r of results as any[]) {
+      const isFriendly = ((r.event?.notes || '') + (r.event?.title || '')).includes('rijateljsk');
+      if (isFriendly) continue; // prijateljske ne ulaze ni u bilans ni u liste strijelaca
       const isRRL = isRRLNote(r.event?.notes);
       if (!isRRL) {
         leaguePlayed++;
