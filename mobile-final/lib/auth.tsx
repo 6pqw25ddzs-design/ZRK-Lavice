@@ -58,6 +58,7 @@ export function AuthProvider({ children: nodes }: { children: ReactNode }) {
         }
       } finally {
         setLoading(false);
+        registerPushToken(); // pri svakom otvaranju — pita za dozvolu i registruje uređaj (i bez prijave)
       }
     })();
   }, []);

@@ -2,6 +2,11 @@ const API_URL = 'https://api.zrklavice.me';
 
 let authToken: string | null = null;
 export function setAuthToken(token: string | null) { authToken = token; }
+export function hasAuthToken() { return !!authToken; }
+
+// Anonimna registracija push tokena — radi i bez prijave
+export const registerDevicePush = (token: string, platform: string) =>
+  request('/api/push/register', { method: 'POST', body: JSON.stringify({ token, platform }) });
 
 async function request(path: string, options: RequestInit = {}) {
   const res = await fetch(`${API_URL}${path}`, {
