@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Bebas_Neue } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -44,6 +45,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         <main id="sadrzaj" className="flex-1">{children}</main>
         <Footer />
+        <Script
+          src="https://analytics.kontura.digital/script.js"
+          data-website-id="50a4c159-2094-4819-bf64-57f8204c24e9"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
