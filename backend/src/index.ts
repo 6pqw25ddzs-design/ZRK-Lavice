@@ -48,7 +48,8 @@ app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(',') || '*' }));
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+// 1000/15min po IP; admin panel povlači mnogo GET-ova pa je stari limit (100) izazivao HTTP 429
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 1000 });
 app.use('/api', limiter);
 
 app.use('/api/auth', authRoutes);
