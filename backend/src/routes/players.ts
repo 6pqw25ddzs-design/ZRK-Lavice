@@ -49,15 +49,18 @@ router.get('/:id', async (req, res) => {
     let goals = 0, saves = 0, conceded = 0;
     const playedEvents = new Set<string>(
       (player.attendance || [])
-        .filter((a: any) => a.event?.type === 'match' && a.status === 'present')
+        .filter((a: any) => a.event?.type === 'match' && a.status === 'present'
+          && !(((a.event?.notes || '') + (a.event?.title || '')).includes('rijateljsk')))
         .map((a: any) => a.eventId)
     );
     try {
       const results = await prisma.matchResult.findMany({
         where: { event: { teamId: player.teamId } },
-        select: { eventId: true, scorers: true, keepers: true },
+        select: { eventId: true, scorers: true, keepers: true, event: { select: { title: true, notes: true } } },
       } as any);
       for (const r of results as any[]) {
+        // prijateljske utakmice ne ulaze u zvaničnu statistiku (isto kao u stats.ts)
+        if (((r.event?.notes || '') + (r.event?.title || '')).includes('rijateljsk')) continue;
         const s = r.scorers as Record<string, unknown> | null;
         const g = s && typeof s === 'object' ? Number(s[player.id]) || 0 : 0;
         goals += g;
