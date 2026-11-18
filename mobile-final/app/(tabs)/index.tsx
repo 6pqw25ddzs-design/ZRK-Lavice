@@ -183,7 +183,8 @@ export default function HomeScreen() {
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
 
-  hero: { width: W, height: Math.max(H * 0.44, 380), justifyContent: 'flex-end' },
+  // '100%' umjesto Dimensions width: na preklopnim uređajima se širina mijenja poslije pokretanja
+  hero: { width: '100%', height: Math.max(H * 0.44, 380), justifyContent: 'flex-end' },
   heroImg: { resizeMode: 'cover' },
   heroContent: { padding: 24, paddingBottom: 56 },
   heroLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
