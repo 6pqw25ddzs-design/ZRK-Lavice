@@ -20,7 +20,7 @@ const OSNIVACI = [
     ref: 'Srebro OI London 2012 · Zlato EP 2012 · 2× Liga šampiona' },
   { ime: 'Radmila Petrović', uloga: 'Osnivačica i direktorica', foto: `${BASE}/radmila.JPG`,
     bio: 'Generacija koja je ispisala najljepše stranice crnogorskog rukometa, sa iskustvom sa najvećih takmičenja.',
-    ref: 'Srebro OI London 2012 · Zlato EP 2012 · Liga šampiona' },
+    ref: 'Srebro OI London 2012 · Zlato EP 2012 · 2× Liga šampiona' },
   { ime: 'Anđela Bulatović', uloga: 'Osnivačica i trenerica', foto: `${BASE}/andjela.JPG`,
     bio: 'Istinska legenda crnogorskog rukometa, osvajačica najprestižnijih evropskih trofeja.',
     ref: 'Srebro OI London 2012 · Zlato EP 2012 · Liga šampiona' },
