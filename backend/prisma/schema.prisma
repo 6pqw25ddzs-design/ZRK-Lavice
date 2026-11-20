@@ -323,6 +323,21 @@ model Sponsor {
   @@map("sponsors")
 }
 
+// Zid donatora „Prijatelji kluba" — pojedinci i male firme (ispod sponzorskih nivoa)
+model Friend {
+  id        String   @id @default(uuid())
+  name      String
+  kind      String   @default("individual") // individual | company
+  amountEur Float?   @map("amount_eur")
+  logoUrl   String?  @map("logo_url")
+  websiteUrl String? @map("website_url")
+  note      String?
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("friends")
+}
+
 model Document {
   id         String   @id @default(uuid())
   title      String

@@ -1,4 +1,4 @@
-import { getSettings } from '@/lib/api';
+import { getSettings, getFriends } from '@/lib/api';
 import PaymentLogos from '@/components/PaymentLogos';
 
 export const revalidate = 60;
@@ -22,8 +22,13 @@ const POOL = [
   },
 ];
 
+type Friend = { id: string; name: string; kind: string; logoUrl?: string | null; websiteUrl?: string | null };
+
 export default async function PodrziNasPage() {
   const settings: Record<string, string> = await getSettings().catch(() => ({}));
+  const friends: Friend[] = await getFriends().catch(() => []);
+  const companies = friends.filter(f => f.kind === 'company');
+  const individuals = friends.filter(f => f.kind !== 'company');
   const uplata = [
     { label: 'Naziv primaoca', value: settings.donation_recipient || 'ŽRK Lavice-UDG' },
     { label: 'Žiro račun / IBAN', value: settings.donation_iban || 'Uskoro dostupno' },
@@ -109,6 +114,61 @@ export default async function PodrziNasPage() {
           </a>
           <p style={{ color: 'var(--text-muted)' }} className="text-xs mt-3">info@zrklavice.me · odgovaramo u roku od 24h</p>
         </div>
+      </div>
+
+      {/* Zid donatora — Prijatelji kluba */}
+      <div className="mb-16">
+        <h2 className="text-white font-black text-2xl mb-2 text-center">Prijatelji kluba</h2>
+        <p style={{ color: 'var(--text-muted)' }} className="text-center mb-8 max-w-xl mx-auto">
+          Zid zahvalnosti — pojedinci i firme koji su podržali Lavice. Hvala vam što 96 djevojčica trenira, putuje i raste.
+        </p>
+
+        {companies.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-3 mb-6">
+            {companies.map(f => (
+              <a key={f.id} href={f.websiteUrl || undefined} target={f.websiteUrl ? '_blank' : undefined} rel="noreferrer"
+                style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
+                className="rounded-xl px-5 py-3 flex items-center gap-3 hover:brightness-125 transition-all">
+                {f.logoUrl && <img src={f.logoUrl} alt="" className="h-7 w-auto object-contain" />}
+                <span className="text-white font-bold text-sm">{f.name}</span>
+              </a>
+            ))}
+          </div>
+        )}
+
+        {individuals.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-2">
+            {individuals.map(f => (
+              <span key={f.id}
+                style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+                className="rounded-full px-4 py-1.5 text-sm">
+                {f.name}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {friends.length === 0 && (
+          <div style={{ backgroundColor: 'var(--card)', border: '1px dashed var(--border)' }} className="rounded-2xl p-8 text-center">
+            <p style={{ color: 'var(--text-muted)' }} className="mb-4">Zid je spreman — budi prvo ime na njemu.</p>
+            <a href="/doniraj" style={{ backgroundColor: 'var(--gold)', color: '#1A1A1A' }}
+              className="inline-block px-6 py-2.5 rounded-full font-black text-sm hover:brightness-110 transition-all">
+              Doniraj i upiši se →
+            </a>
+          </div>
+        )}
+
+        {friends.length > 0 && (
+          <div className="text-center mt-8">
+            <a href="/doniraj" style={{ backgroundColor: 'var(--gold)', color: '#1A1A1A' }}
+              className="inline-block px-6 py-2.5 rounded-full font-black text-sm hover:brightness-110 transition-all">
+              Pridruži se — doniraj online →
+            </a>
+            <p style={{ color: 'var(--text-muted)' }} className="text-xs mt-3">
+              Uz donaciju od 40 € i više upisujemo ime na zid (uz tvoju saglasnost) · firme od 300 € dobijaju logo
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Članstvo */}
